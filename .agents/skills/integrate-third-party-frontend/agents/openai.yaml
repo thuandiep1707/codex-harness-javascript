@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Integrate Third-Party Frontend'
+  short_description: 'Isolate and onboard external frontend projects'
+  default_prompt: 'Use $integrate-third-party-frontend to assess and plan a maintainable integration for this external frontend project.'

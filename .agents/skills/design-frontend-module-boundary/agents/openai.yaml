@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Design Frontend Module Boundary'
+  short_description: 'Plan DDD ownership for new frontend modules'
+  default_prompt: 'Use $design-frontend-module-boundary to assess this source and propose an approved module boundary and placement map.'

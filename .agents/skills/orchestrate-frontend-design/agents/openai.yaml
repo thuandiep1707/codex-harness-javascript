@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Orchestrate Frontend Design'
+  short_description: 'Coordinate external designers via MCP or plugins'
+  default_prompt: 'Use $orchestrate-frontend-design to coordinate this UI design with an external MCP or plugin provider and return a traceable design handoff.'

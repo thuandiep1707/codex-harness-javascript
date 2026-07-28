@@ -1,0 +1,162 @@
+{
+  "skill_name": "shadcn",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "This repository has components.json. Review a date parser inside a domain module; no UI, registry, primitive, preset, or shadcn command is involved.",
+      "expected_output": "A non-trigger decision that keeps the shadcn skill and all of its references out of context.",
+      "files": [],
+      "expectations": [
+        "Does not trigger shadcn from components.json alone",
+        "Does not run shadcn info, docs, search, view, dry-run, or diff",
+        "Routes the task to its actual repository owner",
+        "Does not load shadcn composition, forms, styling, icon, registry, CLI, or MCP references"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "The official shadcn Button is already installed. Review a behavior-neutral local usage cleanup; no registry lookup, package change, or visual redesign is needed.",
+      "expected_output": "A local-source short-circuit that returns the installed primitive to the ordinary frontend workflow.",
+      "files": [],
+      "expectations": [
+        "Inspects the installed Button and direct consumer first",
+        "Does not refresh shadcn info or inspect a registry without evidence",
+        "Loads only frontend topic rules triggered by the local diff",
+        "Does not load generated-ui-validation merely because Button originated from shadcn",
+        "Does not load supply-chain, integration, security, design, MCP, or testing workflows without evidence"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "This project needs the official shadcn Tooltip primitive, but it may not be installed. Gather the exact impact for an implementation plan without changing repository files.",
+      "expected_output": "An inspect-only path that checks local availability and previews exact impact without mutation.",
+      "files": [],
+      "expectations": [
+        "Checks the resolved local UI path before assuming Tooltip is absent",
+        "Uses the lockfile-resolved project CLI instead of switching to @latest",
+        "Uses version-appropriate docs and add --dry-run with targeted diff",
+        "Reports previewed files, dependencies, CSS, assets, runtime surfaces, and unknowns",
+        "Does not run add without --dry-run or install a dependency"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "The developer approved adding the official shadcn Separator after a dry-run showed one component file and no new dependency or global CSS. Apply the approved change.",
+      "expected_output": "A narrow mutation transaction that re-previews, rejects drift, applies only the approved delta, and returns changed-file evidence.",
+      "files": [],
+      "expectations": [
+        "Reruns the same preview before mutation",
+        "Stops if files, dependencies, or runtime impact drift from approval",
+        "Applies only the approved component and does not use implicit overwrite",
+        "Confirms the applied files and dependencies match the approved preview",
+        "Routes only concrete diff evidence to relevant frontend topic rules",
+        "Does not load generated-ui-validation solely because the CLI generated a file"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "A dry-run for an official @shadcn chart primitive shows that it will add a new npm package and global CSS. The primitive is official, so can the agent apply it immediately?",
+      "expected_output": "A stop-and-handoff decision because official registry identity does not waive dependency or runtime gates.",
+      "files": [],
+      "expectations": [
+        "Does not treat official @shadcn provenance as dependency approval",
+        "Routes the package evidence to audit-frontend-supply-chain",
+        "Routes global CSS or feature runtime evidence to the owning integration gate",
+        "Does not rerun boundary design when approved analysis already places official shadcn primitives in src/components/ui and no evidence changes ownership",
+        "Requires approval before mutation",
+        "Requires a fresh preview and drift check after approval"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "Inspect the community shadcn registry item acme/ui/login-panel and tell me exactly what it would add. Do not install or copy anything yet.",
+      "expected_output": "An inspect-only result that identifies the exact external artifact and hands it to supply-chain review without adoption.",
+      "files": [],
+      "expectations": [
+        "Uses search/view and project-context dry-run rather than add, install, or copy",
+        "Preserves the exact registry address and version or resolved commit evidence",
+        "Records generated files, dependencies, CSS, assets, runtime surfaces, and unknowns",
+        "Routes the exact artifact to audit-frontend-supply-chain before adoption approval",
+        "Does not treat inspection or an audit recommendation as mutation authority"
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "Supply-chain review and the developer approved exact community item acme/ui/login-panel@abc123. Install only that reviewed artifact.",
+      "expected_output": "A post-audit shadcn apply transaction constrained to the approved address and commit.",
+      "files": [],
+      "expectations": [
+        "Resolves the exact approved address and commit instead of searching for an alternative",
+        "Reruns the preview and compares it with the approved evidence record",
+        "Stops on source, file, dependency, CSS, asset, or runtime drift",
+        "Applies only after all evidence-triggered gates are resolved",
+        "Verifies the exact applied delta and returns it to relevant frontend topic rules"
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "Update the installed shadcn Button, which has local project modifications. The developer has not approved overwriting those changes.",
+      "expected_output": "A safe update path that compares upstream with local source and refuses implicit overwrite.",
+      "files": [],
+      "expectations": [
+        "Uses the CLI dry-run and targeted diff as the upstream comparison source",
+        "Identifies local modifications before applying an update",
+        "Does not use --overwrite or replace the customized file implicitly",
+        "Requests an explicit replacement decision or prepares a reviewed manual merge",
+        "Keeps the final mutation inside the approved upstream delta"
+      ]
+    },
+    {
+      "id": 9,
+      "prompt": "Apply a new shadcn preset to this existing project. Components, fonts, tokens, and globals.css may be replaced, and no overwrite strategy has been selected.",
+      "expected_output": "A preset gate that inspects both sides and waits for overwrite, partial, merge, or skip approval.",
+      "files": [],
+      "expectations": [
+        "Treats the preset code as opaque and uses the lockfile-resolved CLI",
+        "Inspects current configuration, CSS, fonts, components, and local modifications",
+        "Previews incoming files, dependencies, and global changes",
+        "Requires an explicit overwrite, partial, merge, or skip decision",
+        "Does not mutate while that decision or an evidence-triggered gate is unresolved"
+      ]
+    },
+    {
+      "id": 10,
+      "prompt": "Implement a developer-approved design-provider screen. The design requires a Dialog that is not installed, so add the official shadcn primitive and complete the screen.",
+      "expected_output": "A composed route where shadcn handles only the Dialog transaction and design-provider validation remains owned by the parent UI task.",
+      "files": [],
+      "expectations": [
+        "Runs the shadcn inspect, gate, apply, and transaction verification only for Dialog",
+        "Returns the generated delta to the parent implementation instead of treating shadcn as design authority",
+        "Uses project topic rules for placement, semantics, styling, and runtime decisions",
+        "Loads generated-ui-validation because the parent task uses an approved design-provider artifact",
+        "Does not duplicate the shadcn preview, dependency, drift, or overwrite checks inside generated UI validation"
+      ]
+    },
+    {
+      "id": 11,
+      "prompt": "Create and verify a private shadcn registry item definition for an already approved internal primitive. Do not install the item into the application.",
+      "expected_output": "A registry-authoring route that reads only registry schema/build mechanics and does not start an adoption flow.",
+      "files": [],
+      "expectations": [
+        "Loads the task-routed registry authoring and build sections",
+        "Preserves the approved primitive ownership and does not redesign its API",
+        "Does not treat registry build success as application adoption approval",
+        "Does not run an add/install mutation against the application",
+        "Returns registry build and verification evidence"
+      ]
+    },
+    {
+      "id": 12,
+      "prompt": "Use the configured shadcn MCP to inspect an official registry item. Return its metadata only and do not install it.",
+      "expected_output": "An explicit MCP inspect-only route with the same source and mutation boundaries as the CLI.",
+      "files": [],
+      "expectations": [
+        "Loads the MCP reference only because a configured shadcn MCP is explicitly requested",
+        "Uses search or view capability without install mutation",
+        "Preserves exact registry identity and returned metadata",
+        "Does not treat an MCP add-command result as mutation approval",
+        "Returns inspect-only evidence without loading unrelated composition references"
+      ]
+    }
+  ]
+}

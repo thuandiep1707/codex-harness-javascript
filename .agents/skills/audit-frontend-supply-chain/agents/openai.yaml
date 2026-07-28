@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Audit Frontend Supply Chain'
+  short_description: 'Assess dependency, license, and provenance risk'
+  default_prompt: 'Use $audit-frontend-supply-chain to assess dependency and source-adoption risk with traceable evidence.'

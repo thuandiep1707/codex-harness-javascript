@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Next.js State Management'
+  short_description: 'Manage URL, Zustand, and TanStack Query state'
+  default_prompt: 'Use $nextjs-state-management to apply best practices for managing state using URL state, Zustand (client state), and TanStack Query (server state).'

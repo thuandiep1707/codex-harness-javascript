@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Migrate Legacy Frontend Module'
+  short_description: 'Move legacy code into approved DDD slices'
+  default_prompt: 'Use $migrate-legacy-frontend-module to plan a behavior-preserving migration into the approved target module.'

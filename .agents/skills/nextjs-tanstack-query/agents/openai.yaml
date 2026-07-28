@@ -1,0 +1,4 @@
+interface:
+  display_name: 'Next.js TanStack Query'
+  short_description: 'Gate and implement module-owned server state'
+  default_prompt: 'Use $nextjs-tanstack-query to assess this task-local server-state flow against project DDD and architecture gates before implementing it.'

@@ -1,0 +1,6 @@
+interface:
+  display_name: 'shadcn/ui'
+  short_description: 'Manage approved shadcn primitives and CLI'
+  icon_small: './assets/shadcn-small.png'
+  icon_large: './assets/shadcn.png'
+  default_prompt: 'Use $shadcn to inspect and manage an approved shadcn/ui primitive in this project.'

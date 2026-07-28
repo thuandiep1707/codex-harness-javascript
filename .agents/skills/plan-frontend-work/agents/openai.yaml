@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan Frontend Work"
+  short_description: "Read project docs and route frontend work"
+  default_prompt: "Use $plan-frontend-work to read the relevant project documentation, decompose the request, and route bounded tasks to frontend coding, design, and testing workers."
