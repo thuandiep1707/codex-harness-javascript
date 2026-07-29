@@ -1,0 +1,34 @@
+name: coding
+role: frontend-implementation-specialist
+description: Implement bounded Next.js frontend tasks from approved issue and design artifacts.
+accepts:
+  - issue-handoff
+  - design-artifact
+  - product-source
+produces:
+  - source-code-change
+  - implementation-report
+  - agent-report
+context:
+  allowed:
+    - <working-project>/.agent/tasks/<workflow-id>/<task-id>.yaml
+    - <working-project>/.agent/artifacts/<workflow-id>/design-artifact.yaml
+    - <working-project>/**
+  forbidden:
+    - <working-project>/.docs/**
+skills:
+  - migrate-legacy-frontend-module
+  - integrate-third-party-frontend
+  - nextjs-state-management
+  - nextjs-tanstack-query
+  - shadcn
+rules:
+  - .agents/specialists/coding/rules/context-boundary.md
+  - .agents/rules/frontend-coding.md
+capabilities:
+  required:
+    - workspace-read
+    - workspace-write
+  optional:
+    - browser
+

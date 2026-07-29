@@ -1,6 +1,6 @@
 ---
 name: migrate-legacy-frontend-module
-description: Plan and execute behavior-preserving movement of legacy or demo frontend code into an already approved DDD module. Use when source is freestyle or follows an old architecture and target ownership is approved; cover characterization, strategy choice, dependency-ordered slices, coexistence, cutover, rollback, and legacy removal.
+description: Execute a bounded behavior-preserving migration of legacy or demo frontend code into an already approved DDD module. Use only for the coding specialist when the issue handoff contains approved target ownership, migration scope, characterization expectations, coexistence, cutover, rollback, and removal controls.
 ---
 
 # Migrate Legacy Frontend Module
@@ -13,13 +13,12 @@ rollback, and legacy removal verifiable.
 
 ## Require an approved target
 
-1. Read `AGENTS.md`, the approved task plan, `.analysis/README.md`, the owning context analysis,
-   `src/modules/README.md`, and `.agents/rules/frontend-coding.md`. Select only topic rules triggered
-   by the approved migration slice and record them in the plan.
-2. Require an approved intake result from `design-frontend-module-boundary` naming the target context,
-   layers, direct consumers, and unresolved architecture decisions.
-3. If ownership is missing or changed by new evidence, stop implementation and return to the boundary
-   skill and plan approval.
+1. Read the assigned `issue-handoff.yaml`, approved design artifact when present,
+   `.agents/rules/frontend-coding.md`, and only the source in the allowed migration scope.
+2. Require the handoff to name the approved target context, layers, direct consumers,
+   characterization expectations, and unresolved architecture decisions.
+3. Never read `.docs/` or `.analysis/`. If ownership is missing or contradicted by source evidence,
+   stop implementation and return a blocker to Orchestrator.
 
 Do not use a migration task to approve a new context, data-flow contract, auth policy, template API,
 or project-wide migration convention.
@@ -96,9 +95,9 @@ surface, remaining debt, and deviations.
 
 ## Compose only as required
 
-- Use `audit-frontend-supply-chain` and `integrate-third-party-frontend` instead when the primary task
-  is adopting external source/vendor runtime rather than migrating owned legacy behavior.
-- Add security review only for a scoped threat surface.
+- Return a routing blocker to Orchestrator when the work is actually external-source adoption rather
+  than migration of owned legacy behavior.
+- Report a security-review need to Orchestrator only for a scoped threat surface.
 - Do not enumerate unrelated skills.
 
 ## Guardrails

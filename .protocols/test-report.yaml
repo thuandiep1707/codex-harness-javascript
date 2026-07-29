@@ -1,0 +1,18 @@
+kind: test-report
+workflow-id: "<workflow-id>"
+task-id: "<task-id>"
+status: "<passed|failed|blocked>"
+test-plan-artifact-used: ""
+changed-files: []
+scenarios:
+  passed: []
+  failed: []
+  skipped: []
+execution:
+  commands: []
+  results: []
+evidence: []
+coverage-limitations: []
+residual-risks: []
+production-defects: []
+

@@ -1,0 +1,28 @@
+kind: analysis-package
+workflow-id: "<workflow-id>"
+objective: "<objective>"
+scope:
+  included: []
+  excluded: []
+requirements:
+  functional: []
+  non-functional: []
+constraints: []
+architecture-direction:
+  summary: ""
+  decisions: []
+  protected-boundaries: []
+acceptance-criteria:
+  - id: "ac-1"
+    statement: ""
+    evidence-required: []
+assumptions:
+  - statement: ""
+    evidence: ""
+ambiguities: []
+contradictions: []
+risks: []
+required-capabilities: []
+open-questions: []
+analysis-status: ready
+

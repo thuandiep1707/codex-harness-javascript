@@ -10,13 +10,13 @@ state owner, accessibility contract, attachment policy, or realtime behavior.
 Treat the chat registry artifacts and every generated dependency as unconfirmed
 third-party source until inspected. Identify the exact registry item, version or
 commit, generated files, and dependency surface with read-only inspection and a
-CLI dry run. Route adoption through `audit-frontend-supply-chain` and obtain
-developer approval before running an add command.
+CLI dry run. Require the issue handoff to record completed supply-chain approval
+before running an add command; otherwise return a blocker to Orchestrator.
 
-After approval, add only the reviewed artifacts. Route attachments, untrusted
-message rendering, streaming, browser storage, or realtime behavior to
-`audit-frontend-security` when those threat surfaces are in scope. Verify the
-installed files and dependencies before applying the patterns below.
+After approval, add only the reviewed artifacts. Return attachments, untrusted
+message rendering, streaming, browser storage, or realtime threat gaps to
+Orchestrator for Brain review. Verify the installed files and dependencies before
+applying the patterns below.
 
 Approved install example:
 

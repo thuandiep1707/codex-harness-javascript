@@ -1,0 +1,23 @@
+name: design
+role: design-provider-specialist
+description: Produce traceable external design artifacts from a bounded issue handoff.
+accepts:
+  - issue-handoff
+produces:
+  - design-artifact
+  - agent-report
+context:
+  allowed:
+    - <working-project>/.agent/tasks/<workflow-id>/<task-id>.yaml
+  forbidden:
+    - <working-project>/.docs/**
+    - <working-project>/source-mutation
+skills:
+  - orchestrate-frontend-design
+rules:
+  - .agents/specialists/design/rules/context-boundary.md
+capabilities:
+  required:
+    - design-provider
+  optional: []
+

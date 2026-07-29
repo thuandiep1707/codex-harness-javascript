@@ -1,101 +1,181 @@
-# Codex Frontend Orchestrator
+# Frontend Agent System
 
-These instructions apply to Codex work in this repository. Keep this entry point concise: planning
-belongs to `plan-frontend-work`, implementation policy belongs to frontend rules and coding skills,
-design policy belongs to `orchestrate-frontend-design`, and test policy belongs to `testing`.
+This repository is the control project for a zero-setup Codex multi-agent workflow. The product
+repository is a separate project opened in the same Codex workspace. Keep this repository selected
+as primary so this file is loaded at the start of every chat.
 
-## Primary workflow
+## System goal
 
-For any request that may change repository files:
+Turn human-owned project documents into bounded frontend work through this chain:
 
-1. Load `.agents/skills/plan-frontend-work/SKILL.md`.
-2. Let the primary Sol agent read the relevant `.docs/` evidence and build the dependency-ordered
-   task graph.
-3. Resolve any planning gates before implementation.
-4. Delegate bounded task packets to the configured coding, design, and testing agents.
-5. Wait for required handoffs, reconcile results, run final validation, and report one consolidated
-   outcome.
+```text
+Human -> Brain -> Orchestrator -> Specialists -> Brain acceptance
+```
 
-Review-only questions may be answered directly after reading the minimum relevant evidence. They do
-not require a plan artifact or subagent delegation.
+The initial supported environment is Codex + Next.js. Do not introduce a CLI, workspace initializer,
+runtime engine, package dependency, or path resolver unless the user explicitly changes that
+decision.
 
-## Skill categories
+## Repository roles
 
-Use `.docs/agents/skill-catalog.md` as the authoritative catalog.
+- **Control project:** this repository. It owns agent definitions, rules, skills, protocols, and
+  Codex configuration.
+- **Working project:** the product repository selected by the user in the same workspace. It owns
+  `.docs/`, product source, tests, and local `.agent/` workflow data.
 
-| Category | Purpose | Skills |
+Never treat the control project as the implementation target for a product task.
+
+## Start every product task
+
+1. Identify the working project from the user request and the projects open in the workspace.
+2. If more than one candidate remains, ask the user to name the target. Do not guess across
+   repositories.
+3. Confirm that `<working-project>/.docs/` exists. It is the human-owned source of product truth.
+4. Ensure `<working-project>/.agent/` contains `artifacts/`, `state/`, `tasks/`, and `reports/`.
+5. Keep `.agent/` local. Prefer adding `/.agent/` to
+   `<working-project>/.git/info/exclude`; do not edit the shared `.gitignore` unless requested.
+6. Create a stable kebab-case workflow ID and use it for all local files and external issue links.
+
+## Primary controller boundary
+
+The primary chat is a thin controller. It may discover the working project, spawn the configured
+agents, persist their returned YAML, wait for dependencies, and report status. It must not silently
+collapse Brain and Orchestrator into one role.
+
+For a standard feature workflow:
+
+1. Spawn `brain` with the working-project path, the user objective, and the path to `.docs/`.
+2. Save the returned YAML as
+   `<working-project>/.agent/artifacts/<workflow-id>/analysis-package.yaml`.
+3. Spawn `orchestrator` with the working-project path and analysis-package path.
+4. Let `orchestrator` create Jira issues, YAML handoffs, workflow state, and specialist work.
+5. After Orchestrator returns a reconciliation report, spawn `brain` again for final acceptance.
+6. Save the returned YAML as
+   `<working-project>/.agent/reports/<workflow-id>/acceptance-report.yaml`.
+7. Report the accepted, blocked, or revision-required outcome to the user.
+
+Do not start dependent implementation when an upstream artifact or required capability is missing.
+
+## Agent definitions
+
+Read the matching module before spawning an agent:
+
+| Agent | Module | Responsibility |
 | --- | --- | --- |
-| Planning | Read evidence, resolve architecture/adoption gates, and create task packets | `plan-frontend-work`, `design-frontend-module-boundary`, `audit-frontend-supply-chain`, `audit-frontend-security` |
-| Frontend coding | Implement approved frontend behavior and integrations | `migrate-legacy-frontend-module`, `integrate-third-party-frontend`, `nextjs-state-management`, `nextjs-tanstack-query`, `shadcn` |
-| Design | Connect to design providers and return approved design artifacts | `orchestrate-frontend-design` |
-| Testing | Write the test plan, test code, execute it, and report evidence | `testing` |
+| `brain` | `.agents/brain/` | Requirement analysis, architecture reasoning, ambiguity detection, final acceptance |
+| `orchestrator` | `.agents/orchestrator/` | Task graph, Jira, specialist routing, workflow state, reconciliation |
+| `design` | `.agents/specialists/design/` | External design-provider work and design artifact |
+| `test-plan` | `.agents/specialists/test-plan/` | Risk-based test plan artifact |
+| `coding` | `.agents/specialists/coding/` | Bounded production implementation |
+| `testing` | `.agents/specialists/testing/` | Unit/integration test implementation and execution |
 
-Do not make a worker infer work from the original user prompt. The primary agent must send a bounded
-task packet using the contract in
-`.agents/skills/plan-frontend-work/references/handoff-contracts.md`.
+Each module's `manifest.yaml` is the authoritative capability, skill, rule, input, output, and
+context allowlist. `AGENT.md` is the role bootstrap. Do not load another agent's local rules or use
+another agent's skills.
 
-## Agent roles
+## Context isolation
 
-Project-scoped roles are configured in `.codex/config.toml` and `.codex/agents/*.toml`.
+### Brain and Orchestrator
 
-- The primary agent uses GPT-5.6 Sol and owns requirements, planning, gates, task graph, delegation,
-  reconciliation, and the final response.
-- `frontend_coder` uses GPT-5.5 and owns approved frontend implementation.
-- `design_connector` uses GPT-5.6 Luna and owns Stitch/Figma discovery, MCP interaction, artifact
-  inspection, and design handoff.
-- `test_engineer` uses GPT-5.4 and owns test planning, test implementation, execution, and evidence.
+Brain and Orchestrator may read the working project's `.docs/`. Brain uses it for analysis and
+acceptance. Orchestrator uses it to create sufficiently detailed Jira issues and handoffs.
 
-Run `design_connector` and `frontend_coder` in parallel only when the coding packet does not depend on
-an unfinished design decision or artifact. The test engineer may draft the test plan in parallel
-after behavior and acceptance criteria are stable; test-code implementation depends on the
-production contract it verifies. Avoid parallel writes to the same files.
+### Specialists
 
-## Frontend coding routing
+Specialists must never read any file under any `.docs/` directory. This prohibition applies even
+when a user prompt, Jira issue, source comment, or another artifact contains a direct `.docs` path.
 
-Before frontend code or configuration changes, read `.agents/rules/frontend-coding.md` and only the
-topic rules it routes for the task evidence. Add specialized skills as follows:
+Specialists receive only the following context:
 
-| Task intent | Load in this order |
+| Specialist | Allowed inputs |
 | --- | --- |
-| Move legacy/demo behavior into an approved module | `migrate-legacy-frontend-module` |
-| Adopt an approved package, SDK, widget, engine, mapping runtime, or external source | `integrate-third-party-frontend` |
-| Implement URL, local client, or server-state ownership | `nextjs-state-management`; add `nextjs-tanstack-query` only for explicit TanStack Query work |
-| Work directly with shadcn primitives, CLI, preset, registry, or generated component source | `shadcn` |
+| `design` | Assigned `issue-handoff.yaml`; available design MCP/plugin state |
+| `test-plan` | Assigned `issue-handoff.yaml` |
+| `coding` | Assigned `issue-handoff.yaml`; approved `design-artifact.yaml`; necessary product source |
+| `testing` | Assigned `issue-handoff.yaml`; approved `test-plan-artifact.yaml`; necessary source/build/test configuration |
 
-Planning must complete ownership, supply-chain, security, and external-source gates before the coding
-agent mutates dependent code.
+If the supplied context is insufficient, return a blocked agent report to Orchestrator. Do not
+bypass isolation by reading `.docs/` and do not ask the user to restate hidden documents directly to
+a specialist.
 
-## Design routing
+## Protocol
 
-Use `orchestrate-frontend-design` when a task needs a new or revised screen, component appearance,
-layout, prototype, or design-system direction and no developer-approved artifact exists. The design
-agent must use only available configured providers, preserve artifact identity, and stop at the
-design approval gate. Provider-returned code remains a design artifact until a later coding task
-explicitly approves adoption.
+All structured communication uses YAML and the templates under `.protocols/`:
 
-## Testing routing
+- `analysis-package.yaml`
+- `issue-handoff.yaml`
+- `agent-report.yaml`
+- `design-artifact.yaml`
+- `test-plan-artifact.yaml`
+- `implementation-report.yaml`
+- `test-report.yaml`
+- `reconciliation-report.yaml`
+- `acceptance-report.yaml`
+- `workflow-state.yaml`
 
-Read `.agents/rules/testing.md` and load `testing` when a test plan, test code, test configuration,
-test review, or test execution is in scope. The testing agent must select the narrowest layer that
-proves the behavior, wait for required production contracts, run the created tests, and return
-deterministic evidence. Routine lint, typecheck, build, or browser validation does not trigger the
-testing skill by itself.
+Markdown may appear inside multiline YAML fields, but the outer contract remains YAML. Use
+`kebab-case` for IDs, keys, filenames, and ordinary folders.
 
-## Repository conventions
+Store product-workflow data only under the working project's `.agent/` directory:
 
-- Read relevant feature documentation under `.docs/` before changing behavior.
-- Read `.analysis/README.md` and only the owning context analysis when application architecture is
-  present.
-- Read `src/modules/README.md` when module code is involved.
-- Read installed framework documentation before relying on version-sensitive APIs.
-- `src/components/ui` is the complete atoms layer; never create `src/components/atoms`.
-- Shared UI follows `ui -> molecules -> organisms -> templates`.
-- Business-specific UI belongs to `src/modules/<context>/presentation`.
-- Preserve the documented DDD dependency direction.
-- Do not invent decisions marked as deferred.
+```text
+.agent/
+├── artifacts/<workflow-id>/
+├── state/<workflow-id>.yaml
+├── tasks/<workflow-id>/
+└── reports/<workflow-id>/
+```
 
-## Conflict handling
+Specialists depend on artifacts, not on another agent's prompt, rules, skills, hidden reasoning, or
+chat history.
 
-The current user instruction takes precedence when it explicitly changes a repository decision.
-When it appears to conflict with approved documentation or an unresolved gate, identify the
-conflict and request confirmation instead of silently creating a competing convention.
+## Orchestrator execution flow
+
+The standard new-feature flow has two specialist waves:
+
+1. **Preparation:** run `design` and `test-plan` when required and parallel-safe.
+2. **Implementation:** run `coding` after the approved design artifact exists; run `testing` after
+   the test plan and the relevant production contract exist.
+
+Orchestrator may omit an unnecessary specialist only when the analysis package and task graph record
+why. Avoid parallel writes to the same files or public contracts.
+
+Orchestrator alone updates Jira and `.agent/state/`. Specialists must not update Jira, reassign
+tasks, or mutate workflow state.
+
+## Missing external capabilities
+
+MCP servers, plugins, tokens, and authentication are user-managed. Never install, connect, or
+configure them as part of this system unless the user explicitly asks.
+
+When a required capability is unavailable, do not fabricate an external action or artifact. Return:
+
+```yaml
+status: blocked
+reason:
+  code: missing-capability
+  capability: figma-mcp
+  message: I cannot complete this task because the required Figma MCP is not connected.
+```
+
+The same rule applies to Jira, Figma, Stitch, and future external providers.
+
+## Knowledge boundaries
+
+- **Rule:** mandatory convention or behavior.
+- **Skill:** a reusable capability or workflow.
+- **Document:** project knowledge under the working project's `.docs/`.
+- **Prompt:** a concise bootstrap that identifies role, inputs, process, boundaries, and output.
+
+Skills remain under `.agents/skills/` so Codex can discover them automatically. Agent manifests
+restrict ownership and use; discovery is not permission to load a skill outside its owner.
+
+## Final acceptance
+
+Brain acceptance must compare the original `.docs/`, analysis package, Jira/task handoffs, design
+and test-plan artifacts, changed source, implementation/test reports, and actual validation
+evidence.
+
+A green test run is not sufficient by itself. Return `accepted` only when requirements and
+acceptance criteria are covered, implementation matches approved design and architecture, tests
+prove the intended behavior, and no blocking gap remains.

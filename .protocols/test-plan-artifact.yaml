@@ -1,0 +1,20 @@
+kind: test-plan-artifact
+workflow-id: "<workflow-id>"
+task-id: "<task-id>"
+scope:
+  included: []
+  excluded: []
+acceptance-coverage:
+  - acceptance-id: "ac-1"
+    test-layer: "<unit|component|integration>"
+    scenarios: []
+    evidence-required: []
+test-data: []
+fixtures: []
+mock-boundaries: []
+environment-requirements: []
+execution-order: []
+known-limitations: []
+residual-risks: []
+plan-status: ready
+

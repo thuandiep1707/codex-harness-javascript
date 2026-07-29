@@ -1,46 +1,50 @@
-# Frontend Skill Catalog
+# Frontend skill ownership
 
-This catalog is the authoritative classification used by the primary planning agent.
+Skill discovery is global to the repository, but skill permission is local to each agent manifest.
+An agent must not load a skill outside its allowlist.
 
-## Planning
-
-| Skill | Responsibility |
-| --- | --- |
-| `plan-frontend-work` | Read `.docs`, resolve planning gates, build the task graph, and hand work to specialized agents |
-| `design-frontend-module-boundary` | Decide bounded-context ownership and DDD placement before implementation |
-| `audit-frontend-supply-chain` | Assess package/source provenance, license, lockfile, lifecycle, advisory, and exit risk |
-| `audit-frontend-security` | Assess browser/runtime threats and produce evidence-backed controls or remediation requirements |
-
-These skills are read-heavy and decision-oriented. Remediation or implementation discovered by an
-audit becomes a separate frontend-coding or testing task.
-
-## Frontend coding
+## Brain
 
 | Skill | Responsibility |
 | --- | --- |
-| `migrate-legacy-frontend-module` | Move approved legacy behavior into an approved module boundary |
-| `integrate-third-party-frontend` | Implement an approved vendor/source integration behind controlled seams |
-| `nextjs-state-management` | Choose and implement URL, local client, and server-state ownership |
-| `nextjs-tanstack-query` | Implement explicit TanStack Query v5 query, mutation, cache, and hydration flows |
-| `shadcn` | Work with shadcn primitives, CLI, presets, registries, and generated component source |
+| `analyze-frontend-requirements` | Create analysis and final acceptance contracts |
+| `design-frontend-module-boundary` | Decide bounded-context ownership and DDD placement |
+| `audit-frontend-supply-chain` | Assess dependency/source adoption risk |
+| `audit-frontend-security` | Assess browser/runtime threat surfaces |
 
-Use `nextjs-tanstack-query` only when TanStack Query is explicit or already present in the affected
-flow. The broader `nextjs-state-management` skill owns the initial state-placement decision.
+## Orchestrator
+
+| Skill | Responsibility |
+| --- | --- |
+| `plan-frontend-work` | Create Jira-backed task graph, handoffs, execution waves, state, and reconciliation |
 
 ## Design
 
 | Skill | Responsibility |
 | --- | --- |
-| `orchestrate-frontend-design` | Connect to Stitch/Figma or another configured design provider and return traceable design artifacts |
+| `orchestrate-frontend-design` | Use a connected provider and return a traceable design artifact |
 
-Design-provider output is not production code until the primary agent creates an approved coding
-packet for its adoption.
+## Test plan
+
+| Skill | Responsibility |
+| --- | --- |
+| `plan-frontend-testing` | Convert one issue handoff into a risk-based test-plan artifact |
+
+## Coding
+
+| Skill | Responsibility |
+| --- | --- |
+| `migrate-legacy-frontend-module` | Migrate approved legacy behavior |
+| `integrate-third-party-frontend` | Implement an approved external integration |
+| `nextjs-state-management` | Implement approved URL/local/client/server state ownership |
+| `nextjs-tanstack-query` | Implement explicit TanStack Query flows |
+| `shadcn` | Work with approved shadcn primitives and source |
 
 ## Testing
 
 | Skill | Responsibility |
 | --- | --- |
-| `testing` | Create the test plan, implement approved unit/component/integration/API/E2E tests, execute them, and report evidence |
+| `testing` | Implement, run, debug, and report bounded frontend tests |
 
-Routine lint, typecheck, build, and browser smoke validation remain implementation validation rather
-than a testing-skill trigger.
+Routine lint, typecheck, build, or browser validation does not trigger the testing skill by itself.
+Test planning and test implementation are separate responsibilities.

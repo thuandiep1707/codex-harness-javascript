@@ -1,4 +1,4 @@
 interface:
-  display_name: 'Frontend Testing'
-  short_description: 'Plan and test frontend behavior at the right layer'
-  default_prompt: 'Use $testing to create the test plan, implement the approved test layer, run it, and report evidence for this frontend behavior.'
+  display_name: "Implement Frontend Tests"
+  short_description: "Implement and run tests from an approved test plan"
+  default_prompt: "Use $testing to implement and run the approved bounded frontend tests."

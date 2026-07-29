@@ -1,6 +1,6 @@
 ---
 name: nextjs-tanstack-query
-description: Assess, design, implement, or revise an explicit TanStack Query v5 server-state flow in this Next.js 16 project, including client queries and mutations, query options and keys, invalidation, optimistic updates, the existing browser provider, server prefetching, dehydration, and hydration. Use only when the task explicitly requests TanStack Query or changes an existing TanStack Query flow; do not trigger for ordinary Server Component fetching, unrelated React state, or routine validation.
+description: Implement or revise an approved TanStack Query v5 server-state flow in a Next.js project, including client queries and mutations, query options and keys, invalidation, optimistic updates, provider reuse, server prefetching, dehydration, and hydration. Use only for the coding specialist when the issue explicitly scopes TanStack Query; do not trigger for ordinary Server Component fetching or unrelated React state.
 ---
 
 # Next.js TanStack Query
@@ -13,14 +13,14 @@ the observed browser provider, and make cache and mutation effects explicit.
 
 ## Load authority and live evidence
 
-1. Read `AGENTS.md`, the approved task plan, `.analysis/README.md`, and only the owning context
-   analysis.
-2. Read `src/modules/README.md`, `.agents/rules/frontend-coding.md`, and
+1. Read the assigned `issue-handoff.yaml`, approved design artifact when present, and only the
+   source scope named in the handoff. Never read `.docs/` or `.analysis/`.
+2. Read `.agents/rules/frontend-coding.md` and
    `.agents/rules/frontend/react-state-runtime.md`. Load async-state, testing, security, or other topic
    rules only when their triggers match the approved slice.
 3. Inspect `package.json`, `eslint.config.mjs`, the current query provider, root layout composition,
    owning module layers, nearby query code, and direct consumers.
-4. Read relevant installed Next.js 16 documentation and current official TanStack Query v5
+4. Read documentation matching the installed Next.js version and current official TanStack Query v5
    documentation before version-sensitive implementation.
 
 The current provider and its defaults are observed evidence, not approved permanent policy. Installed
@@ -29,8 +29,7 @@ or dependency change.
 
 ## Apply the architecture gate
 
-`.analysis/README.md` defers TanStack Query conventions and server/client data flow. Before
-implementation, record the task-local decisions that are required:
+Require the issue handoff to provide or authorize these task-local decisions:
 
 - owning bounded context, operation contract, and direct consumers;
 - presentation binding and framework-free application seam;
@@ -42,7 +41,7 @@ implementation, record the task-local decisions that are required:
 - loading, pending, error, empty, permission, cancellation, and offline behavior; and
 - authorization, tenant/user/locale identity, serialization, and data-exposure constraints.
 
-Stop dependent work at `tanstack-query-architecture-approval-required` when a required decision is
+Return `tanstack-query-architecture-approval-required` to Orchestrator when a required decision is
 not approved. Continue independent approved work; never infer a global convention from one feature,
 the installed packages, or provider defaults.
 

@@ -1,0 +1,13 @@
+name = "testing"
+description = "Implement and execute bounded frontend tests from an approved issue and test-plan artifact."
+model = "gpt-5.4"
+model_reasoning_effort = "high"
+sandbox_mode = "workspace-write"
+developer_instructions = """
+Load .agents/specialists/testing/AGENT.md, manifest.yaml, and only its listed local rules and skills.
+Accept one issue-handoff YAML and one approved test-plan artifact.
+Never read, search, summarize, or quote any .docs file.
+Inspect only the source, build, runner configuration, and existing tests needed for the handoff.
+Do not revise requirements, redesign the test plan, modify production behavior to make tests pass, update Jira, or mutate workflow state.
+Run the targeted tests and return YAML matching .protocols/test-report.yaml and .protocols/agent-report.yaml.
+"""

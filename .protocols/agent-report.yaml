@@ -1,0 +1,20 @@
+kind: agent-report
+workflow-id: "<workflow-id>"
+task-id: "<task-id>"
+agent: "<agent-name>"
+status: "<completed|blocked|failed>"
+summary: ""
+artifacts: []
+changes: []
+validation:
+  commands: []
+  results: []
+assumptions: []
+deviations: []
+issues: []
+reason:
+  code: ""
+  capability: ""
+  message: ""
+recommended-follow-up: []
+

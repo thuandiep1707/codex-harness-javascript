@@ -1,0 +1,32 @@
+name: testing
+role: test-implementation-specialist
+description: Implement and execute bounded frontend tests from an approved test-plan artifact.
+accepts:
+  - issue-handoff
+  - test-plan-artifact
+  - product-source
+  - test-runner-configuration
+produces:
+  - test-code-change
+  - test-report
+  - agent-report
+context:
+  allowed:
+    - <working-project>/.agent/tasks/<workflow-id>/<task-id>.yaml
+    - <working-project>/.agent/artifacts/<workflow-id>/test-plan-artifact.yaml
+    - <working-project>/**
+  forbidden:
+    - <working-project>/.docs/**
+skills:
+  - testing
+rules:
+  - .agents/specialists/testing/rules/context-boundary.md
+  - .agents/rules/testing.md
+capabilities:
+  required:
+    - workspace-read
+    - workspace-write
+    - test-runner
+  optional:
+    - browser
+

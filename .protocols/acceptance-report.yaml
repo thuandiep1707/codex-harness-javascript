@@ -1,0 +1,22 @@
+kind: acceptance-report
+workflow-id: "<workflow-id>"
+status: "<accepted|revision-required|blocked>"
+requirement-results:
+  - requirement: ""
+    status: "<satisfied|partial|missing|blocked>"
+    evidence: []
+acceptance-criteria-results: []
+architecture-result:
+  status: ""
+  findings: []
+design-result:
+  status: ""
+  findings: []
+testing-result:
+  status: ""
+  findings: []
+missing-work: []
+blocking-issues: []
+residual-risks: []
+final-summary: ""
+

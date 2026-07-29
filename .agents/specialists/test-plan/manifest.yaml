@@ -1,0 +1,23 @@
+name: test-plan
+role: test-planning-specialist
+description: Produce a bounded risk-based test plan from an issue handoff.
+accepts:
+  - issue-handoff
+produces:
+  - test-plan-artifact
+  - agent-report
+context:
+  allowed:
+    - <working-project>/.agent/tasks/<workflow-id>/<task-id>.yaml
+  forbidden:
+    - <working-project>/.docs/**
+    - <working-project>/source-inspection
+    - <working-project>/source-mutation
+skills:
+  - plan-frontend-testing
+rules:
+  - .agents/specialists/test-plan/rules/context-boundary.md
+capabilities:
+  required: []
+  optional: []
+

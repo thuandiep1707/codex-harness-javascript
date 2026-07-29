@@ -1,8 +1,12 @@
 ---
 name: nextjs-state-management
-description: Decide and implement state ownership in Next.js applications using URL state, local React state, Zustand client state, and server-state boundaries. Use when frontend behavior introduces or revises filters, pagination, shareable navigation state, cross-component client state, per-request stores, hydration, or explicit TanStack Query usage.
+description: Implement approved state ownership in Next.js applications using URL state, local React state, Zustand client state, and server-state boundaries. Use only for the coding specialist when an issue handoff introduces or revises filters, pagination, shareable navigation state, cross-component client state, per-request stores, hydration, or explicit TanStack Query usage.
 ---
 # State Management
+
+Read the assigned issue handoff and necessary source only. Never read `.docs/` or `.analysis/`.
+Return unresolved ownership or dependency decisions to Orchestrator instead of choosing project-wide
+policy.
 
 ## **Priority: P2 (MEDIUM)**
 

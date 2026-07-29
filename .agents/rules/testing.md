@@ -73,6 +73,8 @@ Follow these standardized conventions for test file placement and naming:
 - Immediately after completing governed feature implementation and proportionate baseline
   verification, AI Agents MUST ask the Decision Gate prompt:
   > 🧪 **DECISION GATE**: Viết test **[Lớp Test]** cho **[Feature/Component]**? (**yes** / **no**)
-- **Final Documentation Update Rule**: After executing (or skipping) test creation, AI Agents MUST draft/update `.docs/<feature-name>.md` and update the Behavior Matrix inside the corresponding `.analysis/<context>.md` with the final test status (`completed` or `skipped/deferred`).
+- **Final Report Rule**: After executing (or blocking) test creation, the Testing specialist MUST
+  return `test-report.yaml` and `agent-report.yaml` to Orchestrator. It MUST NOT read or update
+  `.docs/`; Orchestrator owns Jira and workflow-state updates.
 - **File Continuity**: When refactoring or updating existing features, ALWAYS update the existing `.analysis/<context>.md` file to prevent duplicate files.
 - A governed in-scope plan without this section and prompt is invalid.

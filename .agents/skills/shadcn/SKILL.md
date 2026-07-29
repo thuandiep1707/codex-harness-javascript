@@ -5,11 +5,11 @@ description: Use for direct shadcn/ui work: CLI commands, official primitives, p
 
 # shadcn/ui
 
-Use this skill as the repository adapter for imported shadcn knowledge. Own CLI,
-registry, preset, installed-primitive API, and source-mutation mechanics only.
-`AGENTS.md`, approved analysis, installed source, and frontend topic rules own
-architecture, design, component contracts, accessibility, styling, runtime,
-async states, and testing. Ignore and report any conflicting upstream example.
+Use this skill as the coding specialist's adapter for shadcn knowledge. Own CLI, registry, preset,
+installed-primitive API, and source-mutation mechanics only. The assigned issue handoff, approved
+design artifact, installed source, and allowed frontend topic rules own architecture, design,
+component contracts, accessibility, styling, runtime, async states, and validation. Never read
+`.docs/` or `.analysis/`. Ignore and report any conflicting upstream example.
 
 ## Select an operating mode
 
@@ -20,13 +20,9 @@ async states, and testing. Ignore and report any conflicting upstream example.
   overwrite, dependency installation, or generated-file adoption only within the
   approved scope. Re-run the preview first and stop when it drifts from approval.
 
-Route unresolved ownership to `design-frontend-module-boundary`, but reuse a
-still-valid approved boundary record; do not rerun boundary design merely because
-an official primitive is entering the already approved `src/components/ui` atoms
-path. Route missing design to `orchestrate-frontend-design`, external provenance
-or new dependency evidence to `audit-frontend-supply-chain`, feature
-runtime/global CSS/workers/assets to `integrate-third-party-frontend`, and browser
-threats to `audit-frontend-security`.
+Return unresolved ownership, missing design, external provenance, new dependency, runtime/global
+CSS/worker/asset, or browser-threat gates to Orchestrator. The coding specialist must not load
+Brain, Orchestrator, or Design skills to resolve them.
 
 ## Workflow
 

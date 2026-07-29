@@ -1,6 +1,6 @@
 ---
 name: integrate-third-party-frontend
-description: Onboard an external or open-source frontend project, SDK, widget, 2D/3D engine, mapping runtime, or cloned repository behind an approved module and vendor boundary. Use when choosing package, wrapper, vendoring, iframe, or separate-deployment integration and when workers, WASM/WebGL, global CSS, assets, CSP, updates, rollback, or removal must be controlled.
+description: Implement an approved external frontend project, SDK, widget, engine, mapping runtime, or cloned source behind a bounded vendor seam. Use only for the coding specialist when the issue handoff fixes the exact artifact, module ownership, integration mode, supply-chain approval, runtime controls, rollback, and removal policy.
 ---
 
 # Integrate Third Party Frontend
@@ -13,15 +13,14 @@ architecture into the business domain.
 
 ## Require approved intake and adoption evidence
 
-1. Read `AGENTS.md`, the approved task plan, `.analysis/README.md`, the owning context analysis,
-   `src/modules/README.md`, and `.agents/rules/frontend-coding.md`. Select only topic rules triggered
-   by the artifact and approved integration mode; record them in the plan.
-2. Require an approved `design-frontend-module-boundary` result naming business ownership and the
-   vendor/integration placement.
-3. Require `audit-frontend-supply-chain` evidence for the exact package, repository commit, fork, or
-   artifact being considered.
-4. Stop when boundary, license/provenance, update ownership, or permitted integration mode remains
-   unapproved.
+1. Read the assigned `issue-handoff.yaml`, `.agents/rules/frontend-coding.md`, and only the source
+   and configuration in the allowed integration scope.
+2. Require the handoff to name business ownership, vendor placement, exact artifact identity,
+   integration mode, and approved runtime controls.
+3. Require the handoff to record supply-chain approval for the exact package, commit, fork, or
+   artifact.
+4. Never read `.docs/` or `.analysis/`. Stop and return a blocker to Orchestrator when boundary,
+   provenance/license, update ownership, or integration mode is missing or contradicted.
 
 Do not treat permission to inspect or clone source as permission to vendor, install, publish, or
 modify the target repository.
@@ -64,7 +63,8 @@ Plan client/server boundaries, CSS, portals/stacking, workers, WASM/WebGL, stati
 cross-origin requirements, browser messaging, third-party network calls, memory/GPU disposal,
 accessibility, and performance budgets.
 
-Route application/browser threats to `audit-frontend-security`; do not duplicate its review.
+Return application/browser threat gaps to Orchestrator for Brain review; do not load Brain's
+security skill or duplicate its review.
 
 ### 5. Build a dependency-ordered implementation plan
 
@@ -87,8 +87,8 @@ assets, generated output, CSP/deployment, tests, and documentation consumers.
 - Verify build/typecheck/lint, direct consumers, initialization/teardown, degraded network and failure
   paths, CSP/assets, critical browser journeys, accessibility, and performance.
 - Record upstream version, local patches, owner, upgrade procedure, rollback, and exit criteria.
-- Return to plan approval on any new dependency, artifact, integration mode, runtime requirement, or
-  architecture decision.
+- Return a blocker to Orchestrator on any new dependency, artifact, integration mode, runtime
+  requirement, or architecture decision.
 
 ## Output contract
 

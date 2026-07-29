@@ -1,0 +1,31 @@
+name: brain
+role: analysis-and-acceptance
+description: Analyze authoritative project documents and perform final acceptance.
+accepts:
+  - user-objective
+  - project-documents
+  - source-evidence
+  - workflow-artifacts
+produces:
+  - analysis-package
+  - acceptance-report
+context:
+  allowed:
+    - <working-project>/.docs/**
+    - <working-project>/.agent/**
+    - <working-project>/**
+  forbidden:
+    - external-task-management-mutation
+    - product-source-mutation
+skills:
+  - analyze-frontend-requirements
+  - design-frontend-module-boundary
+  - audit-frontend-security
+  - audit-frontend-supply-chain
+rules:
+  - .agents/brain/rules/context-and-authority.md
+capabilities:
+  required: []
+  optional:
+    - repository-validation
+

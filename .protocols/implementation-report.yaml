@@ -1,0 +1,15 @@
+kind: implementation-report
+workflow-id: "<workflow-id>"
+task-id: "<task-id>"
+status: "<completed|blocked|failed>"
+implemented-behavior: []
+changed-files: []
+public-contracts: []
+design-artifact-used: ""
+validation:
+  commands: []
+  results: []
+deviations: []
+known-limitations: []
+test-handoff: []
+

@@ -8,15 +8,3 @@ multi_agent = true
 enabled = true
 max_concurrent_threads_per_session = 3
 interrupt_message = true
-
-[agents.frontend_coder]
-description = "Implement bounded frontend production tasks after planning gates are resolved."
-config_file = "./agents/frontend-coder.toml"
-
-[agents.design_connector]
-description = "Connect to configured Stitch or Figma tooling and return traceable design artifacts."
-config_file = "./agents/design-connector.toml"
-
-[agents.test_engineer]
-description = "Create test plans, implement approved test code, run it, and report deterministic evidence."
-config_file = "./agents/test-engineer.toml"

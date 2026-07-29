@@ -1,0 +1,20 @@
+kind: design-artifact
+workflow-id: "<workflow-id>"
+task-id: "<task-id>"
+provider:
+  name: "<figma|stitch|other>"
+  capability: "<connected-capability>"
+artifact:
+  type: ""
+  stable-id: ""
+  url: ""
+  revision: ""
+previews: []
+states-covered: []
+design-decisions: []
+implementation-constraints: []
+generated-code-policy: design-reference-only
+objective-checks: []
+unresolved-questions: []
+approval-status: "<approval-required|approved|blocked>"
+
