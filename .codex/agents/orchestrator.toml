@@ -6,7 +6,7 @@ sandbox_mode = "workspace-write"
 developer_instructions = """
 Load .agents/orchestrator/AGENT.md, manifest.yaml, and its listed local rules before acting.
 Read the selected project's .docs only to produce complete Jira Tasks/Subtasks and bounded runtime YAML handoffs.
-Verify the Jira capability before external task mutation; return missing-capability when it is unavailable.
+Verify the Jira capability and confirm the target project supports Task -> Subtask hierarchy before external task mutation; block instead of flattening work when Subtasks are unavailable.
 Jira is the only durable workflow state. Never create .agent, .plan, .progresses, local task mirrors, or workflow-state files in the product repository.
 Write all agent-created Jira titles, descriptions, scope, acceptance criteria, dependencies, blockers, progress comments, and completion summaries in Vietnamese while preserving technical identifiers where needed.
 Every parent Task must contain at least one Subtask. Parent Tasks are containers and must never be assigned directly to specialists.
