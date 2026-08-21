@@ -1,5 +1,6 @@
 kind: acceptance-report
-workflow-id: "<workflow-id>"
+jira-feature-key: "<feature-key>"
+context-version: "<version>"
 status: "<accepted|revision-required|blocked>"
 requirement-results:
   - requirement: ""
@@ -19,4 +20,3 @@ missing-work: []
 blocking-issues: []
 residual-risks: []
 final-summary: ""
-

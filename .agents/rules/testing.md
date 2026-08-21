@@ -1,80 +1,87 @@
 # Frontend Testing Rules
 
-Apply this rule when creating, organizing, running, or reviewing tests in this repository (unit, component, integration, contract, visual, and E2E tests).
+Apply this rule only to a Testing specialist Subtask that creates, changes, runs, or reviews frontend
+tests. The Jira Subtask and transient handoff already decide that testing work is in scope; do not
+create a local test plan, ask a separate yes/no testing decision gate, or update `.analysis/`/`.docs/`.
 
-When writing or designing tests, always load and follow the specialized `testing` skill at `.agents/skills/testing/SKILL.md`.
+Load the specialized `.agents/skills/testing/SKILL.md` for concrete test workflow and runner guidance.
 
----
+## Authority and boundary
 
-## 1. Applicability Scope
+Use this order:
 
-- **Applies to**: Governed tasks that create or revise feature behavior, business logic, module
-  behavior, critical API/component contracts, test code, or test configuration.
-- **Exempt / Skipped**: Review-only and routine tasks, pure documentation or governance changes,
-  minor typos, formatting, and behavior-neutral maintenance. Run only validation relevant to the
-  changed files; lint/typecheck is not automatic for files outside their configured scope.
+1. assigned Testing Subtask + transient handoff;
+2. approved test-plan evidence supplied by Orchestrator when required;
+3. relevant production contract/source and current test-runner configuration;
+4. this rule + testing skill.
 
-When classification is uncertain or a nominally routine change alters observable behavior, treat it
-as governed. A task tier never overrides an explicit developer request for tests.
+Never read `.docs/`, infer missing product behavior from chat history, modify Jira, or expand parent
+Task scope. Return a blocker when expected behavior/test authority is insufficient.
 
----
+## Test placement
 
-## 2. Test File and Folder Structure
+### Unit and component
 
-Follow these standardized conventions for test file placement and naming:
+Colocate with implementation under `src/`:
 
-### 1. Unit & Component Tests
+```text
+<name>.test.ts
+<name>.test.tsx
+```
 
-- **Colocate with implementation file** under `src/`:
-  - File naming: `<name>.test.ts` or `<name>.test.tsx`.
-  - Example (Domain Service): `src/modules/<context>/domain/services/user.service.ts` $\rightarrow$ `src/modules/<context>/domain/services/user.service.test.ts`.
-  - Example (Component/Hook): `src/modules/<context>/presentation/components/user-card.tsx` $\rightarrow$ `src/modules/<context>/presentation/components/user-card.test.tsx`.
-  - Example (Shared Lib): `src/lib/api/server/axios.ts` $\rightarrow$ `src/lib/api/server/axios.test.ts`.
+### Module/integration
 
-### 2. Integration & Module Boundary Tests
+Use the established repository pattern, typically:
 
-- **Place in module `__tests__` directory** or `tests/integration/`:
-  - Module Integration: `src/modules/<context>/__tests__/integration/<scenario>.test.ts`.
-  - Cross-Module Integration: `tests/integration/<flow-name>.test.ts`.
+```text
+src/modules/<context>/__tests__/integration/<scenario>.test.ts
+tests/integration/<flow>.test.ts
+```
 
-### 3. E2E & Browser Journey Tests (Playwright)
+### E2E/browser
 
-- **Place in top-level `e2e/` or `tests/e2e/`**:
-  - File naming: `<feature-journey>.spec.ts` or `<feature-journey>.e2e.ts`.
-  - Example: `e2e/auth/login-journey.spec.ts` or `tests/e2e/checkout-flow.spec.ts`.
+Use the established top-level E2E location when the assigned Subtask explicitly requires browser
+journey coverage, for example `e2e/` or `tests/e2e/`.
 
-### 4. Fixtures & Mocks
+### Fixtures/mocks
 
-- Module-owned fixtures/mocks: `src/modules/<context>/__tests__/fixtures/` or `src/modules/<context>/__tests__/mocks/`.
-- Shared/Global fixtures/mocks: `tests/fixtures/` or `tests/mocks/`.
+Keep module-owned fixtures/mocks with the module test boundary. Use shared test folders only for truly
+cross-cutting test data/infrastructure.
 
----
+Do not introduce a new test folder convention merely because an example above exists; preserve live
+repository evidence.
 
-## 3. Mocking & Fixture Principles
+## Test design
 
+- Test observable contract/behavior, not private implementation details.
 - Prefer real pure collaborators and small fakes over broad mocks.
-- Avoid mocking private functions or reproducing implementation algorithms inside expected assertions.
-- Keep tests deterministic: control time, randomness, network, storage, and external API seams.
+- Do not mock private functions or copy the implementation algorithm into assertions.
+- Keep tests deterministic by controlling time, randomness, network, storage, and external seams when
+  the assigned test layer requires it.
+- Choose the narrowest useful test layer from approved test-plan evidence; do not add unrelated
+  coverage to appear thorough.
+- Never weaken an assertion, production behavior, lint/type rules, or runner configuration merely to
+  make tests pass.
 
----
+## Execution
 
-## 4. Self-Test Execution & Validation
+Run the narrowest targeted command first, then the baseline validation explicitly required by the
+handoff/current repository contract.
 
-- AI Agents MUST run the appropriate test runner command (`npm run test`, `npx vitest run`, `npx playwright test`, or `npm run typecheck`) to verify test execution before marking status as `completed`.
-- If tests fail, analyze error logs, fix the root cause, and re-run validation until all tests pass deterministically.
+Record:
 
----
+- commands run;
+- pass/fail results;
+- relevant failure cause and correction;
+- skipped required validation and reason;
+- residual risk or blocker.
 
-## 5. Decision Gate & Documentation Enforcement
+If a test exposes a production defect, report it to Orchestrator. Do not silently alter production
+behavior unless the current specialist assignment explicitly authorizes production changes (normally
+it does not).
 
-- Governed plans whose testing workflow applies MUST include a dedicated
-  `## Testing Workflow & Decision Gate` section. Review-only and routine exempt tasks do not add an
-  artificial test section or prompt.
-- Immediately after completing governed feature implementation and proportionate baseline
-  verification, AI Agents MUST ask the Decision Gate prompt:
-  > 🧪 **DECISION GATE**: Viết test **[Lớp Test]** cho **[Feature/Component]**? (**yes** / **no**)
-- **Final Report Rule**: After executing (or blocking) test creation, the Testing specialist MUST
-  return `test-report.yaml` and `agent-report.yaml` to Orchestrator. It MUST NOT read or update
-  `.docs/`; Orchestrator owns Jira and workflow-state updates.
-- **File Continuity**: When refactoring or updating existing features, ALWAYS update the existing `.analysis/<context>.md` file to prevent duplicate files.
-- A governed in-scope plan without this section and prompt is invalid.
+## Completion
+
+Return one `test-report` and one `agent-report` object to Orchestrator. Do not persist runtime reports
+into the product repository and do not update Jira directly. `completed` requires the assigned test
+scope and required validation evidence to be satisfied deterministically.

@@ -1,14 +1,14 @@
 name = "coding"
-description = "Implement bounded Next.js frontend production work from approved issue and design artifacts."
+description = "Implement one bounded frontend Coding Subtask from a transient Jira-derived handoff."
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 developer_instructions = """
 Load .agents/specialists/coding/AGENT.md, manifest.yaml, and only its listed local rules and skills.
-Accept one issue-handoff YAML and the approved design artifact when required.
-Never read, search, summarize, or quote any .docs file.
+Accept one transient issue-handoff object and approved dependency/design evidence when required.
+Never read, search, summarize, or quote any .docs file and never rely on chat history for missing requirements.
+Apply the mandatory component-decomposition gate before source write. If it triggers, load the full Atomic component rule and establish the decomposition/ownership map first.
 Inspect and edit only product source allowed by the handoff.
-Do not expand scope, change architecture, invent design, adopt unapproved dependencies, write independent tests, update Jira, or mutate workflow state.
+Do not expand scope, change architecture, invent design, adopt unapproved dependencies, write independent tests, update Jira, or mutate external workflow state.
 Run assigned validation and return YAML matching .protocols/implementation-report.yaml and .protocols/agent-report.yaml.
 """
-

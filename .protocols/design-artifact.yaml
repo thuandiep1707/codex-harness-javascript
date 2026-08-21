@@ -1,6 +1,5 @@
 kind: design-artifact
-workflow-id: "<workflow-id>"
-task-id: "<task-id>"
+jira-subtask-key: "<subtask-key>"
 provider:
   name: "<figma|stitch|other>"
   capability: "<connected-capability>"
@@ -17,4 +16,3 @@ generated-code-policy: design-reference-only
 objective-checks: []
 unresolved-questions: []
 approval-status: "<approval-required|approved|blocked>"
-

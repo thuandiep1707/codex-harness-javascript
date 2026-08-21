@@ -4,39 +4,55 @@
 
 | Role | Codex agent | Responsibility |
 | --- | --- | --- |
-| Primary controller | main chat | Discover target, spawn roles, persist returned YAML, report outcome |
-| Brain | `brain` | Analyze `.docs`, reason about architecture, perform final acceptance |
-| Orchestrator | `orchestrator` | Create Jira tasks, handoffs, state, routing, and reconciliation |
-| Design | `design` | Use a connected design provider and return a design artifact |
-| Test plan | `test-plan` | Produce a risk-based test-plan artifact |
-| Coding | `coding` | Implement bounded production code |
-| Testing | `testing` | Implement and run bounded frontend tests |
+| Primary controller | main chat | Discover target, resolve `new/resume/replan/acceptance`, spawn roles, report outcome |
+| Brain | `brain` | Analyze relevant `.docs`, record baseline, targeted revalidation, final acceptance |
+| Orchestrator | `orchestrator` | Jira functional hierarchy, resume context reconstruction, routing, reconciliation |
+| Design | `design` | Use connected design provider and return design evidence |
+| Test plan | `test-plan` | Produce a bounded risk-based test-plan result |
+| Coding | `coding` | Implement one bounded Coding Subtask |
+| Testing | `testing` | Implement and run one bounded Testing Subtask |
 
 The primary controller is intentionally thin. Brain does not create tasks. Orchestrator does not
-perform specialist work.
+perform specialist work. Chat history is never required to resume valid Jira work.
+
+## Jira hierarchy
+
+```text
+Feature context
+  -> Task: functional slice
+      -> Subtask: specialist execution unit
+```
+
+Parent Tasks are scope/acceptance boundaries. Specialists execute Subtasks only. Orchestrator creates
+only the specialist Subtasks actually required by a functional slice.
 
 ## Context boundary
 
-Brain and Orchestrator may read the working project's `.docs/`. Specialists may not.
+Brain may read relevant `.docs/` for analysis/revalidation/acceptance. Orchestrator may read relevant
+`.docs/` during planning/replanning and uses minimal Jira context during resume. Specialists may not
+read `.docs/`.
 
-| Specialist | Allowed task context |
-| --- | --- |
-| `design` | `issue-handoff.yaml` |
-| `test-plan` | `issue-handoff.yaml` |
-| `coding` | issue handoff, approved design artifact, necessary source |
-| `testing` | issue handoff, approved test-plan artifact, necessary source/build |
-
-Every specialist returns YAML to Orchestrator. Orchestrator alone updates Jira and workflow state.
+Every specialist receives a transient handoff object composed from Feature context + Task delta +
+Subtask delta + direct dependency evidence. It returns structured YAML objects to Orchestrator.
+Orchestrator alone updates Jira.
 
 ## Sequence
 
-1. Brain returns analysis.
-2. Orchestrator creates Jira issues and handoffs.
-3. Design and Test Plan run in the preparation wave when required.
-4. Coding runs after the required design artifact is approved.
-5. Testing runs after the test plan and production contract exist.
-6. Orchestrator reconciles.
-7. Brain performs acceptance against the original `.docs/`.
+### New work
+
+1. Brain returns analysis with relevant documents and `docs-baseline`.
+2. Orchestrator creates Feature context, functional Tasks, then required specialist Subtasks.
+3. Specialists run according to direct dependencies.
+4. Orchestrator stores compact durable results/blockers/handoffs in Jira.
+5. Brain performs final acceptance.
+
+### Resume
+
+1. Resolve current Jira Subtask.
+2. Verify relevant docs have not materially changed since baseline.
+3. Orchestrator loads only Feature + parent Task + current Subtask + direct dependencies + latest
+   durable checkpoint/result.
+4. Run only the required specialist and continue from current source state.
 
 Custom agent TOML files intentionally omit MCP server configuration. External capabilities are
 inherited from the user's session and must already be connected.

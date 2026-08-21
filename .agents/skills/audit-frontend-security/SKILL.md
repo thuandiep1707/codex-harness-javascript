@@ -1,110 +1,85 @@
 ---
 name: audit-frontend-security
-description: Perform authorized frontend and browser security reviews with scoped threat modeling, source and configuration inspection, safe scanner selection, evidence-backed findings, remediation guidance, and retesting. Use for XSS, CSRF, CSP, URL/input handling, tokens, cookies, sessions, client storage, authorization assumptions, browser messaging, realtime channels, uploads, workers, or third-party runtime threats; use the supply-chain skill for dependency provenance and license risk.
+description: Perform authorized frontend/browser security analysis with scoped threat modeling, source/config inspection, evidence-backed findings, remediation guidance, and retest requirements. Use from Brain analysis/revalidation for XSS, CSRF, CSP, URL/input handling, tokens, cookies, sessions, client storage, authorization assumptions, browser messaging, realtime channels, uploads, workers, or third-party runtime threats.
 ---
 
 # Audit Frontend Security
 
 ## Goal
 
-Find and communicate frontend weaknesses with reproducible evidence and explicit limits. Keep review,
-active testing, remediation, and retest as separately authorized actions.
+Produce security evidence for the analysis package without creating a second work-management or
+approval system. Keep review, active testing, remediation, and retest as separately authorized actions.
 
-## Establish authorization before testing
+## Authorization first
 
-1. Record requester, target source/environment, accounts/roles, permitted methods, data, network
-   actions, time window, and excluded systems.
-2. Distinguish source/config review, passive runtime inspection, active security testing, remediation,
-   and retest.
-3. Stop before any action outside the approved scope. Accessible tools or credentials do not expand
-   authorization.
-4. Never run destructive, denial-of-service, persistence, credential attack, production mutation, or
-   third-party attack without explicit, specific authority.
+Before active security testing, establish target/environment, permitted accounts/roles, methods,
+network/data actions, and exclusions from the user request or approved project evidence. Accessible
+tools/credentials do not expand authorization.
 
-Read [security-evidence-and-reporting.md](references/security-evidence-and-reporting.md) before
-collecting sensitive evidence.
+Never perform destructive, denial-of-service, persistence, credential attacks, production mutation,
+or third-party attacks without explicit specific authority.
 
-## Load authoritative context
+Read `references/security-evidence-and-reporting.md` before collecting sensitive evidence.
 
-- Read `AGENTS.md`, the approved task plan, `.analysis/README.md`, the owning context analysis,
-  `.agents/rules/frontend-coding.md`, and relevant source/configuration. From the baseline rule,
-  load only topic rules triggered by the reviewed surface, such as runtime, async-state, asset,
-  accessibility, or styling rules.
-- Read installed Next.js documentation for framework security behavior.
-- Consult current primary security guidance and exact scanner documentation; do not rely on remembered
-  versions or generic checklists.
-- Route dependency, lockfile, provenance, license, SBOM, or package-advisory work to
-  `audit-frontend-supply-chain` only when that evidence is in scope.
+## Authority and context
+
+Use relevant product `.docs/`, current source/configuration, current Brain analysis context, installed
+framework documentation, and current primary security/tool documentation when required.
+
+Do not read/update `.analysis/`, local plan/progress files, or Jira execution state from this skill.
+Do not use Coding rules as product requirement authority; inspect them only when necessary to assess an
+already-established implementation convention.
+
+Route dependency/provenance/license/SBOM evidence to `audit-frontend-supply-chain` when required.
 
 ## Workflow
 
-### 1. Build a task-local threat model
+### 1. Build a scoped threat model
 
-Read [browser-threat-matrix.md](references/browser-threat-matrix.md). Identify assets, actors, trust
-boundaries, origins/execution contexts, entry points, untrusted data paths, sensitive operations,
-existing controls, and where enforcement actually occurs.
+Read `references/browser-threat-matrix.md` when needed. Identify assets, actors, trust boundaries,
+origins/execution contexts, entry points, untrusted data paths, sensitive operations, existing
+controls, and actual enforcement location.
 
-Select applicable tests and record exclusions. Frontend permission checks do not prove server-side
-authorization.
+Frontend permission checks are never evidence of server-side authorization by themselves.
 
-### 2. Trace source and configuration
+### 2. Trace source/configuration
 
-- Follow untrusted data from source to render, URL, request, storage, message, worker, log, or vendor
-  sink.
-- Inspect token/cookie/session lifecycle, refresh races, cancellation/retry, logout, cache/storage, and
-  cross-tab/realtime behavior.
-- Inspect CSP-sensitive scripts/styles/frames/workers/WASM, browser globals, third-party origins,
-  uploads/downloads, service workers, and telemetry.
-- Record exact files, lines, routes, roles, requests, and assumptions. Redact secrets and unrelated
-  personal data.
+Follow untrusted data to render, URL, request, storage, browser message, worker, log, or vendor sinks.
+Inspect applicable token/cookie/session lifecycle, CSP-sensitive resources, third-party origins,
+upload/download flows, realtime/browser messaging, storage/cache, workers, and telemetry.
 
-### 3. Select tools safely
+Record exact evidence while redacting secrets and unrelated personal data.
 
-- Discover installed tools and versions before proposing another scanner.
-- Use static or passive checks first when they answer the question.
-- Obtain required approval before network access, installation, authenticated runtime tests, artifact
-  creation, or active payloads.
-- Preserve raw output separately from validated findings and record tool errors/exclusions.
-- Never auto-fix during an audit-only task.
+### 3. Use tools safely
 
-### 4. Validate and prioritize findings
+Use static/passive evidence first. Network access, new tool installation, authenticated runtime tests,
+artifact creation, or active payloads require matching authorization. Preserve scanner output as tool
+evidence, not automatically confirmed findings. Never auto-fix during analysis-only work.
 
-For each candidate:
+### 4. Validate findings
 
-1. Confirm the source/runtime path or mark `likely`/`needs-verification`.
-2. State preconditions and realistic attacker capability.
-3. Explain concrete impact and affected users/data/actions.
-4. Assign severity from likelihood and impact with named assumptions.
-5. Identify the owning control and smallest compatible remediation.
-6. Define targeted retest and regression coverage.
+For each candidate finding, record:
 
-Do not convert scanner alerts directly into confirmed vulnerabilities. Do not dismiss a source-level
-weakness merely because active exploitation was outside authorization.
+1. evidence and confidence (`confirmed`, `likely`, `needs-verification`);
+2. prerequisites/attacker capability;
+3. concrete impact and affected surface;
+4. severity rationale with assumptions;
+5. owning control and smallest compatible remediation direction;
+6. required retest/regression evidence.
 
-### 5. Remediate only when requested and approved
+Do not promote raw scanner alerts to confirmed vulnerabilities.
 
-Follow DDD ownership and framework/template boundaries. Avoid weakening CSP, validation, typing,
-linting, tests, or authentication to make a finding disappear. Return to plan approval when the fix
-changes auth policy, API contracts, dependencies, deployment/CSP, or another deferred decision.
+## Architecture/remediation boundary
 
-### 6. Report and retest
+Brain may recommend constraints/remediation direction in the analysis package, but it must not create
+or execute remediation work. If a fix changes auth policy, API contract, dependency, CSP/deployment,
+or another architecture decision, record that impact for Orchestrator/Jira planning after approval.
 
-Use the finding/report schema in the reporting reference. Separate confirmed, likely,
-needs-verification, fixed, and non-reproducible items. Report negative checks only for surfaces
-actually tested and include residual/unknown coverage.
+## Output
 
-Mark a finding fixed only after authorized evidence verifies the original condition, representative
-bypass variants, direct consumers, and regression validation.
+Return threat-model scope, findings/evidence, confidence/severity rationale, required architecture or
+implementation constraints, retest requirements, exclusions, unknown coverage, and residual risk to
+Brain.
 
-## Compose only as required
-
-- Add `audit-frontend-supply-chain` only for dependency/provenance/license/lock evidence.
-- Add a test skill only when creating the corresponding regression layer.
-- Do not enumerate unrelated skills.
-
-## Guardrails
-
-- Never expose credentials, session material, private endpoints, sensitive screenshots, or personal
-  data in reports.
-- Never call a frontend-only permission check a security boundary.
-- Never claim comprehensive security from one review, scanner, environment, or successful build.
+Never expose credentials/session material/private endpoints/sensitive screenshots/personal data and
+never claim comprehensive security from one review, scanner, environment, or successful build.

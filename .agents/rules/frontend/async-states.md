@@ -1,78 +1,68 @@
 # Loading, Error, and Empty-State Rules
 
-Load this rule only when the canonical router in `../frontend-coding.md` matches loading, pending,
-error, empty, no-result, no-selection, not-found, permission, or missing-configuration UI. Use the
-**route boundary**, **component/data state**, **pending action**, or **dynamic fallback** mode matching
-the evidence.
+Load this rule only when the frontend router matches loading, pending, error, empty, no-result,
+no-selection, not-found, permission, or missing-configuration UI.
 
-The project-wide visual conventions for these states remain deferred in `.analysis/README.md`. This rule governs classification, reuse, and escalation; it does not approve a new visual pattern.
-
-This rule owns state classification, exact-pattern reuse, and deferred visual escalation. It does not
-own data-fetching architecture, runtime-splitting approval, or the visual design itself.
+Use only patterns explicitly present in the transient handoff, approved design evidence, or compatible
+current source. This rule does not authorize a new visual convention.
 
 ## Keep state meanings distinct
 
-Identify the exact state before implementing or reporting it:
+- **Loading:** required data/runtime is not ready.
+- **Pending action:** a user-triggered operation is running.
+- **Error:** an operation/runtime failed.
+- **Initial empty:** request succeeded but no resource exists.
+- **Filtered/search empty:** resources may exist but current criteria return none.
+- **No selection:** data exists but no item is selected.
+- **Not found:** requested route/resource does not exist under the approved contract.
+- **Permission:** access is unavailable.
+- **Missing configuration:** required setup is absent.
 
-- **Loading:** required data or runtime is not ready yet.
-- **Pending action:** a user-initiated operation is still running.
-- **Error:** an operation or runtime failed.
-- **Initial empty:** the request succeeded, but no resource exists yet.
-- **Filtered or search empty:** resources may exist, but the current criteria return no result.
-- **No selection:** data exists, but the user has not selected an item.
-- **Not found:** the requested route or resource does not exist under the approved route contract.
-- **Permission:** access is unavailable; do not misrepresent this as an empty dataset.
-- **Missing configuration:** required setup is absent and may be an error or setup workflow rather than an empty state.
+Do not collapse these behind a broad falsy-data check. Loading, error, permission, missing config, and
+empty data are different contracts.
 
-Do not collapse these conditions behind a broad falsy-data check. Loading is not empty, error is not empty, and permission or missing configuration must not silently become not-found behavior.
+## Pattern reuse
 
-## Reuse only an approved matching pattern
+Reuse an existing state component only when meaning, placement, interaction, and owner match the
+current Subtask. Do not invent or install a spinner, skeleton, shimmer, overlay, retry panel, empty
+illustration, notification convention, state icon/color/copy, or placeholder pattern without supplied
+approval evidence.
 
-Reuse an existing loading, error, or empty-state component only when its meaning, placement, interaction, and owning layer match the current requirement. Record the inspected pattern and why its contract applies.
+Provider HTML/JSX/CSS/SVG/copy is design evidence only; never copy it directly as implementation
+authority.
 
-The existence of a shadcn/ui component or a superficially similar screen is not design approval. Do not install or create any of the following without explicit developer approval:
+## Route boundaries
 
-- a spinner, skeleton, shimmer, or loading animation;
-- a loading overlay or blocking loader;
-- an error card, retry panel, or notification convention;
-- an empty-state illustration or placeholder rows;
-- state-specific icons, colors, messages, or action copy.
+Preserve existing Next.js route ownership. Create/move/redesign `loading.tsx`, `error.tsx`,
+`global-error.tsx`, or `not-found.tsx` only when the handoff explicitly includes that boundary and the
+required design/behavior evidence exists.
 
-Design-provider HTML, JSX, CSS, SVG, or copy is design evidence only. Do not copy it into application source without a separately approved implementation decision.
+Read installed Next.js documentation before changing a route boundary. Do not use `notFound()` for
+ordinary request errors, permission outcomes, or missing application configuration.
 
-## Preserve route-boundary ownership
+## Pending actions
 
-Keep existing Next.js route boundaries and their ownership intact. Do not create, move, or redesign `loading.tsx`, `error.tsx`, `global-error.tsx`, or `not-found.tsx` unless the approved task plan and design explicitly require that boundary.
+Unless already defined by approved evidence, treat these as unresolved product/interaction decisions:
 
-Read the relevant installed Next.js 16 documentation before changing a route boundary. Do not use `notFound()` to represent an ordinary request error, a permission result, or missing application configuration.
+- disabling/locking a control;
+- changing labels or showing progress;
+- preventing repeated submission;
+- error placement;
+- close/reset/retain behavior after success/failure;
+- retry availability/limits.
 
-A route-level pattern is not automatically the correct component-level or action-level pattern.
+Do not hide failures, turn errors into empty results, retry indefinitely, expose sensitive response
+data, or treat `console.error` as a user-facing contract.
 
-## Do not invent pending-action behavior
+## Dynamic fallbacks
 
-Treat all of the following as product and interaction decisions unless an approved component contract or design already defines them:
+A dynamically imported component may use only an approved existing fallback matching the boundary.
+Do not choose a spinner/skeleton or collapsing `null` merely to avoid an unresolved fallback decision.
+Follow `react-state-runtime.md` for the dynamic-import decision itself.
 
-- disabling or locking a control while an action runs;
-- changing a label or showing progress;
-- allowing or preventing repeated submission;
-- choosing field, form, panel, or notification placement for an error;
-- closing, resetting, or retaining a dialog after success or failure;
-- offering retry and deciding its limits.
+## Completion
 
-Do not fill a missing decision with a conventional-looking implementation. If safe action behavior depends on the decision, leave that action scope unresolved and continue independent work.
-
-Visual deferral does not permit broken error logic. Do not swallow failures, convert failures into empty data, report success after failure, retry indefinitely, expose sensitive response data, or treat `console.error` as the user-facing error contract.
-
-## Gate dynamic-loading fallbacks
-
-A dynamically imported component may use only an existing approved fallback whose contract fits the exact boundary. Do not invent a spinner or skeleton, and do not use `null` merely to avoid choosing a pattern when it would collapse layout, hide a required control, or create unexplained blank space.
-
-If runtime splitting is approved but no fallback is approved, record the fallback as unresolved under this rule. Follow `react-state-runtime.md` for the dynamic-import decision itself.
-
-## Continue independent work
-
-A missing state design is a local blocker, not permission to stop independent work. Use the shared
-unresolved record in `../frontend-coding.md`, adding the exact state classification, owning boundary,
-matching patterns inspected, and required message, icon, action, placement, or sizing decisions.
-
-Do not claim the affected UI or task is fully complete when a required loading, pending, error, or empty-state behavior remains unresolved. Report completed independent scope and unresolved dependent scope separately.
+A missing state contract blocks only dependent scope. Return the exact state classification, owning
+boundary, inspected compatible patterns, and missing decision to Orchestrator. Continue independent
+assigned work where safe, but do not report affected behavior complete while required state behavior
+remains unresolved.

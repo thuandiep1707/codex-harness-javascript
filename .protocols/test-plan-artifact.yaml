@@ -1,6 +1,5 @@
 kind: test-plan-artifact
-workflow-id: "<workflow-id>"
-task-id: "<task-id>"
+jira-subtask-key: "<subtask-key>"
 scope:
   included: []
   excluded: []
@@ -17,4 +16,3 @@ execution-order: []
 known-limitations: []
 residual-risks: []
 plan-status: ready
-

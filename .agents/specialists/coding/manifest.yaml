@@ -1,6 +1,6 @@
 name: coding
 role: frontend-implementation-specialist
-description: Implement bounded Next.js frontend tasks from approved issue and design artifacts.
+description: Implement one bounded frontend specialist Subtask from a transient Jira-derived handoff.
 accepts:
   - issue-handoff
   - design-artifact
@@ -11,11 +11,12 @@ produces:
   - agent-report
 context:
   allowed:
-    - <working-project>/.agent/tasks/<workflow-id>/<task-id>.yaml
-    - <working-project>/.agent/artifacts/<workflow-id>/design-artifact.yaml
+    - transient-issue-handoff
+    - approved-dependency-evidence
     - <working-project>/**
   forbidden:
     - <working-project>/.docs/**
+    - jira-mutation
 skills:
   - migrate-legacy-frontend-module
   - integrate-third-party-frontend
@@ -24,6 +25,7 @@ skills:
   - shadcn
 rules:
   - .agents/specialists/coding/rules/context-boundary.md
+  - .agents/specialists/coding/rules/component-decomposition-gate.md
   - .agents/rules/frontend-coding.md
 capabilities:
   required:
@@ -31,4 +33,3 @@ capabilities:
     - workspace-write
   optional:
     - browser
-

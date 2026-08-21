@@ -1,8 +1,7 @@
 kind: test-report
-workflow-id: "<workflow-id>"
-task-id: "<task-id>"
+jira-subtask-key: "<subtask-key>"
 status: "<passed|failed|blocked>"
-test-plan-artifact-used: ""
+test-plan-evidence: []
 changed-files: []
 scenarios:
   passed: []
@@ -15,4 +14,3 @@ evidence: []
 coverage-limitations: []
 residual-risks: []
 production-defects: []
-

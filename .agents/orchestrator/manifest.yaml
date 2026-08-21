@@ -1,28 +1,29 @@
 name: orchestrator
 role: execution-management
-description: Decompose analysis into Jira-backed tasks and coordinate specialist execution.
+description: Plan or resume Jira-backed frontend work and coordinate specialist execution.
 accepts:
+  - workflow-mode
   - analysis-package
-  - project-documents
+  - jira-context
   - specialist-reports
 produces:
-  - task-graph
   - jira-issues
   - issue-handoffs
-  - workflow-state
   - reconciliation-report
 context:
   allowed:
     - <working-project>/.docs/**
-    - <working-project>/.agent/**
     - <working-project>/**
+    - jira
   forbidden:
     - product-source-mutation
     - test-source-mutation
+    - product-runtime-workflow-files
 skills:
   - plan-frontend-work
 rules:
   - .agents/orchestrator/rules/execution-control.md
+  - .agents/orchestrator/rules/task-decomposition.md
 capabilities:
   required:
     - jira
@@ -32,4 +33,3 @@ routes:
   test-plan: test-plan
   coding: coding
   testing: testing
-

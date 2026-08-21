@@ -1,113 +1,89 @@
 ---
 name: design-frontend-module-boundary
-description: Assess imported, legacy, demo, cloned, or new frontend capabilities before module creation; determine whether responsibility belongs to an existing or proposed bounded context, shared UI, delivery, or an integration adapter. Use when ownership, DDD placement, or the need for a new module is unclear.
+description: Assess imported, legacy, demo, cloned, or new frontend capabilities before module creation; determine whether responsibility belongs to an existing or proposed bounded context, shared UI, delivery, or an integration adapter. Use only in Brain analysis/revalidation when ownership or DDD placement is unclear.
 ---
 
 # Design Frontend Module Boundary
 
 ## Goal
 
-Establish an evidence-backed ownership and placement decision before proposing implementation files.
-Keep capability boundaries separate from framework, UI-library, and vendor-library boundaries.
+Produce an evidence-backed ownership/placement decision for the analysis package before Orchestrator
+creates Jira work. Keep business boundaries separate from framework, UI-library, and vendor-library
+boundaries.
 
-## Load authority first
+## Authority
 
-1. Read `AGENTS.md` and the approved task plan workflow.
-2. Read `.analysis/README.md` and identify candidate bounded contexts from task language and source
-   evidence.
-3. Read only the candidate `.analysis/<context>.md` files needed to resolve ownership. Do not load
-   every context.
-4. Read `src/modules/README.md` and `.agents/rules/frontend-coding.md` before proposing module or
-   frontend placement. Load only topic rules triggered by concrete UI/runtime evidence; do not scan
-   the topic-rule catalog.
-5. Read installed Next.js documentation only when the intake reaches a framework-specific decision.
+Use only:
 
-If an authority conflicts with the request, report the conflict and stop for developer direction.
+1. user objective and relevant product `.docs/` selected by Brain;
+2. verified current product source/configuration evidence;
+3. already-approved architecture decisions in the current analysis package/revalidation context;
+4. installed framework documentation when a framework-specific decision is required.
+
+Do not read or update `.analysis/`, local task plans/progress files, or Jira execution state from this
+skill. Do not create implementation files.
+
+If authoritative evidence conflicts, record the contradiction/open question in the analysis package
+instead of resolving it through convention or source folder names.
 
 ## Workflow
 
 ### 1. Fix the intake boundary
 
-- Record the source root, target repository, requested capability, expected consumers, and current
-  authorization for reads, cloning, installs, and writes.
-- Distinguish the imported source boundary from the business boundary it may support.
-- Keep this step read-only unless an approved plan already authorizes implementation.
+Identify source root, requested capability, expected consumers, current business vocabulary, external
+artifact boundary when relevant, and exact evidence available. Keep intake read-only.
 
 ### 2. Collect evidence
 
-Read [intake-evidence.md](references/intake-evidence.md). Run the inventory helper when a source tree
-exists:
+Read `references/intake-evidence.md` when needed. The bundled inventory helper may be used against an
+existing source tree for file/import evidence only. Inspect business language, runtime behavior,
+contracts, state, consumers, and critical flows directly before drawing ownership conclusions.
 
-```powershell
-node scripts/inventory-frontend-source.mjs --root <source-root> --format markdown
-```
+### 3. Classify responsibility
 
-Treat helper output as file/import evidence only. Inspect business language, runtime behavior,
-contracts, state, consumers, and critical flows directly.
+Classify material responsibilities as:
 
-### 3. Classify responsibilities
-
-Classify each responsibility as one of:
-
-- business rule or invariant;
-- application orchestration or port;
+- domain/business rule or invariant;
+- application orchestration/port;
 - infrastructure/vendor/browser integration;
 - module-specific presentation;
 - shared non-business UI;
-- framework delivery/routing; or
+- framework delivery/routing;
 - unresolved.
 
-Do not classify by source folder names alone. Record evidence and uncertainty for every non-trivial
-classification.
+Do not classify by legacy/provider folder names alone.
 
-### 4. Evaluate ownership
+### 4. Evaluate ownership options
 
-Read [ownership-and-placement.md](references/ownership-and-placement.md). Compare:
+Read `references/ownership-and-placement.md` when needed and compare:
 
-1. Extension of one approved bounded context.
-2. Proposal for a new bounded context.
-3. Integration adapter inside an owning context.
-4. Shared UI or framework utility.
-5. Rejection or isolation of source that does not belong in the target architecture.
+1. extension of an existing bounded context;
+2. proposed new bounded context;
+3. integration adapter owned by a context;
+4. shared UI/framework utility;
+5. isolation/rejection of source that should not enter the target architecture.
 
-Never treat an SDK, renderer, map engine, cloned repository, or visual workspace as domain logic
-without business semantics and invariants.
+An SDK, renderer, map engine, cloned repository, or visual workspace is not domain logic merely because
+it is large or product-important.
 
-### 5. Produce an impact model
+### 5. Return analysis evidence
 
-Return:
+Return to Brain:
 
-- scope and evidence sources;
-- inventory summary and limitations;
-- business vocabulary and responsibility map;
-- candidate ownership options and rejected options;
-- dependency and consumer map;
-- source-to-target placement table;
-- deferred decisions, unknowns, and architecture conflicts;
-- proposed analysis-document changes when a new boundary is requested; and
-- validation strategy for the next implementation plan.
+- evidence sources and limitations;
+- business vocabulary/responsibility map;
+- candidate ownership options and rejected alternatives;
+- dependency/consumer map;
+- proposed source-to-target placement direction;
+- protected boundaries;
+- unresolved architecture decisions/contradictions;
+- validation implications for later Jira work.
 
-For proposed files, include `Why`, `Affected`, `Risk`, and `Control`.
+Do not produce an implementation plan. Orchestrator converts approved analysis into Functional Tasks
+and specialist Subtasks.
 
-### 6. Apply the decision gate
+## Gates
 
-Stop at `architecture-approval-required` or `more-evidence-required`. Continue to an implementation
-plan only when ownership is already approved and the intake result is `ready-for-implementation-plan`.
-
-## Compose only as required
-
-- Continue with `migrate-legacy-frontend-module` after an approved boundary for legacy/demo behavior.
-- Run `audit-frontend-supply-chain`, then `integrate-third-party-frontend`, for external source or a
-  vendor runtime.
-- Load a test skill only when its test layer is explicitly being designed or implemented.
-
-Do not read unrelated skill bodies.
-
-## Guardrails
-
-- Do not create a module, folder, analysis file, or source file during intake without an approved
-  implementation plan.
-- Do not invent migration, auth, DTO/repository, query/data-flow, loading/error/empty-state, or design
-  token policy marked deferred by the repository.
-- Do not restore disabled routes or bypass controlled templates.
-- Do not hide unresolved evidence behind a confident ownership recommendation.
+Use `architecture-approval-required` or `more-evidence-required` when ownership cannot be established
+from current authority. Do not create modules, folders, analysis files, source files, or local workflow
+artifacts during this skill.

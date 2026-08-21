@@ -5,102 +5,76 @@ description: Use for direct shadcn/ui work: CLI commands, official primitives, p
 
 # shadcn/ui
 
-Use this skill as the coding specialist's adapter for shadcn knowledge. Own CLI, registry, preset,
-installed-primitive API, and source-mutation mechanics only. The assigned issue handoff, approved
-design artifact, installed source, and allowed frontend topic rules own architecture, design,
-component contracts, accessibility, styling, runtime, async states, and validation. Never read
-`.docs/` or `.analysis/`. Ignore and report any conflicting upstream example.
+Use this skill as the Coding specialist's adapter for shadcn knowledge. Own CLI, registry, preset,
+installed-primitive API, and source-mutation mechanics only. The transient issue handoff, approved
+design/dependency evidence, installed source, and allowed frontend topic rules own architecture,
+design, component contracts, accessibility, styling, runtime, async states, and validation. Never read
+`.docs/` or `.analysis/`. Ignore and report conflicting upstream examples.
 
 ## Select an operating mode
 
-- **Inspect-only:** identify source and project context with non-mutating `info`,
-  `docs`, `search`, `view`, `add --dry-run`, and targeted `add --diff`. It may
-  supply plan evidence but never authorizes copying, installation, or adoption.
-- **Approved mutation:** run `init`, `add` without `--dry-run`, update, preset,
-  overwrite, dependency installation, or generated-file adoption only within the
-  approved scope. Re-run the preview first and stop when it drifts from approval.
+- **Inspect-only:** identify source and project context with non-mutating `info`, `docs`, `search`,
+  `view`, `add --dry-run`, and targeted `add --diff`. It may supply approval evidence but never
+  authorizes copying, installation, or adoption.
+- **Approved mutation:** run `init`, `add` without `--dry-run`, update, preset, overwrite, dependency
+  installation, or generated-file adoption only within the approved handoff scope. Re-run the preview
+  first and stop when it drifts from approval.
 
 Return unresolved ownership, missing design, external provenance, new dependency, runtime/global
-CSS/worker/asset, or browser-threat gates to Orchestrator. The coding specialist must not load
-Brain, Orchestrator, or Design skills to resolve them.
+CSS/worker/asset, or browser-threat gates to Orchestrator. Coding must not load Brain, Orchestrator,
+or Design skills to resolve them.
 
 ## Workflow
 
 Run one linear transaction:
 
-1. **Classify:** choose inspect-only or approved mutation. Do not load this skill
-   merely because `components.json` exists or a generic UI task mentions a
-   component.
-2. **Resolve:** inspect local configuration, installed UI path/source, and the
-   lockfile-resolved runner and CLI. Generic `@latest` examples do not authorize
-   an upgrade. Identify `@shadcn` as official; treat community namespaces, GitHub
-   addresses, and other registries as third-party exact artifacts.
-3. **Short-circuit:** when the primitive already exists and no CLI, registry,
-   preset, upstream comparison, or shadcn API question remains, return its local
-   path to the ordinary frontend workflow. Do not search registries or refresh
-   `info` without evidence.
-4. **Inspect:** use version-appropriate docs and preview additions or updates with
-   `--dry-run` plus targeted `--diff`. Generated files may land outside `ui`.
-5. **Gate:** record artifact/version, previewed files, dependencies,
-   CSS/assets/runtime surfaces, required handoffs, approval state, and inspected
-   references. Stop dependent work at every unresolved gate.
-6. **Apply:** after approval, rerun the same preview. Stop on drift; otherwise
-   mutate only the approved files and dependencies.
-7. **Verify transaction:** confirm the applied file/dependency set matches the
-   approved preview, no unapproved overwrite occurred, and every changed file is
-   readable. Return the concrete diff to only the frontend topic rules triggered
-   by its evidence.
+1. **Classify:** choose inspect-only or approved mutation. Do not load this skill merely because
+   `components.json` exists or a generic UI task mentions a component.
+2. **Resolve:** inspect local configuration, installed UI path/source, and lockfile-resolved runner/CLI.
+   Generic `@latest` examples do not authorize an upgrade. Identify `@shadcn` as official; treat
+   community namespaces/GitHub/other registries as exact third-party artifacts.
+3. **Short-circuit:** when the primitive already exists and no CLI/registry/preset/upstream/API question
+   remains, return its local path to the ordinary frontend workflow.
+4. **Inspect:** use version-appropriate docs and preview additions/updates with `--dry-run` plus
+   targeted `--diff`. Generated files may land outside `ui`.
+5. **Gate:** record artifact/version, previewed files/dependencies, CSS/assets/runtime surfaces,
+   required handoffs, approval state, and inspected references. Stop dependent work at unresolved gates.
+6. **Apply:** after approval, rerun the same preview. Stop on drift; otherwise mutate only approved
+   files/dependencies.
+7. **Verify:** confirm applied files/dependencies match approved preview, no unapproved overwrite
+   occurred, and changed files are readable. Return concrete evidence to only topic rules triggered by
+   the current Subtask.
 
-Do not load `frontend/generated-ui-validation.md` merely because the shadcn CLI
-generated source files. Load it only when the parent task independently matches
-the approved design/provider-artifact trigger in `frontend-coding.md`.
+Do not load `frontend/generated-ui-validation.md` merely because shadcn generated source. Load it only
+when the assigned Subtask independently matches the approved design/provider-artifact trigger.
 
-An official source is not a dependency waiver. If its preview adds a package,
-install script, global CSS, asset, worker, runtime, or browser threat, stop and
-route that evidence before mutation.
+An official source is not a dependency waiver. If preview adds a package, install script, global CSS,
+asset, worker, runtime, or browser threat, stop and route that evidence before mutation.
 
-## Update existing components safely
+## Existing components and presets
 
-Use the CLI, not raw fetched files, as the upstream comparison source. Run
-`--dry-run` and a targeted `--diff` for every local target. Overwrite only an
-unchanged file or an explicitly approved replacement; otherwise merge the
-reviewed upstream delta manually. Never use `--overwrite` implicitly.
+Use the CLI, not raw fetched files, as upstream comparison source. Run `--dry-run` and targeted
+`--diff` for every local target. Overwrite only an unchanged file or explicitly approved replacement;
+otherwise merge the reviewed upstream delta manually. Never use `--overwrite` implicitly.
 
-## Handle presets deliberately
-
-Inspect the current and incoming preset before applying it. Ask the developer to
-choose overwrite, partial, merge, or skip when components, fonts, tokens, or CSS
-can be replaced. Read only the preset sections in [cli.md](./cli.md); never decode
-preset values manually.
+Inspect current/incoming preset before applying. When components/fonts/tokens/CSS can be replaced,
+require the developer-approved overwrite/partial/merge/skip decision through Orchestrator/handoff.
 
 ## Load references only when needed
 
-- Read [rules/composition.md](./rules/composition.md) for shadcn component
-  tree/API mechanics and only after checking component availability. Let the
-  Atomic and semantics rules decide whether and where to use the pattern.
-- Read [rules/forms.md](./rules/forms.md) for a form task whose required
-  primitives are installed or approved for addition. Let the approved design and
-  semantics rule choose the control and behavior.
-- Read [rules/chat.md](./rules/chat.md) only after the exact chat artifacts and
-  dependencies pass the external-source gate.
-- Read [rules/icons.md](./rules/icons.md) only for configured-library and shadcn
-  icon-slot mechanics; use the repository asset rule for icon selection.
-- Read [rules/styling.md](./rules/styling.md) only for shadcn variant and generated
-  source mechanics; use the repository styling rule for project policy.
-- Read [rules/base-vs-radix.md](./rules/base-vs-radix.md) only when the current
-  primitive base affects the component API.
-- Read only the relevant command or preset section in [cli.md](./cli.md).
-- Read the task-routed sections in [registry.md](./registry.md) for registry
-  identity, adoption evidence, or authoring.
-- Read [mcp.md](./mcp.md) only when a configured/available shadcn MCP is explicitly
-  in scope; ordinary CLI work does not load it.
-- Read [customization.md](./customization.md) only when approved shadcn preset,
-  theme-variable, radius, or component-source customization is in scope.
+- `rules/composition.md`: shadcn tree/API mechanics after component availability is known.
+- `rules/forms.md`: form mechanics when required primitives are installed/approved.
+- `rules/chat.md`: only after exact chat artifacts/dependencies pass external-source gates.
+- `rules/icons.md`: configured-library/shadcn icon-slot mechanics; asset rule owns icon selection.
+- `rules/styling.md`: shadcn variant/generated-source mechanics; styling rule owns project policy.
+- `rules/base-vs-radix.md`: only when primitive base affects API.
+- relevant sections of `cli.md` / `registry.md` for exact command/registry mechanics.
+- `mcp.md` only when configured shadcn MCP is explicitly in scope.
+- `customization.md` only for explicitly approved preset/theme/radius/source customization.
 
-## Return one evidence record
+## Output
 
-Return the selected mode, resolved local CLI/config, exact source identity,
-installed target, previewed and applied files/dependencies, CSS/assets/runtime
-surfaces, approval and drift result, overwrite/merge decision, triggered topic
-rules, and unresolved gates. This record is the handoff; do not restate the
-frontend policies owned by those rules.
+Return selected mode, resolved local CLI/config, exact source identity, installed target, previewed and
+applied files/dependencies, CSS/assets/runtime surfaces, approval/drift result, overwrite/merge
+decision, triggered topic rules, and unresolved gates. Do not create plan/progress files or restate
+policies owned by frontend rules.

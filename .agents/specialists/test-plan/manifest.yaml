@@ -1,6 +1,6 @@
 name: test-plan
 role: test-planning-specialist
-description: Produce a bounded risk-based test plan from an issue handoff.
+description: Produce a bounded risk-based test plan for one specialist Subtask.
 accepts:
   - issue-handoff
 produces:
@@ -8,11 +8,12 @@ produces:
   - agent-report
 context:
   allowed:
-    - <working-project>/.agent/tasks/<workflow-id>/<task-id>.yaml
+    - transient-issue-handoff
   forbidden:
     - <working-project>/.docs/**
     - <working-project>/source-inspection
     - <working-project>/source-mutation
+    - jira-mutation
 skills:
   - plan-frontend-testing
 rules:
@@ -20,4 +21,3 @@ rules:
 capabilities:
   required: []
   optional: []
-
