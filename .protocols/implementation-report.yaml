@@ -1,15 +1,20 @@
 kind: implementation-report
-workflow-id: "<workflow-id>"
-task-id: "<task-id>"
+jira-subtask-key: "<subtask-key>"
 status: "<completed|blocked|failed>"
 implemented-behavior: []
 changed-files: []
 public-contracts: []
-design-artifact-used: ""
+design-evidence-used: []
+structure:
+  composition-roots: []
+  components-created: []
+  components-reused: []
+  decomposition-decisions: []
+  oversized-handwritten-tsx: []
+  approved-exceptions: []
 validation:
   commands: []
   results: []
 deviations: []
 known-limitations: []
 test-handoff: []
-
