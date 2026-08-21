@@ -1,140 +1,99 @@
 # React State and Runtime Rules
 
-Load this rule only when the canonical router in `../frontend-coding.md` matches a Server/Client
-boundary, state ownership, Effect, custom hook, Context/Provider, store, browser API, integration
-runtime, or code-splitting decision. Use only the relevant internal mode: **component boundary**,
-**local state/derivation/effect**, **state abstraction**, or **browser/runtime splitting**.
+Load this rule only when the frontend router matches a Server/Client boundary, state ownership,
+Effect, custom hook, Context/Provider, store, browser API, integration runtime, or runtime code-split.
 
-This rule does not approve a server-data architecture. TanStack Query conventions and the broader server/client data-flow decision remain deferred in `.analysis/README.md`.
+The transient Jira handoff and supplied approved evidence own architecture decisions. This rule does
+not read `.docs/`/`.analysis/`, approve a server-data architecture, or create a local implementation
+plan.
 
-This rule owns React execution boundaries, client state and effect placement, abstraction gates,
-browser isolation, and runtime splitting. Atomic owns component contracts, Styling owns inline-style
-exceptions, Async States owns fallback design, and the explicit TanStack Query skill owns an approved
-task-local TanStack workflow without changing the project-wide deferral.
+## Framework evidence
 
-## Read installed framework evidence first
+Before changing framework-sensitive behavior, inspect the installed Next.js documentation and only
+the live product configuration/dependencies relevant to the Subtask. Do not rely on remembered
+behavior from another framework version and do not install a state/data library through this rule.
 
-Before changing a framework-sensitive boundary, read the relevant installed Next.js 16 documentation under `node_modules/next/dist/docs/`. In particular, verify the current rules for Server and Client Components, the `'use client'` directive, and lazy loading instead of relying on behavior from another Next.js version.
+## Server/Client boundary
 
-Treat `package.json` as the authority for installed state and data libraries. Do not install, configure, or adopt a library through this rule.
+Keep Server Components by default. Add `'use client'` at the narrowest cohesive boundary that directly
+needs client state/lifecycle/context, browser event handlers/APIs, or a browser-only dependency.
 
-## Use Server Components by default
+Do not mark a route, full screen, template, or large subtree client-side merely because one nested
+region is interactive. Props crossing Server → Client must be serializable. Keep static/server-
+renderable content outside interactive islands when component contracts allow it.
 
-Keep a component as a Server Component unless it directly needs client state/lifecycle/context,
-browser event handlers or APIs, or a browser-only third-party library.
+## State ownership
 
-Add `'use client'` at the narrowest component boundary that owns the requirement. Do not mark a route, screen, template, organism, or other large subtree as a Client Component merely because one nested region is interactive.
+Place state at its lowest complete owner:
 
-Remember that a `'use client'` entry point brings its imported module graph into the client bundle. Props crossing from a Server Component to a Client Component must be serializable. Server-rendered content may be passed through approved `children` or named-slot contracts when that preserves a smaller client boundary.
+- preserve local state owned by approved primitives;
+- molecule/organism owns cohesive presentation interaction;
+- lift shared sibling state only to the nearest common owner;
+- module presentation owns module workflow state;
+- keep business state out of shared Atomic components/templates.
 
-An interactive island is the smallest Client Component subtree owning a cohesive interaction. Keep
-static and server-renderable content outside it; justify any larger boundary in the approved plan.
+Do not duplicate one source of truth across local state, URL, Context, store, and server cache. Do not
+introduce Context/store just to avoid a small explicit props contract.
 
-## Isolate browser runtimes
+## Derivation and effects
 
-Keep browser APIs and browser-only third-party runtimes inside a narrow Client Component or approved integration boundary. A presentation component may coordinate rendering and lifecycle, but it must not absorb an infrastructure contract or module business behavior merely to access the browser.
+Derive inexpensive values during render. Do not copy derived values into state or use an Effect to
+synchronize values that can be derived from current props/state.
 
-Do not import server-only secrets, repositories, or implementations into a client module graph. Do not move browser access upward into a route, template, or full screen when a child boundary can own it.
+Use `useMemo` only for evidenced expensive pure computation or required stable identity.
 
-Any third-party requirement for DOM mutation or inline styles must also satisfy the exception and approval rules in `styling-layout.md`.
+Use `useEffect` only for external synchronization such as browser APIs, subscriptions/listeners,
+timers, or approved runtime lifecycle. Put user-action logic in event handlers. Provide required
+cleanup. Do not use Effect-based fetching as an invented project data-flow convention.
 
-## Place state at its lowest complete owner
+## New abstractions
 
-Place state in the lowest component that owns the behavior and contains every consumer that needs it:
+Creating a new project-authored custom hook, Context/Provider, or store that establishes a reusable
+state contract requires explicit authority in the handoff or developer approval returned through
+Orchestrator.
 
-- preserve local state owned by an approved shadcn/Radix primitive;
-- let a molecule own a small, cohesive presentation interaction;
-- let an organism coordinate presentation state across its lower-level parts;
-- when sibling components need the same state, lift it only to their nearest common parent;
-- let a module screen or controller coordinate workflow state that spans multiple organisms;
-- keep business state out of shared templates and shared Atomic Design components.
+When proposing one, identify owner, consumers, encapsulated state/effects/APIs, why colocation is
+insufficient, contract, lifecycle/reset risks, and alternatives. Missing approval blocks only the
+dependent scope.
 
-Do not duplicate one source of truth across local state, URL state, Context, and a store. Do not introduce Context or a store merely to avoid a small, explicit props contract.
+Do not add an unapproved dependency. Installed libraries are not automatic architecture approval.
 
-Follow `atomic-components.md` for controlled and uncontrolled component APIs. State ownership does not authorize an imperative ref API or a structural escape hatch.
+## Server-state libraries
 
-## Derive values during render
+Use TanStack Query or another server-state abstraction only when the assigned Subtask or supplied
+architecture evidence explicitly approves that flow. Do not invent query-key, cache, stale-time,
+retry, invalidation, optimistic-update, prefetch/hydration, or parallel client-store conventions.
 
-Calculate derived values directly during render when the calculation is inexpensive. Do not copy derived values into `useState`, and do not use `useEffect` to synchronize a value that can be derived from current props or state.
+Route approved TanStack Query implementation details to the `nextjs-tanstack-query` skill.
 
-Use `useMemo` only when at least one of these conditions is evidenced:
+## Browser/runtime isolation
 
-- a pure calculation is meaningfully expensive; or
-- stable reference identity is required by a dependency or memoized consumer.
+Keep browser APIs and browser-only third-party runtimes inside narrow Client/integration boundaries.
+Never import server secrets/repository implementations into the client graph. Do not move browser
+access upward when a child boundary can own it.
 
-Do not add `useMemo` as a default wrapper around ordinary expressions. Memoization must preserve a pure calculation and declare complete dependencies.
+Third-party DOM mutation/inline-style behavior must also satisfy the styling/integration rules.
 
-## Use effects only for external synchronization
+## Runtime code splitting
 
-Use `useEffect` only to synchronize a Client Component with an external browser API, approved
-runtime, subscription/listener, timer, or media/canvas/DOM lifecycle.
+Moving JSX into another file is not runtime code splitting. Use static imports by default.
 
-Put logic caused by a user action in the corresponding event handler rather than in an Effect that detects the action later. Add cleanup for subscriptions, listeners, timers, and runtime instances when their contract requires it.
+Consider dynamic loading only when supplied evidence establishes meaningful client runtime/bundle
+cost, non-initial use, user-action-only use, or a verified browser-only dependency.
 
-Do not use an Effect for render preprocessing or derived state. Do not establish direct API fetching in an Effect as a substitute for the deferred server-data decision.
+Do not dynamically import ordinary shadcn atoms, lightweight UI, primary navigation, immediately
+visible content, or components merely because they contain hooks.
 
-## Require approval for new state abstractions
+Every dynamic boundary requires approved evidence for exact target, why deferral matters, browser
+constraints, loading/fallback behavior, layout/interaction risk, and validation. Use `ssr: false` only
+for verified browser-only dependencies inside Client Components, never to hide hydration or ownership
+bugs.
 
-Creating a project-authored custom hook requires explicit developer approval. Record its problem and
-owner, consumers, encapsulated state/effects/APIs, why colocation is insufficient, proposed contract,
-lifecycle/cleanup/dependency risks, and alternatives.
+Follow installed Next.js documentation for `next/dynamic`/`import()` mechanics and `async-states.md`
+for fallback contracts.
 
-Creating a new Context/Provider also requires explicit developer approval. A module Context must remain owned by and private to that bounded context. A new global Context is allowed only for an explicitly approved application-wide concern such as authentication or authorization. Place a provider as deep as its consumer boundary permits.
+## Completion
 
-Creating a new store requires explicit developer approval and the same ownership, consumer, lifecycle, and reset analysis. A module store must not be consumed by another bounded context. A global store is reserved for an explicitly approved application-wide authentication or authorization concern. Do not use a store for local component state, ordinary form state, or as a duplicate cache for server data.
-
-Zustand is not currently installed. Do not assume it is available or add it in an unrelated task; any dependency adoption must appear in a separately approved plan.
-
-Missing approval for one hook, provider, or store blocks only the dependent implementation. Continue independent approved work and consolidate the unresolved proposal at task end.
-
-## Preserve the TanStack Query deferral
-
-The repository contains TanStack Query dependencies, but their use does not constitute an approved data-flow convention. Until the developer approves that architecture, do not invent:
-
-- query or mutation hooks;
-- query-key factories or naming rules;
-- cache, stale-time, retry, or invalidation policies;
-- optimistic updates;
-- prefetch, dehydration, or hydration conventions;
-- a parallel Effect-based fetch convention;
-- a Zustand or Context copy of server state.
-
-When a task reaches one of these decisions, record the concrete query or mutation requirement, its proposed owner, the consumers, and the unresolved cache or invalidation questions. Continue independent work. If the server-state decision is essential to the requested behavior, report that dependent scope as unresolved rather than selecting a convention implicitly.
-
-## Use static imports by default
-
-Atomic decomposition and moving a component into its own file are source-organization decisions; they do not justify runtime code splitting.
-
-Use static imports unless repository evidence shows that a component or dependency:
-
-- has meaningful client-side runtime or bundle cost;
-- is not required for the initial render;
-- is used only after a user action; or
-- cannot execute in a server environment.
-
-Assess code splitting for browser-heavy capabilities such as maps, WebGL or other 2D/3D engines, video runtimes, charting libraries, rich-text or code editors, large previewers, and substantial client-only SDKs. Assessment is not automatic authorization to split them.
-
-Do not dynamically import:
-
-- standard shadcn/ui atoms;
-- lightweight molecules or organisms;
-- primary navigation;
-- immediately visible content;
-- a component merely because it uses a React hook or has its own file.
-
-Do not add viewport-triggered loading or a custom lazy-loading hook without separate developer approval.
-
-## Gate every dynamic boundary
-
-Every `next/dynamic` or dynamic `import()` decision must already be in the approved plan with the
-exact deferred component/dependency, initial-render need, browser constraints, expected runtime or
-bundle benefit, approved loading/fallback behavior, layout-shift and interaction risk, and success or
-failure validation.
-
-Keep `next/dynamic` declarations at module scope with an explicit import path as required by the installed documentation. A user-action `import()` is allowed only when the approved plan demonstrates that the dependency is meaningfully deferred and the owning module, not shared UI, coordinates the operation.
-
-Use `ssr: false` only for a verified browser-only dependency and only inside a Client Component. Do not use it to hide hydration mismatches, non-deterministic rendering, invalid HTML, incorrect state initialization, or a misplaced integration boundary.
-
-Server Components are already code-split by Next.js. Do not assume that dynamically importing a Client Component from a Server Component creates an additional client split; verify the installed Next.js documentation and resulting build behavior.
-
-Loading, error, and fallback visuals for a dynamic boundary must follow `async-states.md`. A missing approved fallback is an unresolved design decision, not permission to invent a spinner, skeleton, or collapsing `null` fallback.
+Return Server/Client decisions, state owner, relevant effect/abstraction decisions, approvals used,
+dynamic-boundary evidence, validation, and unresolved dependent scope in the implementation report.
+Do not invent missing architecture to report the Subtask complete.
