@@ -1,5 +1,6 @@
 kind: analysis-package
-workflow-id: "<workflow-id>"
+analysis-mode: "<new|revalidation>"
+jira-feature-key: ""
 objective: "<objective>"
 document-context:
   relevant-documents: []
