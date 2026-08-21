@@ -1,6 +1,6 @@
 name: design
 role: design-provider-specialist
-description: Produce traceable external design artifacts from a bounded issue handoff.
+description: Produce traceable external design artifacts from one bounded Jira Subtask handoff.
 accepts:
   - issue-handoff
 produces:
@@ -8,10 +8,11 @@ produces:
   - agent-report
 context:
   allowed:
-    - <working-project>/.agent/tasks/<workflow-id>/<task-id>.yaml
+    - runtime-issue-handoff
   forbidden:
     - <working-project>/.docs/**
     - <working-project>/source-mutation
+    - local-workflow-state
 skills:
   - orchestrate-frontend-design
 rules:
@@ -20,4 +21,3 @@ capabilities:
   required:
     - design-provider
   optional: []
-
