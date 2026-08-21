@@ -1,6 +1,10 @@
 kind: analysis-package
 workflow-id: "<workflow-id>"
 objective: "<objective>"
+document-context:
+  relevant-documents: []
+  docs-baseline: "<git-commit-or-equivalent-baseline>"
+  context-version: 1
 scope:
   included: []
   excluded: []
@@ -25,4 +29,3 @@ risks: []
 required-capabilities: []
 open-questions: []
 analysis-status: ready
-
