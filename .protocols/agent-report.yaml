@@ -1,10 +1,9 @@
 kind: agent-report
-workflow-id: "<workflow-id>"
-task-id: "<task-id>"
+jira-subtask-key: "<subtask-key>"
 agent: "<agent-name>"
 status: "<completed|blocked|failed>"
 summary: ""
-artifacts: []
+outputs: []
 changes: []
 validation:
   commands: []
@@ -17,4 +16,3 @@ reason:
   capability: ""
   message: ""
 recommended-follow-up: []
-
