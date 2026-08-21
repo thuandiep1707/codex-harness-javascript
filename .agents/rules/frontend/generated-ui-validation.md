@@ -1,92 +1,60 @@
 # Generated UI Validation
 
-Load this rule only when the canonical router in `../frontend-coding.md` matches UI generated or
-substantially reconstructed from a developer-approved design/provider artifact. A shadcn CLI command
-or generated primitive does not trigger this rule by itself.
+Load this rule only when UI is generated or substantially reconstructed from developer-approved
+design/provider evidence. A shadcn CLI operation alone does not trigger it.
 
-This file is a final evidence index, not a competing policy source. The baseline and triggered topic
-rules remain normative. A check passes only when the completion record cites inspected files,
-searches, approvals, handoffs, commands, and results.
+This file is a final evidence index, not a competing policy source. The Coding baseline and triggered
+topic rules remain normative.
 
-## Build the validation manifest
+## Validation manifest
 
-Record the approved artifact and relevant nodes/screens/states, implementation files and direct
-consumers, every topic selected from the canonical router, specialized handoffs used, approved scope,
-exceptions, and unresolved dependent areas. Missing manifest evidence is a failed validation, not
-permission to assume a topic passed.
+Before reporting completion, identify:
 
-## Validate through normative owners
+- approved design/provider evidence and relevant screen/state references;
+- implementation files and direct consumers;
+- topic rules triggered by the current Subtask;
+- approved scope/exceptions;
+- unresolved dependent areas.
 
-For each section below, record `pass`, `unresolved`, or `not-applicable`. The last result requires a
-brief evidence-based reason. An unresolved result uses the shared record in `../frontend-coding.md`
-and cannot be reported as completed dependent behavior.
+A missing required evidence item is not permission to assume the topic passed.
 
-### Discovery and ownership
+## Validate through topic owners
 
-Owner: `atomic-components.md`; add the decomposition map, repository searches, direct consumers,
-Atomic/DDD placement, chosen API, reuse/composition result, and custom-atom approval. When exact
-shadcn mechanics trigger, link the shadcn handoff containing source identity, local CLI/config,
-previewed/applied files, dependencies, approval, and drift result.
+For every applicable topic report `pass`, `unresolved`, or `not-applicable` with evidence:
 
-### Component APIs
+- **Atomic:** decomposition, reuse, ownership, public contracts, custom-atom approvals.
+- **Assets:** icon/image source mapping, ownership, accessibility, Next Image metadata.
+- **Semantics:** controls/navigation, landmarks, headings, labels/names/ARIA, table handling.
+- **Styling:** existing variants/tokens/utilities, provider-value mapping, fluid layout, approved exceptions.
+- **React runtime:** Server/Client/state ownership, effects, abstraction approvals, browser/runtime boundaries.
+- **Async states:** exact loading/error/empty/pending state inventory and approved patterns.
 
-Owner: `atomic-components.md`; add evidence for atoms-layer placement, public variants/CVA,
-`className`/`style`, children/slots/render props, semantic callbacks, presentation-oriented props, and
-controlled/uncontrolled ownership. Reference the owner instead of copying its policy into this file.
+Do not duplicate the full policy of those owner rules here.
 
-### Icons, SVG, and images
+## Provider evidence integrity
 
-Owner: `icons-images-assets.md`; add candidate/source assessment, selected or unresolved mapping,
-asset owner, accessibility decision, and `next/image` alt, dimensions/`fill`, `sizes`, and quality
-evidence. Record approvals and specialized-source exceptions.
+Confirm that:
 
-### Semantics and accessibility
+- provider HTML/JSX/CSS/SVG/source remained design evidence rather than copied implementation authority;
+- each implemented responsibility maps to approved local components/tokens/assets/contracts or is
+  explicitly unresolved;
+- provider output did not establish package, folder, architecture, responsive, accessibility,
+runtime, or design-system conventions;
+- placement follows product-repository ownership instead of provider file structure;
+- changed source/config/assets remain inside the assigned Subtask scope;
+- direct consumers and material states were inspected.
 
-Owner: `semantics-accessibility.md`; add selected primitives, control/navigation and landmark
-decisions, heading/label/name/ARIA relationships, table handling, and confirmation that built-in
-keyboard and focus behavior remains intact.
+## Repository validation
 
-### Styling and layout
+Use the validation matrix in `../frontend-coding.md` and the commands required by the handoff/current
+repository. Record results and reasons for skipped required checks. Do not weaken configuration,
+hide warnings, or edit unrelated source to make validation pass.
 
-Owner: `styling-layout.md`; add reused component/token/utility mappings, provider-CSS decisions,
-unresolved values, variant class validation, fluid desktop behavior, approved exceptions, and targeted
-inspection for arbitrary Tailwind or unauthorized inline styles.
-
-### React state and runtime
-
-Owner: `react-state-runtime.md`; add Server/Client and state-owner decisions, derived/effect evidence,
-abstraction approvals, installed-document references, browser isolation, and dynamic-boundary
-cost/fallback/validation evidence. Confirm that deferred data-flow policy was not inferred.
-
-### Loading, error, and empty states
-
-Owner: `async-states.md`; add the exact state inventory, matching approved patterns, route-boundary
-decisions, unresolved visual requirements, and separated independent/dependent scope.
-
-## Check provider-artifact integrity
-
-- [ ] Provider HTML, JSX, CSS, SVG, source, dependencies, and naming remained design evidence rather than copied authority.
-- [ ] Every implemented responsibility maps to an approved local component, token, utility, asset, contract, or unresolved decision.
-- [ ] Provider output established no package, folder, architecture, responsive scope, accessibility pattern, runtime boundary, or design-system convention.
-- [ ] Placement follows repository ownership rather than provider file structure.
-- [ ] Changed files, dependencies, configuration, assets, and generated artifacts remain inside approved scope.
-- [ ] Direct consumers and material states were inspected, not only the generated component in isolation.
-
-## Run proportionate repository validation
-
-Use the validation matrix in `../frontend-coding.md` and the approved plan. Record applicable
-formatting, lint, typecheck, build, direct-consumer, approved-test, and final-diff checks with results.
-Give a reason for every skip. Do not weaken configuration, hide warnings, or edit unrelated code to
-make validation pass.
-
-## Report gates and unresolved work
-
-List approvals used, deviations, and each owner result once. Separate completed independent scope
-from unresolved dependent scope. A material deviation returns to plan approval before implementation.
+A material deviation from the assigned Jira Subtask/design/architecture evidence must return to
+Orchestrator as revision/blocker; do not create a local approval plan.
 
 ## Automation boundary
 
-Use the repository's current Prettier, ESLint, TypeScript, build, and approved test tooling as
-configured. This index does not claim that prose rules are automatically enforced.
-
-Do not add a custom ESLint plugin, validation script, CI workflow, or dependency under this rule. Record repeated, objectively detectable violations as future automation candidates; automate them only through a separately approved plan whose maintenance cost is justified by repository evidence.
+Use existing Prettier, ESLint, TypeScript, build, and approved test tooling. Do not add a custom lint
+plugin, validation script, CI workflow, or dependency merely to enforce this prose rule. Route any
+future automation proposal through an explicit Jira Task/developer decision.
