@@ -1,124 +1,84 @@
 # Styling and Layout Rules
 
-Load this rule only when the canonical router in `../frontend-coding.md` matches CSS, Tailwind,
-design tokens, component styling, visual variants, provider CSS, or desktop layout. Use only the
-relevant internal mode: **existing styling**, **variant values**, **provider mapping**, **global/token
-proposal**, **desktop layout**, or **integration exception**.
+Load this rule only when the frontend router matches CSS, Tailwind, design tokens, component styling,
+visual variants, provider CSS, or layout behavior.
 
-This rule documents approved styling and desktop-layout constraints. It does not authorize a new design token, component variant, global CSS rule, mobile/tablet design, or third-party styling exception outside an approved task plan.
+The transient Jira handoff, approved design evidence, and live product design-system configuration own
+allowed scope. This rule does not read `.docs/`/`.analysis/`, create a local plan, approve a new token,
+variant, global CSS rule, responsive scope, or third-party styling exception on its own.
 
-This rule owns allowed styling sources, class/token values, layout behavior, and styling exceptions.
-`atomic-components.md` owns whether a component exposes a variant, CVA contract, `className`,
-children, or slots. When both trigger, Atomic defines the API and this rule validates its values.
+## Styling source order
 
-## Styling source of truth
+Resolve visual requirements in this order:
 
-Use only styling capabilities already approved by the repository. Resolve a visual requirement in this order:
+1. existing component public variant/composition contract;
+2. existing shared/module component owning the pattern;
+3. existing semantic design-system token/rule;
+4. standard Tailwind utility supported by the installed repository version.
 
-1. An existing component's public variant or composition contract.
-2. An existing shared atom, molecule, organism, or template that owns the pattern.
-3. An existing semantic design-system token or rule in `src/app/globals.css`.
-4. A standard Tailwind utility supported by the repository's installed Tailwind version.
+Map by semantic responsibility, not by copying provider CSS values. If no approved mapping exists,
+return the exact missing styling decision to Orchestrator instead of approximating a value or silently
+expanding the design system.
 
-Map visual intent by semantic responsibility, not by copying provider CSS values. Do not invent a color, spacing step, typography value, radius, shadow, z-index, token, variant, or global class when the approved sources do not provide it.
+## Tailwind policy
 
-If no approved mapping exists, record the missing styling decision and request developer approval. Continue independent work instead of approximating the value, adding a local workaround, or silently expanding the design system.
+Project-authored styling uses standard Tailwind utilities and approved design-system utilities.
+Do not introduce arbitrary values/properties/selectors/variants merely to match a design screenshot.
+Typical prohibited shortcuts include `w-[...]`, `bg-[#...]`, `shadow-[...]`, `z-[...]`, arbitrary
+properties, or arbitrary selectors.
 
-## Tailwind utility policy
+Generated upstream shadcn source may contain syntax required by that upstream implementation. Preserve
+it when produced by the approved shadcn workflow; it is not precedent for handwritten project code.
 
-Project-authored component styling must use standard Tailwind utility classes and approved design-system utilities.
+Do not introduce CSS Modules, component-scoped stylesheets, CSS-in-JS, copied provider CSS blocks, or
+a global CSS/token change without explicit authority in the handoff/developer approval.
 
-Do not introduce arbitrary Tailwind values, arbitrary properties, arbitrary variants, or arbitrary selectors in project-authored code. Prohibited forms include, but are not limited to:
+## Inline styles
 
-```text
-w-[...]
-h-[...]
-bg-[#...]
-shadow-[...]
-z-[...]
-grid-cols-[...]
-[property:value]
-[&...]
-```
+Do not write inline CSS/computed style objects or expose unrestricted `style` from project-authored
+components. A narrow exception is allowed only when approved third-party runtime evidence proves that
+no class/config API can satisfy the requirement. Keep the exception isolated at the integration
+boundary and record exact properties and validation.
 
-Do not use an arbitrary CSS variable expression as a workaround for this restriction.
+## Provider mapping
 
-Installed or newly generated upstream shadcn source may contain arbitrary selectors or values required by that upstream implementation. Preserve such generated syntax when using the approved shadcn workflow; do not remove it solely to satisfy this rule. It is not precedent for project-authored atoms or other components, and agents must not imitate it manually.
+Provider CSS/classes/values are design evidence only. For each material value, map the semantic role to
+an existing component variant, token, utility, or approved contract. Otherwise leave the dependent
+visual decision unresolved. Do not copy provider classes/CSS, add arbitrary Tailwind, or create a
+feature-local fork to obtain pixel fidelity.
 
-Do not create component-scoped stylesheets, CSS Modules, CSS-in-JS, or copied CSS blocks to bypass the Tailwind and design-system contract. A proposed global design-system rule or token is an architecture/design-system change and requires developer approval in the task plan.
+## Responsive and fluid layout
 
-## Inline style prohibition
+Implement only responsive scope explicitly included by the assigned Task/design evidence. Do not
+invent mobile/tablet layouts or breakpoints.
 
-Do not write inline CSS, computed style objects, or expose a `style` prop from a project-authored component.
+Within the approved viewport scope, major page/workspace regions must remain fluid unless a fixed
+contract is explicitly required. Do not lock the whole layout to a design-frame width/height.
 
-An exception is possible only when an approved library/runtime technically requires inline styles and
-has no suitable class or configuration API. The approved plan records its integration owner,
-requirement evidence, rejected class/token/config alternatives, exact inline properties, isolation,
-and validation.
+Fixed intrinsic/design-system dimensions are allowed for things such as icons, status indicators,
+avatars, approved control sizes, intrinsic image metadata, media aspect ratios, or approved specialized
+runtime internals when they do not freeze the surrounding layout.
 
-Keep an approved exception at the narrowest integration adapter or client-runtime boundary. Do not spread it into shared Atomic components, module business UI, or consumer APIs, and do not treat one approved integration exception as a general styling precedent.
+## Variants and ownership
 
-## Design-provider CSS
+- prefer existing component variants over internal class overrides;
+- follow `atomic-components.md` for component API/variant ownership;
+- do not deep-style/fork a shared component from a consumer;
+- higher-level components should use controlled variants/slots rather than unrestricted styling escape
+  hatches;
+- use only an approved stacking/z-index contract supplied by current source/design evidence; do not
+  invent numeric hierarchy.
 
-CSS, utility classes, values, and generated component styling returned by a design provider are evidence only. Do not copy them directly into application source.
+## Approval-required changes
 
-For each provider value, identify its semantic role; inspect existing variants, shared patterns,
-`src/app/globals.css` tokens/rules, and supported Tailwind utilities; then use only a mapping that
-preserves the role and contract. Otherwise record it as unresolved for developer approval.
+Return to Orchestrator/developer before:
 
-Do not use arbitrary Tailwind syntax, inline CSS, a feature stylesheet, a copied component variant, or an approximate hard-coded value to achieve provider-level pixel fidelity. Do not modify global CSS or a shared component for one feature without an approved design-system impact plan.
+- adding/changing design tokens or global CSS rules;
+- adding a shared visual variant not already authorized;
+- introducing a new styling mechanism;
+- introducing a third-party inline-style exception;
+- expanding responsive scope.
 
-An unresolved styling decision should report:
-
-- the owning component and design location;
-- the visual responsibility and provider evidence;
-- existing variants, tokens, global rules, and utilities inspected;
-- why the available mappings are insufficient;
-- the proposed token, variant, or design decision for developer review; and
-- which independent work was completed while the decision remained pending.
-
-## Fluid desktop layout
-
-Mobile and tablet implementation is outside the current scope. Do not add new mobile/tablet layouts or breakpoint behavior unless an explicit requirement and approved design bring them into scope.
-
-Desktop UI must remain fluid across desktop viewports. Page/route roots, templates/workspaces,
-headers, navigation/sidebars, main content, panels, major regions, and grid/table containers must not
-be fixed to one design-frame width or height.
-
-Use standard fluid layout utilities and existing component contracts for available-space allocation, such as full/minimum sizing, flex or grid flow, growth and shrink behavior, wrapping, approved constraints, and overflow behavior. Select the exact utility only from repository-approved design-system and Tailwind capabilities.
-
-Do not hard-code an overall region's width or height through Tailwind sizing classes, inline styles, DOM measurements, or values copied from a design frame. A fixed desktop mockup is evidence of hierarchy and proportion, not authorization to lock the application to that viewport.
-
-Fixed intrinsic or design-system-controlled dimensions remain allowed when they do not fix the surrounding layout. Examples include:
-
-- icons, status indicators, and avatars;
-- approved control size variants;
-- image intrinsic `width` and `height` metadata;
-- approved media aspect-ratio contracts; and
-- specialized runtime internals covered by an approved integration exception.
-
-Intrinsic image dimensions reserve aspect ratio and do not replace fluid layout classes. Apply `.agents/rules/frontend/icons-images-assets.md` for the complete Next.js Image contract.
-
-## Variants, composition, and stacking
-
-- Prefer an existing component variant over repeating or overriding its internal classes.
-- Apply the approved typed CVA contract from `atomic-components.md`; do not create a parallel variant system with conditional classes or boolean styling props.
-- Preserve native semantic boolean props and upstream shadcn behavior contracts; they are not styling precedents for new components.
-- Preserve the Atomic rule that only atoms expose `className`; higher layers use controlled variants, children, and named slots.
-- Do not use deep selectors, copied variants, feature forks, or consumer overrides to bypass an atom, organism, or template contract.
-- Use the approved semantic stacking hierarchy in `.analysis/README.md`. Do not invent numeric z-index values or expose `zIndex` as a consumer prop.
-
-## Approval and unresolved workflow
-
-Developer approval is required before:
-
-- adding or changing a design token or global CSS rule;
-- adding a shared visual variant not already covered by the approved plan;
-- introducing a component stylesheet or non-Tailwind styling mechanism;
-- implementing a third-party inline-style exception; or
-- expanding the task into mobile or tablet layout behavior.
-
-A missing style, token, or layout contract blocks only the dependent UI. Use the shared unresolved and
-completion records in `../frontend-coding.md`, adding inspected variants/tokens/utilities, provider
-evidence, fluid-layout decisions, approved exceptions, and validation for arbitrary Tailwind or
-unauthorized inline styles.
+A missing style/token/layout contract blocks only dependent UI. Continue independent assigned work
+where safe and report the inspected mappings, exact missing decision, approved exceptions, and
+validation evidence. Do not report dependent UI complete while required visual behavior is unresolved.
