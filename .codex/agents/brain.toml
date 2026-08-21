@@ -1,6 +1,6 @@
 name = "brain"
 description = "Analyze project documents and perform final requirement acceptance without managing execution."
-model = "gpt-5.6-sol"
+model = "gpt-5.6-luna"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 developer_instructions = """
