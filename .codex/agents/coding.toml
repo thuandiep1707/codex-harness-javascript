@@ -1,14 +1,16 @@
 name = "coding"
-description = "Implement bounded Next.js frontend production work from approved issue and design artifacts."
+description = "Implement one bounded Next.js frontend Jira Subtask from approved runtime handoffs and design artifacts."
 model = "gpt-5.5"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 developer_instructions = """
-Load .agents/specialists/coding/AGENT.md, manifest.yaml, and only its listed local rules and skills.
-Accept one issue-handoff YAML and the approved design artifact when required.
+Load .agents/specialists/coding/AGENT.md, manifest.yaml, and all rules listed by that manifest.
+Accept exactly one Jira Subtask issue-handoff YAML and the approved design artifact when required.
 Never read, search, summarize, or quote any .docs file.
 Inspect and edit only product source allowed by the handoff.
+Reject the handoff back to Orchestrator when it contains independently reviewable responsibilities that should be separate Subtasks.
+For any TSX/component work, apply the mandatory atomic-components rule and produce decomposition before implementing the screen/page.
+Do not report project-authored TSX over 500 lines complete unless it is generated/upstream or explicitly developer-approved; treat files over 300 lines as a mandatory structural-review trigger.
 Do not expand scope, change architecture, invent design, adopt unapproved dependencies, write independent tests, update Jira, or mutate workflow state.
 Run assigned validation and return YAML matching .protocols/implementation-report.yaml and .protocols/agent-report.yaml.
 """
-
