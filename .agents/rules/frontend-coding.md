@@ -1,192 +1,107 @@
 # Frontend Coding Rules
 
-Apply this rule when creating, changing, moving, deleting, or reviewing frontend code or frontend configuration. This includes TypeScript/TSX in `src`, Next.js routes and configuration, React components and hooks, shared UI, module presentation code, browser integrations, TanStack Query, styling, assets, and frontend validation tooling.
+Apply this baseline to every frontend production-code Subtask. Keep it small: load detailed topic
+rules only when the router below matches the transient handoff or current source evidence.
 
-Do not load this detailed rule for unrelated documentation or repository-governance work unless that work changes frontend conventions.
+## Authority
 
-## Authority order
+Use this order:
 
-Follow the authority order in `AGENTS.md`: current developer instruction and approved task scope,
-repository governance and analysis, live configuration and installed documentation, then compatible
-source patterns. Surface conflicts instead of creating a competing convention.
+1. assigned Jira Subtask + transient `issue-handoff`;
+2. approved architecture/design/dependency evidence supplied by Orchestrator;
+3. this repository's allowed rules/skills;
+4. live product configuration and installed framework documentation;
+5. compatible nearby source patterns.
 
-## Topic rule routing
+Do not use chat history, `.docs/`, `.analysis/`, local plans, or broad repository archaeology as a
+replacement for missing specialist context. Return a blocker when higher authority is missing or
+conflicts with source evidence.
 
-This file is the mandatory frontend safety baseline. Load only the additional topic rules whose triggers match repository evidence for the current task; do not read the entire topic catalog by default.
+## Topic router
 
-| Task evidence                                                                                                                              | Additional rule                                                                                    |
-| ------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| Creating, generating, splitting, placing, or changing a component, shadcn primitive, public props, variants, children, slots, or callbacks | `frontend/atomic-components.md`                                                                    |
-| Translating or changing icons, SVGs, images, logos, markers, or visual assets                                                              | `frontend/icons-images-assets.md`                                                                  |
-| Creating or changing interactive markup, navigation, headings, forms, accessible names, ARIA state, icon-only controls, or tables          | `frontend/semantics-accessibility.md`                                                              |
-| Translating CSS, Tailwind classes, design tokens, component styling, or desktop layout dimensions                                          | `frontend/styling-layout.md`                                                                       |
-| Deciding Server/Client boundaries, state ownership, effects, hooks, Context/Providers, stores, browser APIs, or runtime code splitting     | `frontend/react-state-runtime.md`                                                                  |
-| Handling loading, error, empty, no-result, no-selection, not-found, permission, or missing-configuration states                            | `frontend/async-states.md`                                                                         |
-| Validating UI generated or substantially reconstructed from a design/provider artifact                                                     | `frontend/generated-ui-validation.md` plus every owning topic rule triggered by the implementation |
+| Evidence in current Subtask/source | Load |
+| --- | --- |
+| Creating, splitting, placing, or changing component structure/public component contracts | `frontend/atomic-components.md` |
+| Icons, SVG, images, logos, markers, visual assets | `frontend/icons-images-assets.md` |
+| Interactive semantics, navigation, headings, forms, ARIA, tables | `frontend/semantics-accessibility.md` |
+| CSS, Tailwind, tokens, layout, responsive behavior | `frontend/styling-layout.md` |
+| Server/Client boundary, hooks, state, effects, providers, stores, browser APIs, runtime splitting | `frontend/react-state-runtime.md` |
+| Loading, error, empty, no-result, permission, missing-configuration states | `frontend/async-states.md` |
+| UI reconstructed from approved design/provider evidence | `frontend/generated-ui-validation.md` plus other triggered topic rules |
 
-Topic rules refine this baseline; they do not override higher authority. Record selected topic rules
-in plans when the active task tier requires a plan. If no trigger matches, this baseline is enough.
-
-### Routing contract
-
-- This table is canonical; topic introductions may clarify but not broaden it.
-- Select topics from task evidence, not merely an installed dependency, configuration, or component.
-- Follow only relevant internal modes. Cross-references require their own router match.
-- Rules own policy; specialized skills return workflow evidence to those owners without replacing it.
+The always-loaded Coding `component-decomposition-gate.md` decides whether the Atomic rule is needed
+before source write. Do not load all topic rules “for safety”.
 
 ## Before coding
 
-Before changing implementation files:
+1. Confirm the exact bounded Subtask objective, included/excluded scope, allowed write surface, direct
+   dependencies, and required validation from the handoff.
+2. Inspect nearby source and direct consumers before creating or moving files/components/hooks/types.
+3. Inspect only live config needed for the change (`package.json`, `tsconfig`, ESLint, Prettier,
+   `components.json`, framework config, etc.).
+4. Use installed Next.js documentation for framework APIs when the Subtask changes framework behavior.
+5. Stop at unresolved architecture, design, dependency, or public-contract decisions instead of
+   inventing project policy.
 
-1. Identify the owning bounded context and load only the analysis, module boundary, live
-   configuration, and topic rules relevant to the proposed change.
-2. Search nearby code and direct consumers with `rg` or `rg --files` before creating a file, folder,
-   component, hook, type, or abstraction.
-3. Read installed Next.js 16 documentation before using or changing a framework API.
-4. Stop at deferred or conflicting decisions; do not invent policy from examples or memory.
+## Ownership and placement
 
-## Tool-enforced conventions
-
-Live `tsconfig.json`, ESLint, Prettier, `package.json`, and `components.json` settings own exact compiler,
-format, alias, script, and shadcn behavior. Inspect only the files relevant to the task. Do not weaken
-them, create a parallel convention, introduce avoidable warnings, or manually imitate an exception
-found in generated upstream source. Route styling exceptions to `frontend/styling-layout.md`.
-
-## Decide ownership before creating files
-
-Before creating a file or folder, identify its bounded context or shared layer, why existing code cannot
-own the responsibility, its direct consumers and dependency direction, and whether it crosses a
-deferred decision. Unclear ownership or a new folder convention requires approval. Do not use
-`common`, `misc`, `helpers`, or `services` as fallback ownership.
-
-## DDD folder and file placement
-
-Place business-specific behavior in its owning bounded context:
+Business-specific behavior belongs to its approved bounded context. Preserve the dependency direction:
 
 ```text
-src/modules/<context>/
-├── domain/
-│   ├── entities/
-│   ├── value-objects/
-│   ├── repositories/
-│   └── services/
-├── application/
-│   ├── use-cases/
-│   ├── dto/
-│   └── ports/
-├── infrastructure/
-│   ├── api/
-│   ├── repositories/
-│   └── mappers/
-└── presentation/
-    ├── components/
-    ├── hooks/
-    ├── view-models/
-    └── screens/
+presentation -> application <- infrastructure
+                    |
+                    v
+                  domain
 ```
 
-- `domain`: entities, value objects, domain services, and repository abstractions; no React, Next.js,
-  HTTP client, browser API, or UI dependency.
-- `application`: use cases, DTOs, and ports; depends inward on domain.
-- `infrastructure`: API adapters, repository implementations, and mappers implementing inward
-  contracts.
-- `presentation`: module-owned components, hooks, screens, and view models.
+- `domain`: business concepts/contracts; no React, Next.js, HTTP client, or browser dependency.
+- `application`: use cases, DTOs, ports; depends inward on domain.
+- `infrastructure`: API/repository adapters and mappers implementing inward contracts.
+- `presentation`: module-owned screens, components, hooks, view models.
 - `src/app`: thin delivery composition, not business implementation.
 
-Do not create a bounded context, DDD sublayer, cross-module business folder, or scaffolded-category
-file without concrete approved responsibility.
+Do not create new bounded contexts, DDD layers, shared folders, or architecture conventions unless the
+handoff already approves their responsibility. Never use `common`, `misc`, `helpers`, or `services` as
+unclear-ownership fallbacks.
 
-Preserve this dependency direction:
-
-```text
-presentation ──► application ◄── infrastructure
-                       │
-                       ▼
-                     domain
-```
-
-## Testing conventions
-
-Load `.agents/rules/testing.md` and the `testing` skill only when test work is in scope under
-`AGENTS.md`.
-
-## Atomic Design with shadcn/ui
-
-`src/components/ui` is the complete atoms layer; never create `src/components/atoms`.
+For shared presentation composition, preserve the established Atomic structure:
 
 ```text
-src/components/ui          # atoms: shadcn/ui + approved compatible custom atoms
-        ↓
-src/components/molecules   # small reusable compositions
-        ↓
-src/components/organisms   # complete reusable UI sections
-        ↓
-src/components/templates   # controlled page/layout patterns
+src/components/ui          # atoms / shadcn + approved custom atoms
+src/components/molecules
+src/components/organisms
+src/components/templates
 ```
 
-Installed shadcn primitives and approved compatible custom atoms live in `ui`; shared composition flows
-through `molecules`, `organisms`, and controlled `templates`. Business semantics and orchestration stay
-in the owning module presentation layer. Search existing components first and load
-`frontend/atomic-components.md` for placement, decomposition, public API, variant, and custom-atom
-decisions. Do not fork primitives or deep-style controlled components to bypass ownership.
+Business semantics remain in the owning module. Load the Atomic rule for actual placement,
+decomposition, custom-atom gates, variants, slots, and component public APIs.
 
-## Other frontend locations
+## File and runtime discipline
 
-- `src/components/providers`: approved application-wide providers.
-- `src/components/shared`: non-business presentation helpers, never unclear ownership fallback.
-- `src/lib`: shared framework/integration utilities, not business behavior.
-- `src/config`, `src/constants`, `src/hooks`, and `src/types`: genuinely cross-cutting concerns only;
-  otherwise keep them in the owning module.
-- `src/assets` or `public`: choose from current import/serving evidence.
-
-## File names and exports
-
-Use exact Next.js reserved filenames where applicable and repository kebab-case elsewhere unless a
-framework or generator requires another form. Use PascalCase component symbols and `use`-prefixed
-hooks. Prefer one primary responsibility per file. Add a barrel only for an intentional reviewed
-public API. Preserve `.gitkeep` until a tracked file in the same folder replaces it.
-
-## React and Next.js
-
-Use installed Next.js documentation, not remembered behavior, for framework decisions. Keep route
-files thin, Server Components as the supported default, and Client Components at the narrowest
-cohesive interactive boundary. Load `frontend/react-state-runtime.md` for state, effects, browser
-runtime, providers/stores, dynamic imports, or `ssr: false`.
-
-## UI, styling, and accessibility
-
-Route interactive semantics, styling/layout, assets/icons, and async states to their topic rules. Keep
-desktop layout fluid, use approved semantic tokens and z-index hierarchy, preserve established async
-boundaries, and do not invent custom complex interactions or responsive scope. Use Lucide as the
-general icon library and `next/image` according to the installed framework guidance.
+- Prefer one primary cohesive responsibility per handwritten file.
+- Use framework-reserved filenames where required; otherwise follow repository naming conventions.
+- Keep route/page files thin and Client Components at the narrowest cohesive interactive boundary.
+- Search for existing components/utilities before creating new ones.
+- Do not add or change dependencies unless explicitly approved in the handoff/dependency evidence.
+- Preserve unrelated changes and avoid speculative cleanup.
 
 ## Validation
 
-Select validation according to the change:
+Use the smallest validation that proves the assigned change, then required repository baselines:
 
-| Change type                                                     | Minimum validation                                             |
-| --------------------------------------------------------------- | -------------------------------------------------------------- |
-| TypeScript/TSX implementation                                   | Targeted checks, `npm run lint`, and `npm run typecheck`       |
-| Next.js route, boundary, or compilation-affecting configuration | Lint, typecheck, and build                                     |
-| Formatting/documentation                                        | Format/check changed files and inspect the diff                |
-| Shared component or template contract                           | Lint, typecheck, direct consumers, and approved tests/build    |
-| Generated or reconstructed UI                                   | Owning topic checks plus `frontend/generated-ui-validation.md` |
-| Review-only                                                     | Read-only evidence; do not mutate merely to validate           |
+| Change | Minimum evidence |
+| --- | --- |
+| TypeScript/TSX implementation | targeted check + lint + typecheck |
+| Next.js route/boundary/compilation config | lint + typecheck + build |
+| Shared component/template contract | lint + typecheck + direct consumers + approved tests/build |
+| Reconstructed/generated UI | triggered topic validation + generated-UI rule |
+| Documentation/format-only | changed-file format/check + diff inspection |
 
-Report commands run, failures, skipped validation, and the reason for each skip. Do not hide failures by weakening configuration or editing unrelated code.
+Report commands run, results, failures, and reasons for skipped required checks. Never make validation
+pass by weakening configuration, assertions, or unrelated production behavior.
 
-## Change discipline
+## Completion
 
-Preserve unrelated changes, avoid speculative cleanup, and stay within the active task tier and
-approved scope. Update analysis only for an approved architecture decision. Material scope changes
-return to approval. Do not restore `src/app/(dont-use)`.
-
-## Shared unresolved and completion evidence
-
-When a topic decision is unresolved, stop only dependent work and continue independent approved work.
-Record it once with owner/trigger, inspected evidence, rejected alternatives, required decision or
-approval, completed independent scope, and incomplete dependent scope.
-
-Topic rules add only their specialized evidence. Before completion, report selected rules and skills,
-approvals used, unresolved dependent scope, deviations, validation commands and results, and reasons
-for skipped checks. Do not claim unresolved required behavior as complete.
+Return only evidence for the assigned Subtask: implemented behavior, changed files, public contracts,
+structural/decomposition evidence when triggered, validation, deviations, limitations, and test
+handoff. Do not update Jira yourself and do not claim unresolved required behavior as complete.
