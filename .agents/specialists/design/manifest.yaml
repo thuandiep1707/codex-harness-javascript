@@ -1,6 +1,6 @@
 name: design
 role: design-provider-specialist
-description: Produce traceable external design artifacts from a bounded issue handoff.
+description: Produce traceable external design evidence from one bounded specialist Subtask.
 accepts:
   - issue-handoff
 produces:
@@ -8,10 +8,12 @@ produces:
   - agent-report
 context:
   allowed:
-    - <working-project>/.agent/tasks/<workflow-id>/<task-id>.yaml
+    - transient-issue-handoff
+    - design-provider-state
   forbidden:
     - <working-project>/.docs/**
     - <working-project>/source-mutation
+    - jira-mutation
 skills:
   - orchestrate-frontend-design
 rules:
@@ -20,4 +22,3 @@ capabilities:
   required:
     - design-provider
   optional: []
-
