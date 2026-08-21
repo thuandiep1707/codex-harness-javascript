@@ -1,116 +1,78 @@
 ---
 name: audit-frontend-supply-chain
-description: Assess JavaScript/frontend dependencies or cloned source for license evidence, provenance, lockfile and integrity data, lifecycle scripts, advisory or SBOM evidence, maintenance, update, and exit risk. Use before adopting, vendoring, upgrading, or approving third-party source and for dependency-focused security reviews.
+description: Assess JavaScript/frontend dependencies or cloned source for license evidence, provenance, lockfile/integrity data, lifecycle scripts, advisory/SBOM evidence, maintenance, update, rollback, and exit risk. Use from Brain analysis/revalidation before approving third-party adoption or when dependency-focused security evidence is required.
 ---
 
 # Audit Frontend Supply Chain
 
 ## Goal
 
-Produce an adoption, continued-use, upgrade, or rejection recommendation from traceable evidence.
-Separate offline facts, network-backed advisory results, legal questions, runtime threats, and unknown
-coverage.
+Produce traceable adoption/continued-use/upgrade/rejection evidence for the analysis package. Separate
+offline facts, network-backed advisory results, legal questions, runtime threats, and unknown coverage.
 
-## Establish authority and scope
+## Authority and scope
 
-1. Read `AGENTS.md`, the active task scope, and relevant package/tooling configuration.
-2. Accept an exact read-only artifact handoff before implementation approval when it records source,
-   version/commit/item, intended use, previewed files/dependencies, and unresolved evidence.
-3. Confirm whether network access, external repository reads, scanner execution, or persistent audit
-   artifacts are authorized separately from package installation or remediation.
-4. Keep the audit read-only. An audit recommendation is evidence for a later approval; it never
-   authorizes installation, source adoption, update, remediation, or other repository mutation.
+Use relevant product `.docs/`, current source/package/tooling configuration, exact external artifact
+identity, and current Brain analysis context. Keep the audit read-only unless the user explicitly
+assigns another action outside this skill.
 
-Do not treat a request to audit as permission to install, update, fix, publish, or contact a live
-system.
+Do not treat audit permission as install/update/fix/publish/adoption permission. Do not create local
+plan/progress workflow files. Persistent scanner/SBOM output outside ordinary temporary tooling requires
+explicit user/project authority; Jira later owns durable execution context if implementation work is
+approved.
 
 ## Workflow
 
 ### 1. Collect offline evidence first
 
-Run the bundled helper from the skill directory:
-
-```powershell
-node scripts/inspect-js-supply-chain.mjs --root <project-root> --format markdown
-```
-
-Use its output as manifest and supported npm lockfile evidence only. Read the manifest, lockfile,
-repository metadata, license files, notices, patches, and binary/WASM/worker artifacts directly as
-needed.
+Use the bundled `inspect-js-supply-chain.mjs` helper when useful for supported manifest/lock evidence.
+Inspect manifest, lockfile, repository metadata, license/notices, patches, lifecycle scripts, and
+binary/WASM/worker artifacts directly as needed.
 
 ### 2. Evaluate adoption evidence
 
-Read [dependency-adoption-checklist.md](references/dependency-adoption-checklist.md). Record:
+Read `references/dependency-adoption-checklist.md` when needed. Record:
 
-- identity, provenance, and exact artifact;
-- declared and conflicting license evidence;
-- maintainer, release, support, and incident channels;
-- dependency and install/lifecycle surface;
-- update, patch, ownership, rollback, and exit plans; and
-- missing or unverifiable evidence.
+- exact identity/provenance;
+- declared/conflicting license evidence;
+- maintainer/release/support signals;
+- dependency/install/lifecycle surface;
+- patch/update ownership, rollback, and exit strategy;
+- missing/unverifiable evidence.
 
-Do not convert metadata into a legal opinion or a trust conclusion.
+Do not convert metadata into a legal opinion or trust conclusion.
 
-### 3. Route scanners and SBOMs conditionally
+### 3. Scanner/SBOM evidence
 
-Read [scanner-and-sbom-routing.md](references/scanner-and-sbom-routing.md) only when vulnerability or
-component inventory evidence is requested.
+Read `references/scanner-and-sbom-routing.md` only when vulnerability/component-inventory evidence is
+required. Discover installed package-manager/scanner versions and use current official docs for
+version-sensitive commands.
 
-- Discover the installed package manager and scanner versions.
-- Consult current official documentation before running version-sensitive commands.
-- Request approval before installing tools, using network-backed scans, or writing persistent
-  reports/SBOMs outside the approved plan.
-- Never run automatic remediation such as `npm audit fix` during an audit-only task.
+Network-backed scans or new tool installation require matching authorization. Never run automatic
+remediation such as `npm audit fix` in an audit-only action.
 
-Record command, version, database/source, scope, timestamp, exclusions, exit code, and raw artifact
-location. A successful scan means only that the named tool reported no covered finding.
+Record tool/version/source/scope/timestamp/exclusions/exit status. A clean scan proves only the named
+tool's covered checks.
 
-### 4. Assess risk and applicability
+### 4. Assess applicability
 
-Separate each item into:
+Separate observed facts, known advisory/policy findings, application/runtime applicability, unknown
+coverage, proposed controls, and residual risk. Route XSS/CSRF/CSP/token/session/browser-message/runtime
+threats to `audit-frontend-security` instead of duplicating them.
 
-1. Observed fact.
-2. Known advisory or policy finding.
-3. Application/runtime applicability.
-4. Unknown or unsupported coverage.
-5. Proposed control and residual risk.
+## Output
 
-Route XSS, CSRF, CSP, token/session, browser messaging, input/output, or runtime behavior to
-`audit-frontend-security`. Do not duplicate that threat review here.
+Return to Brain:
 
-### 5. Return a decision package
-
-Return:
-
-- evaluated source/package identity;
-- tools and evidence sources;
+- exact source/package identity;
+- evidence/tool sources;
 - manifest/lock/install summary;
-- license and provenance evidence with unanswered questions;
-- findings with applicability and severity rationale;
-- unknown coverage and limitations;
-- update/monitoring/rollback/exit ownership; and
-- one conditional recommendation: `adopt`, `adopt-with-controls`, `hold`, or `reject`.
+- license/provenance evidence and unanswered questions;
+- findings with applicability/severity rationale;
+- unknown coverage/limitations;
+- update/monitoring/rollback/exit ownership;
+- conditional recommendation: `adopt`, `adopt-with-controls`, `hold`, or `reject`.
 
-Do not mark adoption ready when a required approval, license review, artifact identity, or critical
-evidence remains unknown.
-
-When the audit follows shadcn inspect-only discovery, preserve the exact registry address and version
-or resolved commit from the handoff. A similarly named item is a different adoption decision.
-
-## Compose only as required
-
-- Run after `design-frontend-module-boundary` when ownership is unresolved and before
-  `integrate-third-party-frontend` when onboarding external source.
-- For community/GitHub shadcn source, accept the exact item from shadcn inspect-only mode, return the
-  recommendation for developer approval, then hand the approved identity back to shadcn apply mode.
-- Add `audit-frontend-security` only for application/browser threat surfaces.
-- Load test skills only when creating the corresponding verification layer.
-
-Do not enumerate or read unrelated skill bodies.
-
-## Guardrails
-
-- Never print registry credentials, tokens, private URLs with embedded secrets, or environment values.
-- Never equate lockfile integrity with publisher identity or code safety.
-- Never report an SBOM as a vulnerability or license-compliance result.
-- Never hide unsupported lockfiles, scanner errors, exclusions, stale databases, or network failures.
+Do not mark adoption ready while required identity, approval, license review, or critical evidence is
+unknown. Never expose registry credentials/tokens/private secret-bearing URLs, equate lock integrity
+with publisher identity/code safety, or present SBOM output as vulnerability/legal-compliance proof.
