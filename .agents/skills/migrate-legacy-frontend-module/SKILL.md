@@ -1,108 +1,84 @@
 ---
 name: migrate-legacy-frontend-module
-description: Execute a bounded behavior-preserving migration of legacy or demo frontend code into an already approved DDD module. Use only for the coding specialist when the issue handoff contains approved target ownership, migration scope, characterization expectations, coexistence, cutover, rollback, and removal controls.
+description: Execute a bounded behavior-preserving migration of legacy or demo frontend code into an already approved DDD module. Use only for the Coding specialist when the transient handoff contains approved target ownership, migration scope, characterization expectations, coexistence, cutover, rollback, and removal controls.
 ---
 
 # Migrate Legacy Frontend Module
 
 ## Goal
 
-Move approved behavior into the target architecture without disguising a rewrite as a migration.
-Preserve observable behavior intentionally, isolate temporary compatibility code, and make cutover,
+Move only the assigned behavior into the approved target architecture without disguising a rewrite as
+a migration. Preserve observable behavior intentionally, isolate compatibility code, and make cutover,
 rollback, and legacy removal verifiable.
 
-## Require an approved target
+## Required authority
 
-1. Read the assigned `issue-handoff.yaml`, approved design artifact when present,
-   `.agents/rules/frontend-coding.md`, and only the source in the allowed migration scope.
-2. Require the handoff to name the approved target context, layers, direct consumers,
-   characterization expectations, and unresolved architecture decisions.
-3. Never read `.docs/` or `.analysis/`. If ownership is missing or contradicted by source evidence,
-   stop implementation and return a blocker to Orchestrator.
+Read the transient handoff, approved dependency/design evidence when present, frontend Coding rules,
+and only source in the allowed migration scope. Never read `.docs/` or `.analysis/`.
 
-Do not use a migration task to approve a new context, data-flow contract, auth policy, template API,
-or project-wide migration convention.
+The handoff must name target context/layers, direct consumers, characterization expectations, allowed
+migration slice, coexistence/cutover/rollback controls, and unresolved architecture decisions. Missing
+or contradicted authority is a blocker to Orchestrator.
 
-## Workflow
+Do not use a migration Subtask to approve a new bounded context, data-flow/auth contract, template API,
+dependency, or project-wide migration convention.
 
-### 1. Establish scope and baseline
+## Execution
 
-- Identify the exact behavior, routes, source files, consumers, data/API dependencies, state, assets,
-  browser integrations, and release boundary in the approved slice.
-- Read [characterization-and-cutover.md](references/characterization-and-cutover.md).
-- Capture current critical behavior before changing it. Label known bugs as preserved or explicitly
-  approved changes.
-- Load `testing` only after the repository Decision Gate approves the corresponding unit,
-  integration, contract, component, or E2E layer.
+### 1. Establish current behavior
 
-### 2. Expose dependency seams
+Identify exact routes/source/consumers/data dependencies/state/assets/browser integrations involved in
+the assigned slice. Read `references/characterization-and-cutover.md` only as needed. Capture critical
+observable behavior and distinguish known preserved bugs from explicitly approved changes.
 
-Map incoming consumers, outgoing calls, shared mutable state, framework/browser coupling, global
-styles, side effects, subscriptions, workers, vendor types, and compatibility constraints. Separate:
+Testing is not self-routed from this skill; execute only validation assigned to the current Coding
+Subtask. Separate Testing Subtasks remain owned by Orchestrator.
 
-- business behavior moving to domain/application;
-- infrastructure and data mapping;
-- module presentation;
-- shared UI that already has approved reuse; and
-- temporary bridges with a named removal gate.
+### 2. Expose seams
 
-Do not copy the old folder structure into the new context.
+Map incoming consumers, outgoing calls, shared mutable state, framework/browser coupling, global styles,
+side effects, subscriptions/workers, vendor types, and compatibility constraints. Separate business
+behavior, infrastructure mapping, module presentation, already-approved shared UI, and temporary
+bridges with explicit removal conditions.
 
-### 3. Select and approve a strategy
+Do not copy the legacy folder structure into the target context.
 
-Read [migration-strategy-options.md](references/migration-strategy-options.md). Compare options using
-task evidence and record rejected alternatives.
+### 3. Use the approved migration strategy
 
-If strategy selection would establish or change project-wide migration policy, revise the plan and
-wait for approval. Do not default to vertical slices, route-by-route migration, or a big-bang rewrite
-solely from preference.
+Read `references/migration-strategy-options.md` when strategy detail is needed. If the handoff does not
+fix a strategy and choosing one would affect architecture/coexistence/cutover policy, return a blocker
+to Orchestrator instead of creating or revising a local plan.
 
-### 4. Plan dependency-ordered migration units
+### 4. Order work inside the assigned slice
 
-For each unit, define:
+Break the Coding Subtask internally into dependency-ordered implementation units only for execution,
+not as a second workflow database. Each unit should identify behavior, required seam, affected source,
+validation, coexistence/cutover gate, rollback relevance, and bridge-removal condition.
 
-1. Concrete behavior and output.
-2. Required earlier seam or contract.
-3. Source and target files with `Why`, `Affected`, `Risk`, and `Control`.
-4. Characterization and target validation.
-5. Coexistence owner, cutover gate, rollback, and bridge-removal condition.
+Do not persist these units into `.plans/`, `.progresses/`, `.agent/`, or other runtime files. If the
+Subtask itself is too broad for safe execution, return a granularity blocker so Orchestrator can split
+Jira work.
 
-Keep temporary adapters directional. Prevent duplicate requests, mutations, subscriptions, listeners,
-analytics, storage writes, or route ownership.
+### 5. Implement bounded scope
 
-### 5. Implement only the approved unit
+Preserve DDD dependency direction and thin route composition. Reuse approved primitives/templates,
+keep feature UI in module presentation, and avoid unrelated cleanup, style rewrites, dependency
+upgrades, or architecture generalization.
 
-- Preserve DDD dependency direction and thin route composition.
-- Introduce framework/client boundaries only after reading installed Next.js documentation.
-- Reuse approved primitives/templates and keep feature UI in module presentation.
-- Avoid unrelated cleanup, style rewrites, dependency upgrades, or architecture generalization.
-- Update the progress file at every meaningful checkpoint and return to approval on material scope
-  change.
+On material scope/architecture change, stop dependent work and return the change to Orchestrator.
+Do not record a local progress file.
 
-### 6. Validate, cut over, and remove
+### 6. Validate and cut over
 
-- Run targeted tests and repository-required lint, typecheck, build, and browser validation.
-- Complete the parity matrix and document every approved difference and uncovered risk.
-- Verify release monitoring and rollback before switching consumers.
-- Remove bridges and legacy source only after all consumers and rollback obligations are resolved.
-- Record remaining debt with ownership; do not expand the migration to fix it automatically.
+Run assigned targeted and repository baseline validation. Verify parity evidence, approved differences,
+rollback readiness, direct consumers, and bridge/legacy removal conditions. Remove legacy source only
+when consumers and rollback obligations permit it.
 
-## Output contract
+## Output
 
-Report the approved target, strategy decision, migration-unit sequence, baseline/parity evidence,
-changed files, coexistence and cutover state, validation results, rollback readiness, removed legacy
-surface, remaining debt, and deviations.
+Return target/strategy used, implemented migration units, baseline/parity evidence, changed files,
+coexistence/cutover state, validation, rollback readiness, removed legacy surface, remaining debt, and
+deviations in the implementation report.
 
-## Compose only as required
-
-- Return a routing blocker to Orchestrator when the work is actually external-source adoption rather
-  than migration of owned legacy behavior.
-- Report a security-review need to Orchestrator only for a scoped threat surface.
-- Do not enumerate unrelated skills.
-
-## Guardrails
-
-- Never declare parity from successful compilation alone.
-- Never leave a bridge, flag, compatibility enclave, or dual-running path without an owner and removal
-  gate.
-- Never delete legacy code before direct consumers, rollback requirements, and evidence are resolved.
+Never claim parity from compilation alone and never leave a bridge/dual-running path without an owner
+and removal condition.
