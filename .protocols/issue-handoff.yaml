@@ -1,14 +1,21 @@
 kind: issue-handoff
-workflow-id: "<workflow-id>"
-task-id: "<task-id>"
+workflow-mode: "<planning|resume>"
+working-project: "<project-name>"
 target-agent: "<design|test-plan|coding|testing>"
 jira:
-  issue-key: "<issue-key>"
-  issue-url: "<issue-url>"
-title: "<title>"
-objective: "<bounded objective>"
-context-summary: |
-  Complete task context prepared by Orchestrator.
+  feature-key: "<feature-key>"
+  task-key: "<parent-task-key>"
+  subtask-key: "<specialist-subtask-key>"
+  assignee: ""
+  status: ""
+context:
+  feature-summary: |
+    Common approved context inherited from the Jira Feature.
+  task-delta: |
+    Functional-slice context owned by the parent Jira Task.
+  subtask-delta: |
+    Execution context owned by the current Jira Subtask.
+objective: "<bounded specialist objective>"
 scope:
   included: []
   excluded: []
@@ -17,11 +24,14 @@ forbidden-paths:
   - ".docs/**"
 dependencies:
   completed: []
-  required-artifacts: []
+  evidence: []
 acceptance-criteria: []
 required-validation: []
 required-capabilities: []
 expected-outputs: []
-output-locations: []
+resume-checkpoint:
+  completed-scope: []
+  remaining-scope: []
+  validation-state: []
+  blockers: []
 status: ready
-
