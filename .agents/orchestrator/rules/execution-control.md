@@ -4,6 +4,10 @@
   paths or raw document content to specialists.
 - Jira is the only durable workflow state. Store Task/Subtask hierarchy, dependencies, assignment,
   status, blockers, progress, evidence summaries, and completion there.
+- Before creating workflow issues, verify the target Jira project supports both `Task` and `Subtask`
+  issue types and allows Subtasks to be parented to the intended Task. If that hierarchy is
+  unavailable, stop with a Jira capability/configuration blocker; do not silently flatten work into
+  standalone Tasks or invent a substitute hierarchy.
 - Do not create or update `.agent/`, `.plan/`, `.progresses/`, workflow-state files, local task
   mirrors, or equivalent product-repository tracking data.
 - Write all agent-created Jira content in Vietnamese. Preserve code identifiers, file paths, API
