@@ -12,14 +12,7 @@ Codex tự nhận skill trong:
 ```
 
 Vị trí discovery dùng chung không đồng nghĩa mọi agent được dùng mọi skill. Ownership chính thức nằm
-trong:
-
-```text
-.agents/<agent>/manifest.yaml
-.agents/specialists/<agent>/manifest.yaml
-```
-
-Mỗi custom agent chỉ được load skill có tên trong `skills` allowlist của manifest.
+trong agent manifest. Mỗi custom agent chỉ được load skill có tên trong `skills` allowlist.
 
 ## Cấu trúc skill
 
@@ -39,7 +32,7 @@ Mỗi custom agent chỉ được load skill có tên trong `skills` allowlist c
 - `scripts/`: helper lặp lại được; không thay thế judgment.
 - `assets/`: template hoặc asset dùng trong output.
 
-Không tạo README, changelog hay tài liệu phụ bên trong từng skill.
+Không tạo README, changelog hay tài liệu phụ bên trong từng skill nếu không có nhu cầu runtime rõ ràng.
 
 ## Progressive disclosure
 
@@ -47,16 +40,18 @@ Không tạo README, changelog hay tài liệu phụ bên trong từng skill.
 2. Agent chỉ đọc `SKILL.md` khi task đúng trigger và skill nằm trong allowlist.
 3. Agent chỉ đọc reference cần cho nhánh hiện tại.
 
-Không quét và nạp toàn bộ skill/reference “cho chắc”.
+Không quét và nạp toàn bộ skill/reference “cho chắc”. Rule lõi nên ngắn; rule chi tiết chỉ load theo
+trigger để giảm token.
 
 ## Context isolation
 
-- Brain skill được đọc `.docs/`.
-- Orchestrator skill được đọc `.docs/` để tạo issue/handoff.
-- Specialist skill không được đọc `.docs/`, kể cả khi reference cũ hoặc task text gợi ý làm vậy.
+- Brain skill được đọc relevant `.docs/`.
+- Orchestrator skill đọc relevant `.docs/` trong planning/replanning; resume ưu tiên minimal Jira context.
+- Specialist skill không được đọc `.docs/`.
 - Specialist thiếu context phải trả blocker cho Orchestrator.
 
-Agent trao đổi qua YAML artifact, không dùng skill của nhau làm handoff.
+Agent trao đổi bằng transient YAML objects. Product repo không lưu handoff/report/runtime state trong
+`.plans/`, `.progresses/`, `.agent/` hoặc workflow folder khác.
 
 ## Khi thêm hoặc sửa skill
 
@@ -66,7 +61,7 @@ Agent trao đổi qua YAML artifact, không dùng skill của nhau làm handoff.
 4. Chỉ thêm script khi cần tính deterministic.
 5. Đồng bộ `agents/openai.yaml`.
 6. Thêm skill vào đúng manifest allowlist.
-7. Cập nhật `skill-catalog.md`.
+7. Cập nhật `skill-catalog.md` khi catalog thay đổi.
 8. Validate frontmatter và naming.
 
 Version được quản lý ở cấp repository bằng Git tag/GitHub Release, không đặt trong từng skill.
