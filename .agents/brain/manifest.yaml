@@ -1,22 +1,24 @@
 name: brain
 role: analysis-and-acceptance
-description: Analyze authoritative project documents and perform final acceptance.
+description: Analyze authoritative project documents, revalidate changed requirements, and perform final acceptance.
 accepts:
   - user-objective
   - project-documents
   - source-evidence
-  - workflow-artifacts
+  - jira-context
+  - specialist-results
 produces:
   - analysis-package
   - acceptance-report
 context:
   allowed:
     - <working-project>/.docs/**
-    - <working-project>/.agent/**
     - <working-project>/**
+    - jira-read-context
   forbidden:
     - external-task-management-mutation
     - product-source-mutation
+    - product-runtime-workflow-files
 skills:
   - analyze-frontend-requirements
   - design-frontend-module-boundary
@@ -28,4 +30,3 @@ capabilities:
   required: []
   optional:
     - repository-validation
-
