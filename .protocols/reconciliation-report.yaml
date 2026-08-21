@@ -1,8 +1,11 @@
 kind: reconciliation-report
 workflow-id: "<workflow-id>"
 status: "<completed|blocked|revision-required>"
-jira-issues: []
-task-results: []
+jira:
+  parent-tasks: []
+  subtasks: []
+  status-consistency: []
+subtask-results: []
 artifacts: []
 acceptance-coverage: []
 conflicts: []
@@ -10,4 +13,3 @@ deviations: []
 validation-evidence: []
 remaining-risks: []
 brain-acceptance-inputs: []
-
