@@ -1,14 +1,16 @@
 kind: issue-handoff
 workflow-id: "<workflow-id>"
-task-id: "<task-id>"
+task-id: "<runtime-task-id>"
 target-agent: "<design|test-plan|coding|testing>"
 jira:
-  issue-key: "<issue-key>"
-  issue-url: "<issue-url>"
-title: "<title>"
-objective: "<bounded objective>"
+  parent-task-key: "<parent-task-key>"
+  parent-task-url: "<parent-task-url>"
+  subtask-key: "<subtask-key>"
+  subtask-url: "<subtask-url>"
+title: "<Vietnamese Subtask title>"
+objective: "<one bounded objective>"
 context-summary: |
-  Complete task context prepared by Orchestrator.
+  Complete bounded context prepared by Orchestrator from approved sources.
 scope:
   included: []
   excluded: []
@@ -22,6 +24,4 @@ acceptance-criteria: []
 required-validation: []
 required-capabilities: []
 expected-outputs: []
-output-locations: []
 status: ready
-
