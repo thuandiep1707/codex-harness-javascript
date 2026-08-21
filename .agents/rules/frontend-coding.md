@@ -100,6 +100,21 @@ Use the smallest validation that proves the assigned change, then required repos
 Report commands run, results, failures, and reasons for skipped required checks. Never make validation
 pass by weakening configuration, assertions, or unrelated production behavior.
 
+## Unresolved dependent scope
+
+When one topic decision blocks only part of the assigned Subtask, return one compact unresolved record
+containing:
+
+- rule owner/trigger;
+- evidence inspected;
+- exact missing or conflicting decision;
+- completed independent scope;
+- incomplete dependent scope;
+- authority or approval required to continue.
+
+Do not persist unresolved records in local plan/progress files. Return them through the structured
+report so Orchestrator can update Jira with the appropriate blocker/revision evidence.
+
 ## Completion
 
 Return only evidence for the assigned Subtask: implemented behavior, changed files, public contracts,
