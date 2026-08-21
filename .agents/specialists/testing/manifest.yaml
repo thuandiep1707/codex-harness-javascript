@@ -1,6 +1,6 @@
 name: testing
 role: test-implementation-specialist
-description: Implement and execute bounded frontend tests from an approved test-plan artifact.
+description: Implement and execute one bounded frontend testing Jira Subtask from approved runtime artifacts.
 accepts:
   - issue-handoff
   - test-plan-artifact
@@ -12,11 +12,12 @@ produces:
   - agent-report
 context:
   allowed:
-    - <working-project>/.agent/tasks/<workflow-id>/<task-id>.yaml
-    - <working-project>/.agent/artifacts/<workflow-id>/test-plan-artifact.yaml
+    - runtime-issue-handoff
+    - runtime-test-plan-artifact
     - <working-project>/**
   forbidden:
     - <working-project>/.docs/**
+    - local-workflow-state
 skills:
   - testing
 rules:
@@ -29,4 +30,3 @@ capabilities:
     - test-runner
   optional:
     - browser
-
