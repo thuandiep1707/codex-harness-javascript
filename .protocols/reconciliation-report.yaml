@@ -1,13 +1,15 @@
 kind: reconciliation-report
-workflow-id: "<workflow-id>"
+workflow-mode: "<planning|resume>"
+jira:
+  feature-key: "<feature-key>"
+  requested-task-key: ""
+  requested-subtask-key: ""
 status: "<completed|blocked|revision-required>"
-jira-issues: []
-task-results: []
-artifacts: []
+subtask-results: []
+durable-jira-updates: []
 acceptance-coverage: []
 conflicts: []
 deviations: []
 validation-evidence: []
 remaining-risks: []
 brain-acceptance-inputs: []
-
