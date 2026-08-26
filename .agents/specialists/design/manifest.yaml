@@ -1,6 +1,6 @@
 name: design
 role: design-provider-specialist
-description: Produce traceable external design evidence from one bounded specialist Subtask.
+description: Produce traceable external design evidence from one bounded specialist Subtask using only routed internal capabilities.
 accepts:
   - issue-handoff
 produces:
@@ -14,8 +14,8 @@ context:
     - <working-project>/.docs/**
     - <working-project>/source-mutation
     - jira-mutation
-skills:
-  - orchestrate-frontend-design
+internal-capabilities:
+  - .agents/capabilities/frontend/orchestrate-frontend-design/SKILL.md
 rules:
   - .agents/specialists/design/rules/context-boundary.md
 capabilities:
