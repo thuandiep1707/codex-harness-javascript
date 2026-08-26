@@ -1,184 +1,113 @@
 # Prompt orchestration
 
-Use this protocol to turn repository evidence into provider instructions without becoming the visual
-designer. Scale the packet and prompt chain to the task; do not send every available file.
+Turn the assigned bounded `issue-handoff` into provider instructions without becoming the visual designer. Use only supplied handoff/dependency evidence and provider state; Design specialist must not read `.docs` directly.
 
-## Contents
+## Build the provider packet
 
-- [Build the design context packet](#build-the-design-context-packet)
-- [Minimize external data](#minimize-external-data)
-- [Choose prompt mode](#choose-prompt-mode)
-- [Compose a single prompt](#compose-a-single-prompt)
-- [Compose a prompt chain](#compose-a-prompt-chain)
-- [Inspect provider responses](#inspect-provider-responses)
-- [Exit conditions](#exit-conditions)
-- [Record runtime evidence](#record-runtime-evidence)
+Include only fields needed by the current Design Subtask:
 
-## Build the design context packet
+| Field | Include | Exclude |
+| --- | --- | --- |
+| Objective | requested outcome and user/job context supplied in handoff | product expansion |
+| Surface | assigned routes/screens/states/components/viewports | deferred surfaces |
+| Required content | labels, fields, controls, actions, navigation | invented features |
+| Fixed constraints | approved tokens/components/accessibility/brand/responsive evidence | nearby-code preference treated as authority |
+| Technical context | framework/component vocabulary that materially affects provider artifact | irrelevant implementation detail |
+| References | supplied screenshots/provider artifacts/stable evidence IDs | raw `.docs` access or stale assumptions |
+| Unknowns | unresolved/deferred decisions | silent guesses |
+| Output contract | artifact type, editability, identifiers, variants, review evidence | undiscovered provider capabilities |
+| Acceptance checks | observable checks from handoff | subjective agent taste |
 
-Separate the packet into these fields:
-
-| Field                | Include                                                                                              | Exclude                                                  |
-| -------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
-| Objective            | Requested outcome and why it exists                                                                  | Unrequested product expansion                            |
-| Users and jobs       | Documented roles, workflows, and critical tasks                                                      | Invented personas or research claims                     |
-| Surface              | Routes, screens, states, components, and target viewport in scope                                    | Deferred or disabled routes                              |
-| Required content     | Labels, data fields, controls, actions, and navigation that evidence requires                        | Placeholder features presented as requirements           |
-| Existing constraints | Approved templates, design tokens, shared components, accessibility, brand, and responsive direction | Preferences inferred only from nearby code               |
-| Technical context    | Framework and component vocabulary useful to the artifact or downstream handoff                      | Internal implementation detail that cannot affect design |
-| References           | Relevant documents, source paths, screenshots, existing provider artifacts, and their authority      | Unattributed screenshots or stale assumptions            |
-| Unknowns             | Missing content, ambiguous states, conflicts, and deferred decisions                                 | Silent guesses                                           |
-| Output contract      | Desired artifact type, editability, identifiers, variants, and review evidence                       | Provider capabilities that were not discovered           |
-| Acceptance checks    | Observable content and constraint checks                                                             | Subjective taste asserted by the agent                   |
-
-Label every non-trivial statement as one of:
-
-- `required`: explicit developer request or approved authority;
-- `observed`: repository or runtime evidence;
-- `reference`: a non-authoritative example;
-- `provider-choice`: a visual decision intentionally delegated to the external designer; or
-- `unknown`: unresolved and not safe to invent.
+Classify non-trivial facts as `required`, `observed`, `reference`, `provider-choice`, or `unknown`.
 
 ## Minimize external data
 
-Before sending the packet:
+Before sending context:
 
-1. Remove credentials, tokens, cookies, personal data, private keys, `.env` values, and unrelated
-   business information.
-2. Prefer a concise summary plus necessary excerpts over whole files.
-3. Preserve source paths or document titles so returned decisions remain traceable.
-4. Record what was deliberately excluded.
-5. Stop at `external-context-approval-required` when sensitive or externally restricted material is
-   necessary and authorization is unclear.
+1. remove credentials, tokens, cookies, personal data, private keys, `.env` values, and unrelated business information;
+2. prefer bounded summaries/excerpts already supplied by Orchestrator over whole files;
+3. preserve stable source/artifact identifiers when traceability requires them;
+4. stop with `external-context-approval-required` when restricted material is necessary and authorization is unclear.
 
 ## Choose prompt mode
 
-Use one prompt only when the provider can produce the requested artifact from a bounded packet and
-no intermediate decision must be approved or learned.
+Use one prompt when a bounded packet can produce the requested artifact without an intermediate decision.
 
-Use a prompt chain when at least one condition holds:
+Use a prompt chain only when materially useful, for example:
 
-- multiple screens depend on a shared information architecture;
+- multiple screens depend on shared information architecture;
 - an existing provider artifact must be inspected before editing;
-- the provider must establish a visual direction before applying it broadly;
+- visual direction must be established before broad application;
 - variants must be compared against explicit criteria;
-- the first response is expected to reveal objective gaps; or
-- artifact retrieval/export requires a separate call.
+- artifact retrieval/export needs a separate call.
 
-Do not split a simple request merely to create activity. Do not continue a chain for general
-“polish” without a concrete mismatch or developer instruction.
+Do not split simple work merely to create activity.
 
-## Compose a single prompt
-
-Use this shape and omit empty sections:
+## Prompt shape
 
 ```text
 Role
-Act as the external visual designer for this task. Make visual decisions that are not fixed below.
+Act as the external visual designer for this assigned scope.
 
 Objective
-<requested outcome and user/job context>
+<bounded outcome>
 
 Design context
-<provider-minimized facts and references>
+<minimized supplied evidence>
 
 Required content and behavior
-<screens, states, labels, controls, navigation, and interactions>
+<assigned screens/states/controls/interactions>
 
-Fixed project constraints
-<approved templates, tokens, brand, viewport, accessibility, and explicit prohibitions>
+Fixed constraints
+<approved project constraints>
 
 Delegated visual decisions
-<composition, hierarchy, spacing, typography, color treatment, imagery, and other open choices>
+<open visual choices intentionally delegated to provider>
 
-Unknowns and deferred decisions
-<items the provider must not silently turn into project policy>
+Unknowns/deferred
+<items provider must not silently turn into project policy>
 
 Output contract
-<artifact type, count, editability, stable identifiers, and evidence to return>
+<artifact/evidence required>
 
 Acceptance checks
-<objective checks the response must satisfy>
+<objective checks>
 ```
 
-Do not prescribe layout, color, type, spacing, or component appearance unless an approved source
-already fixes it. Describe the outcome and constraint; let the provider design the solution.
+Do not prescribe layout/color/type/spacing/component appearance unless supplied approved evidence already fixes it.
 
-## Compose a prompt chain
-
-Give every stage an identifier and this contract:
-
-```text
-Stage: <number and purpose>
-Based on: <context packet and provider artifact/response identifiers>
-Keep fixed: <approved facts and accepted provider decisions>
-May change: <open visual decisions for this stage>
-Request: <one bounded provider action>
-Return: <artifact or structured response with stable evidence>
-Exit when: <observable condition>
-```
-
-Use only the stages the task needs:
-
-1. **Brief alignment:** Ask the provider to restate the intended users, surface, required content,
-   constraints, and open visual decisions. Correct factual misunderstandings before generation.
-2. **Structure:** Ask for screen inventory, content hierarchy, or flow when later visual work depends
-   on it. Keep visual treatment open.
-3. **Generation:** Ask the provider to create the initial visual artifact.
-4. **Compliance correction:** Identify only evidence-backed mismatches and request targeted changes.
-5. **Variant/refinement:** Ask for bounded alternatives or refinements with explicit comparison
-   criteria.
-6. **Finalization:** Ask the provider to preserve accepted decisions and return final artifacts,
-   identifiers, previews, and export information.
+For prompt chains, give every stage a stable purpose and preserve artifact lineage. Typical optional stages are brief alignment, structure, generation, compliance correction, variant/refinement, and finalization. Use only stages actually required.
 
 ## Inspect provider responses
 
-For every response, record:
+For every material response retain:
 
-- provider and tool/channel;
-- response/artifact identifiers;
-- requirements satisfied;
+- provider/tool channel;
+- stable response/artifact identifiers;
+- assigned requirements satisfied;
 - objective mismatches;
-- provider-declared limitations or assumptions;
-- visual decisions made by the provider;
-- unknowns that still require developer input; and
-- the next stage or exit gate.
+- provider-declared assumptions/limitations;
+- visual decisions made by provider;
+- unresolved decisions requiring authority;
+- next stage or exit gate.
 
-Request a correction only for a traceable reason:
-
-- missing or incorrect required content;
-- conflict with an approved project constraint;
-- accessibility or responsive requirement not met;
-- inconsistent treatment across artifacts when consistency was required;
-- provider error, incomplete artifact, or unusable handoff evidence; or
-- explicit developer feedback.
-
-Do not replace the provider's visual judgment with an agent preference. When two valid visual
-directions remain and no objective criterion distinguishes them, return them for developer choice.
+Request corrections only for traceable mismatch, provider error/incomplete output, approved accessibility/responsive constraint, or explicit user feedback. Do not replace provider visual judgment with agent preference.
 
 ## Exit conditions
 
-End orchestration at one of:
+Return one of:
 
-- `design-approval-required`: required artifact evidence exists and objective checks are reported;
-- `design-input-required`: a missing developer/product decision blocks a meaningful prompt;
-- `external-context-approval-required`: required context cannot be sent without authorization;
-- `design-provider-unavailable`: the selected MCP/plugin is missing or unreachable;
-- `provider-authentication-required`: credentials or account access require developer action;
-- `provider-capability-unavailable`: discovered tools cannot perform external visual design; or
-- `provider-output-incomplete`: calls succeeded but required artifacts or stable evidence are absent.
+- `completed`: required artifact evidence exists, objective checks pass, and no human-selection gate remains;
+- `design-approval-required`: multiple materially different valid outcomes require human selection or the handoff explicitly requires approval;
+- `design-input-required`: missing product/design decision blocks meaningful work;
+- `external-context-approval-required`: required context cannot leave the workflow without authorization;
+- `design-provider-unavailable`;
+- `provider-authentication-required`;
+- `provider-capability-unavailable`;
+- `provider-output-incomplete`.
 
-Return the first blocker reached:
+Under `$frontend-delivery`, do not manufacture `design-approval-required` merely because a design artifact was generated. Valid objective evidence may flow directly back to Orchestrator for downstream execution.
 
-1. `design-input-required` when missing product/design input would materially change the brief.
-2. `external-context-approval-required` when required context cannot yet leave the repository.
-3. Provider availability, authentication, or capability gates during provider selection.
-4. `provider-output-incomplete` only after an authorized call lacks the contracted artifact evidence.
-5. `design-approval-required` only after the real provider artifact has been inspected and checked.
+## Evidence durability
 
-## Record runtime evidence
-
-Write the context source list, minimized prompt packet, exact prompt stages, provider calls,
-response/artifact identifiers, mismatch checks, and exit gate to the active progress file. Do not
-commit provider credentials, runtime prompt transcripts, or generated artifacts unless a separately
-approved repository artifact policy requires them.
+Return bounded evidence through `design-artifact` and `agent-report`. Do not write active progress files, prompt transcripts, handoff stores, or workflow state into the product repository. Orchestrator owns any compact durable Jira result/checkpoint needed for resume.
