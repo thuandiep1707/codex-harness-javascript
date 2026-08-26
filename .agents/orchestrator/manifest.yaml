@@ -3,6 +3,7 @@ role: execution-management
 description: Plan, resume, or safely pause Jira-backed frontend work, select evidence-backed internal capabilities, and coordinate specialist execution.
 accepts:
   - workflow-mode
+  - execution-intent
   - analysis-package
   - jira-context
   - specialist-reports
