@@ -23,7 +23,7 @@ context:
     - test-source-mutation
     - product-runtime-workflow-files
 internal-capabilities:
-  - .agents/capabilities/frontend/plan-frontend-work/SKILL.md
+  - .agents/capabilities/frontend/plan-frontend-work/CAPABILITY.md
 rules:
   - .agents/orchestrator/rules/execution-control.md
   - .agents/orchestrator/rules/task-decomposition.md
