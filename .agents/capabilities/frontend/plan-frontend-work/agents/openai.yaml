@@ -1,4 +1,0 @@
-interface:
-  display_name: "Plan Frontend Work"
-  short_description: "Plan, resume, or pause Jira-backed specialist work"
-  default_prompt: "Use $plan-frontend-work to plan, resume, or safely pause Jira-backed specialist work according to the supplied workflow mode."

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Analyze Frontend Requirements"
-  short_description: "Analyze project docs into an acceptance contract"
-  default_prompt: "Use $analyze-frontend-requirements to analyze the selected frontend requirement."

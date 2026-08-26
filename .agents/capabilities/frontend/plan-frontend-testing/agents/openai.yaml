@@ -1,4 +1,0 @@
-interface:
-  display_name: "Plan Frontend Testing"
-  short_description: "Create a risk-based frontend test plan"
-  default_prompt: "Use $plan-frontend-testing to produce a bounded test plan from the assigned issue."

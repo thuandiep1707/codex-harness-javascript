@@ -1,4 +1,0 @@
-interface:
-  display_name: "Orchestrate Frontend Design"
-  short_description: "Create design artifacts through a connected provider"
-  default_prompt: "Use $orchestrate-frontend-design to execute the assigned design handoff with a connected provider."
