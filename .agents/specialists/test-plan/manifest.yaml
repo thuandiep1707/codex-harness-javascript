@@ -15,7 +15,7 @@ context:
     - <working-project>/source-mutation
     - jira-mutation
 internal-capabilities:
-  - .agents/capabilities/frontend/plan-frontend-testing/SKILL.md
+  - .agents/capabilities/frontend/plan-frontend-testing/CAPABILITY.md
 rules:
   - .agents/specialists/test-plan/rules/context-boundary.md
 capabilities:
