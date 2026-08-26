@@ -1,14 +1,149 @@
-# Codex Multi-Agent Delivery System
+# Codex Harness for JavaScript
 
-Hệ thống multi-agent zero-setup cho Codex. Repo này là control repo; project sản phẩm mở song song trong cùng workspace.
+[![Release](https://img.shields.io/github/v/release/thuandiep1707/codex-harness-javascript)](https://github.com/thuandiep1707/codex-harness-javascript/releases)
+[![License](https://img.shields.io/github/license/thuandiep1707/codex-harness-javascript)](LICENSE)
+[![GitHub Template](https://img.shields.io/badge/GitHub-Template-181717?logo=github)](https://github.com/thuandiep1707/codex-harness-javascript/generate)
+[![JavaScript](https://img.shields.io/badge/JavaScript-Harness-F7DF1E?logo=javascript&logoColor=000)](https://github.com/thuandiep1707/codex-harness-javascript)
+
+A workflow-driven multi-agent harness for OpenAI Codex that turns product docs and current source into Jira-backed planning, implementation, testing, pause/resume handoff, and final acceptance.
+
+**Public workflows:** `$frontend-delivery` · `$frontend-planning`
+
+> This repository is a declarative control plane, not a standalone agent runtime. Codex provides the execution environment; this repository provides workflows, agent behavior, rules, protocols, and progressively loaded capability knowledge.
+
+## Why this exists
+
+Long-running AI coding work becomes unreliable when important context lives only in chat history.
+
+A session can end. A different developer may continue the work. Requirements can change after planning. Multiple specialists may need different context. A project may already use MUI, HeroUI, Radix, TanStack Query, Zustand, or another stack that should not be silently replaced by a hard-coded default.
+
+This harness is built around four ideas:
+
+- workflow state should survive chat sessions and developer handoffs;
+- users should launch complete workflows, not dozens of internal skills;
+- specialists should receive bounded context and load only the knowledge they need;
+- existing project evidence should drive implementation routing instead of library assumptions.
+
+## What makes it different
+
+| Principle | What it means |
+| --- | --- |
+| **Workflow-first interface** | Only complete user-facing workflows appear in the `$` picker. Internal capabilities stay private. |
+| **Jira-backed execution context** | Jira stores durable work state, results, handoffs, and continuation context instead of relying on chat memory. |
+| **Pause / Resume by design** | A natural-language pause request creates a durable handoff before the workflow stops. A later session resumes from the smallest valid Jira context. |
+| **Progressive capability loading** | Agents load only routed capabilities for the current subtask instead of loading the whole knowledge base. |
+| **Evidence-based stack discovery** | The harness inspects the existing project before routing UI, state, data, testing, or framework capabilities. |
+| **Strict agent boundaries** | Brain reasons about requirements, Orchestrator owns Jira and routing, Specialists execute bounded work. |
+| **Acceptance beyond green tests** | Completion requires final acceptance against authoritative docs, Jira context, source changes, and validation evidence. |
+
+## Quick Start
+
+### 1. Use the template or clone the repository
+
+Use **Use this template** on GitHub, or clone the repository as your control project.
+
+No runtime package needs to be installed for the harness itself.
+
+### 2. Open the harness and your product project in the same workspace
 
 ```text
 workspace/
-├── codex-subagent-base/   ← primary / control repo
-└── product-project/       ← working repo
+├── codex-harness-javascript/   ← primary / control repo
+└── your-product-project/       ← working repo
 ```
 
-## 4 nguồn sự thật
+The control repo owns agent behavior. The product repo owns product docs and implementation source.
+
+### 3. Provide the required external context
+
+For the bundled frontend workflows:
+
+- keep authoritative product documentation under the product project's `.docs/` surface;
+- make the current product source available in the same workspace;
+- connect Jira so the harness can persist planning, execution state, results, pause handoffs, and resume context;
+- connect optional design providers only when the requested work requires them.
+
+The harness does not store credentials or silently install external integrations.
+
+### 4. Launch a workflow
+
+Planning only:
+
+```text
+$frontend-planning
+Break the current recruitment scope into Jira work. Do not implement it yet.
+```
+
+End-to-end delivery:
+
+```text
+$frontend-delivery
+Implement the recruitment scope from .docs end-to-end.
+```
+
+`$frontend-delivery` does **not** stop just because Jira Tasks/Subtasks were created. It continues through dependency-ready specialist work, testing, reconciliation, and final acceptance unless it reaches a real blocker, approval gate, or explicit pause.
+
+## Example
+
+```text
+$frontend-delivery
+Implement user management from the approved product docs.
+```
+
+The workflow resolves the current lifecycle entry and then coordinates the system:
+
+```text
+.docs + current source
+        ↓
+Brain
+requirement analysis + project-stack discovery
+        ↓
+Orchestrator
+Jira Feature → Task → Specialist Subtask
+        ↓
+Design / Test Plan when required
+        ↓
+Coding
+        ↓
+Testing
+        ↓
+Reconciliation
+        ↓
+Brain Acceptance
+        ↓
+Accepted
+```
+
+If the work is interrupted:
+
+```text
+"pause here"
+    ↓
+stop new dispatch
+    ↓
+reconcile current results
+    ↓
+persist Jira [HANDOFF]
+    ↓
+paused
+```
+
+A later session can resume without depending on the previous chat transcript.
+
+## Public Workflows
+
+Only packages under `.agents/skills/` are user-facing workflow entry points.
+
+| Workflow | Purpose |
+| --- | --- |
+| `$frontend-delivery` | Run frontend work end-to-end from authoritative docs/source through Jira planning, specialist execution, testing, reconciliation, and final acceptance. |
+| `$frontend-planning` | Analyze the requested frontend scope, create the Jira Feature/Task/Subtask graph, and stop before implementation. |
+
+Everything else is internal capability knowledge and should not appear in the `$` picker.
+
+## How the Harness Works
+
+### Truth model
 
 ```text
 Control repo   = Workflow + Agent Behavior Truth
@@ -17,83 +152,11 @@ Jira           = Work + Execution Context Truth
 Product source = Implementation Truth
 ```
 
-Chat history không phải workflow truth. Product repo không tạo `.plans/`, `.progresses/`, `.agent/` hoặc workflow database khác.
+Chat history is never workflow truth.
 
-## Public Workflow vs Internal Capability
+The product repository does not need a second hidden workflow database such as `.plans/`, `.progresses/`, or `.agent/` state folders.
 
-Đây là thay đổi kiến trúc quan trọng nhất của V1 hiện tại.
-
-### Public workflow — user gọi bằng `$`
-
-Chỉ những package dưới `.agents/skills/` được expose ra Codex picker.
-
-Hiện tại:
-
-```text
-$frontend-delivery
-$frontend-planning
-```
-
-`$frontend-delivery` chạy end-to-end:
-
-```text
-.docs/source
-   ↓
-Brain analysis + stack discovery
-   ↓
-Orchestrator Jira planning
-   ↓
-Design / Test Plan khi cần
-   ↓
-Coding
-   ↓
-Testing
-   ↓
-Reconciliation
-   ↓
-Brain Acceptance
-```
-
-Nó không dừng chỉ vì Jira Task/Subtask vừa được tạo. Workflow chỉ dừng khi user pause, thiếu capability, có blocker/approval thật sự, hoặc đã hoàn thành acceptance.
-
-`$frontend-planning` chỉ:
-
-```text
-.docs/source
-   ↓
-Brain analysis
-   ↓
-Orchestrator
-   ↓
-Jira Feature / Task / Subtask
-   ↓
-STOP
-```
-
-### Internal capability — agent tự load khi cần
-
-Knowledge nội bộ nằm dưới `.agents/capabilities/`, ví dụ:
-
-```text
-.agents/capabilities/common/discover-project-stack/
-.agents/capabilities/frontend/plan-frontend-work/
-.agents/capabilities/frontend/shadcn/
-.agents/capabilities/frontend/nextjs-tanstack-query/
-.agents/capabilities/frontend/testing/
-```
-
-Các capability này không phải user entry point và không nên xuất hiện trong `$` picker.
-
-Agent chỉ được load capability khi:
-
-1. capability nằm trong allowlist của `manifest.yaml`;
-2. Orchestrator/handoff route capability đó cho đúng Subtask.
-
-Không load tất cả capability “cho chắc”.
-
-## Execution intent và lifecycle khác nhau
-
-Hai khái niệm được tách riêng:
+### Execution intent and lifecycle are separate
 
 ```text
 Execution intent
@@ -108,34 +171,62 @@ Lifecycle entry
 └── ACCEPTANCE
 ```
 
-Ví dụ:
+Examples:
 
 ```text
 $frontend-delivery + NEW
-→ Brain → Jira planning → Coding/Testing → Acceptance
+→ Brain → Jira planning → specialist execution → Acceptance
 
 $frontend-planning + NEW
 → Brain → Jira planning → STOP
 
 $frontend-delivery + RESUME
-→ skip Brain nếu docs baseline còn hợp lệ → tiếp tục đúng Subtask
+→ reuse valid Jira context → continue the current executable Subtask
 ```
 
-`planning` của Orchestrator không còn đồng nghĩa với “tạo Jira rồi dừng”. Quyết định dừng hay chạy tiếp do execution intent quyết định.
+Planning is a lifecycle operation. It does not automatically mean the workflow should stop; the execution intent decides whether planning is the destination or only one stage of delivery.
 
-## Project stack discovery
+## Progressive Capability Loading
 
-Brain có internal capability `discover-project-stack` để đọc evidence rẻ trước:
+Reusable knowledge lives under `.agents/capabilities/`, not in the public workflow registry.
+
+Examples:
+
+```text
+.agents/capabilities/common/discover-project-stack/
+.agents/capabilities/frontend/plan-frontend-work/
+.agents/capabilities/frontend/shadcn/
+.agents/capabilities/frontend/nextjs-tanstack-query/
+.agents/capabilities/frontend/nextjs-state-management/
+.agents/capabilities/frontend/testing/
+```
+
+An agent may load an internal capability only when:
+
+1. the capability is allowed by that agent's manifest;
+2. the Orchestrator routes it for the current specialist Subtask.
+
+The system does not load every capability "just in case".
+
+This keeps the public command surface small and the execution context focused even as the harness grows to more domains and libraries.
+
+## Project Stack Discovery
+
+Before implementation routing, Brain can use the internal `discover-project-stack` capability to inspect cheap evidence first:
 
 ```text
 package.json / lockfile
-→ framework config
-→ UI/component config
-→ representative imports khi cần
-→ source sâu hơn chỉ khi evidence conflict
+        ↓
+framework config
+        ↓
+UI / component config
+        ↓
+representative imports when needed
+        ↓
+deeper source only when evidence conflicts
 ```
 
-Brain có thể detect các thông tin như:
+It can detect evidence for areas such as:
 
 ```text
 framework
@@ -148,7 +239,7 @@ test runner
 package manager
 ```
 
-Ví dụ project hiện tại dùng:
+For example, if a product already uses:
 
 ```text
 @mui/material
@@ -156,27 +247,21 @@ Ví dụ project hiện tại dùng:
 @tanstack/react-query
 ```
 
-thì Orchestrator route capability phù hợp với MUI/TanStack khi capability tồn tại; Coding không được tự dùng shadcn/Lucide chỉ vì control repo có knowledge đó.
+that evidence should drive capability routing. Coding should not silently switch the project to shadcn, Lucide, Zustand, or another library simply because the harness contains knowledge about it.
 
-Nếu evidence không đủ:
+**Detection is not adoption.** Finding a package does not authorize installing, upgrading, replacing, or standardizing dependencies.
 
-```text
-ui-library: unresolved
-```
+If the required project capability is not available, the workflow should surface a blocker instead of pretending a fallback is valid.
 
-Không tự mặc định shadcn, Lucide, Zustand, TanStack Query hoặc library nào khác.
-
-Detection ≠ adoption. Việc package đã tồn tại không tự cấp quyền cài mới, upgrade, replace hoặc standardize library.
-
-## Jira hierarchy
+## Jira Work Model
 
 ```text
-Feature context
-  └── Task: một Functional Slice
-        └── Subtask: một Specialist Execution Unit
+Feature Context
+  └── Task: one Functional Slice
+        └── Subtask: one Specialist Execution Unit
 ```
 
-Orchestrator chia theo:
+The Orchestrator decomposes work by user outcome and functional boundary:
 
 ```text
 requirement
@@ -186,130 +271,98 @@ requirement
 → specialist Subtasks
 ```
 
-Không chia feature trước theo agent role hay file/component.
+It does not start by splitting a feature into Design / Coding / Testing buckets or by file/component ownership.
 
-Context inheritance:
+Context is inherited rather than duplicated:
 
-- Feature lưu common product/architecture + implementation-environment metadata cần cho routing.
-- Task lưu functional-slice delta.
-- Subtask lưu specialist delta + capability identifiers cần cho execution/resume.
-- Specialist nhận transient `issue-handoff`, không đọc `.docs`.
+- Feature stores common approved product and architecture context;
+- Task stores the functional-slice delta;
+- Subtask stores the specialist execution delta and routed capability identifiers;
+- Specialist receives a transient handoff and does not independently rebuild full product context.
 
-Jira content hướng tới con người phải bằng tiếng Việt; technical identifiers giữ nguyên khi cần.
+## Pause / Resume
 
-## PAUSE / HANDOFF
+Pause is a durable workflow checkpoint, not a simple `stop responding` command.
 
-Khi workflow active, các câu tự nhiên như:
-
-```text
-dừng lại
-tạm dừng
-để mai làm tiếp
-bàn giao ở đây
-```
-
-được hiểu là `PAUSE`.
-
-Flow:
+When the user expresses clear pause intent, the Primary Controller routes it to the Orchestrator, which:
 
 ```text
-User pause
-  ↓
-freeze new dispatch
-  ↓
-collect available specialist/source evidence
-  ↓
-reconcile Jira ↔ actual execution
-  ↓
-persist missing RESULT/status corrections
-  ↓
-persist HANDOFF
-  ↓
-status: paused
+freezes new dispatch
+→ collects available execution evidence
+→ reconciles source/results with Jira
+→ persists missing RESULT/status updates
+→ persists [HANDOFF]
+→ returns paused
 ```
 
-Không được coi việc đổi Jira status là đủ. Nếu Jira không ghi được durable checkpoint thì trả `pause-blocked`.
+A handoff records only continuation essentials such as source identity, completed scope, remaining scope, validation state, blockers, and the next Jira action.
 
-`[HANDOFF]` chỉ giữ continuation essentials:
+If the durable checkpoint cannot be written, the harness must report `pause-blocked` rather than claiming the workflow was safely paused.
 
-```text
-Source: repository / branch / commit khi relevant
-Đã hoàn thành: ...
-Còn lại: ...
-Validation: ...
-Blocker: ...
-Tiếp theo: Jira key / hành động tiếp theo
-```
+## Agent Roles
 
-## Agent roles
-
-| Agent | Trách nhiệm |
+| Agent | Responsibility |
 | --- | --- |
-| `brain` | Requirement, architecture reasoning, stack discovery, revalidation, acceptance |
-| `orchestrator` | Jira planning/resume/pause, capability routing, specialist coordination, reconciliation |
-| `design` | External design-provider execution |
+| `brain` | Requirement reasoning, architecture analysis, project-stack discovery, revalidation, final acceptance |
+| `orchestrator` | Jira planning/resume/pause, dependency routing, capability selection, specialist coordination, reconciliation |
+| `design` | Bounded external design-provider execution |
 | `test-plan` | Risk-based test-plan evidence |
-| `coding` | Bounded implementation với capability được route |
-| `testing` | Bounded test implementation/execution với capability được route |
+| `coding` | Bounded implementation using only routed capabilities |
+| `testing` | Bounded test implementation/execution using only routed capabilities |
 
-Specialist không được đọc `.docs`, không update Jira và không tự mở rộng scope.
+Specialists do not own Jira mutation, do not read the full product truth independently, and do not expand their scope without returning a blocker to the Orchestrator.
 
-## Coding decomposition guard
-
-Coding luôn load decomposition gate nhỏ. Khi tạo/chỉnh page/screen/component, gate yêu cầu xác định composition root, responsibilities, ownership và public contract trước source write.
-
-Handwritten TSX:
-
-- `>= 300` dòng: bắt buộc decomposition review;
-- `>= 500` dòng: không được report complete nếu chưa split hoặc có approved exception.
-
-Line count là alarm, không phải nguyên tắc kiến trúc.
-
-## Repository structure
+## Repository Structure
 
 ```text
-codex-subagent-base/
+codex-harness-javascript/
 ├── AGENTS.md
 ├── README.md
+├── LICENSE
 ├── .agents/
 │   ├── brain/
 │   ├── orchestrator/
 │   ├── specialists/
 │   ├── rules/
-│   ├── skills/              # PUBLIC workflows only
+│   ├── skills/                 # PUBLIC workflows only
 │   │   ├── frontend-delivery/
 │   │   └── frontend-planning/
-│   └── capabilities/        # INTERNAL knowledge
+│   └── capabilities/           # INTERNAL knowledge
 │       ├── common/
-│       ├── frontend/
-│       └── backend/         # future
+│       └── frontend/
 ├── .protocols/
-└── .codex/
+├── .codex/
+└── .docs/                       # harness architecture / maintenance docs
 ```
 
-Kiến trúc này cho phép mở rộng sau này mà không làm `$` picker phình ra:
+For implementation-level rules and protocol details, start with [`AGENTS.md`](AGENTS.md) and the files under `.protocols/`.
 
-```text
-$frontend-delivery
-$frontend-planning
-$backend-delivery      # future
-$backend-planning      # future
-```
+## Roadmap
 
-trong khi hàng chục capability FE/BE/Design vẫn ẩn và chỉ load theo evidence/trigger.
+The core harness is intentionally domain-extensible. Planned directions include:
 
-## External capabilities
+- `$backend-delivery` and `$backend-planning` workflows;
+- backend, design, and DevOps capability families;
+- more evidence-routed frontend capabilities such as MUI, HeroUI, Radix, and other project stacks;
+- a machine-readable capability registry as the knowledge base grows;
+- harness validation / doctor tooling;
+- workflow-level evals for planning, delivery, pause/resume, replan, and acceptance;
+- stronger reliability controls for stale context, idempotent planning, and concurrent sessions.
 
-Repo không tự cài MCP/plugin, không lưu token và không tự cấu hình Jira/Figma/Stitch. Khi capability bắt buộc không tồn tại, agent trả blocker thay vì giả vờ đã tạo external state.
+The goal is to grow the internal capability graph without turning the public `$` picker into a long list of implementation skills.
 
-## Non-goals
+## Contributing
 
-- Không có runtime engine/package riêng.
-- Không copy agent definitions vào product repo.
-- Không dùng chat memory làm persistence contract.
-- Không expose internal capability thành user command.
-- Không hard-code shadcn/Lucide/TanStack/Zustand thành project policy.
+Issues and pull requests are welcome.
 
-## Version
+When extending the harness, keep the architecture boundary clear:
 
-Hệ thống được version đồng bộ bằng Git tag/GitHub Release, không version riêng từng agent/capability.
+- add a **public workflow** only when it represents a complete user-facing orchestration entry point;
+- add reusable implementation knowledge as an **internal capability**;
+- keep specialist responsibilities bounded;
+- prefer durable Jira/source evidence over chat-memory assumptions;
+- avoid hard-coding a project library when stack discovery can resolve it from evidence.
+
+## License
+
+MIT License © 2026 **thuandiep**. See [`LICENSE`](LICENSE).
