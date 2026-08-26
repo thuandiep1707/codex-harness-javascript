@@ -37,7 +37,7 @@ Public workflow package:
 
 ## Internal capabilities
 
-Knowledge nội bộ nằm ngoài discovery root:
+Knowledge nội bộ nằm ngoài discovery root và dùng `CAPABILITY.md` thay vì `SKILL.md`:
 
 ```text
 .agents/capabilities/
@@ -49,12 +49,12 @@ Ví dụ:
 
 ```text
 .agents/capabilities/common/discover-project-stack/CAPABILITY.md
-.agents/capabilities/frontend/plan-frontend-work/SKILL.md
-.agents/capabilities/frontend/shadcn/SKILL.md
-.agents/capabilities/frontend/testing/SKILL.md
+.agents/capabilities/frontend/plan-frontend-work/CAPABILITY.md
+.agents/capabilities/frontend/shadcn/CAPABILITY.md
+.agents/capabilities/frontend/testing/CAPABILITY.md
 ```
 
-Tên file `SKILL.md` còn tồn tại trong một số capability package do lịch sử repo, nhưng directory `.agents/capabilities/` mới là authority phân loại: các package này không phải public Codex skill và không được user invoke trực tiếp.
+Internal capability package không có `agents/openai.yaml`, vì nó không phải public Codex entry point và không được user invoke trực tiếp.
 
 Agent manifest dùng `internal-capabilities:` làm allowlist path. Specialist chỉ load capability khi capability đó vừa nằm trong manifest allowlist vừa được Orchestrator route trong `issue-handoff`.
 
@@ -121,11 +121,11 @@ $backend-planning
 ## Khi thêm internal capability
 
 1. Xác định domain và agent owner.
-2. Đặt dưới `.agents/capabilities/<domain>/...`.
+2. Đặt dưới `.agents/capabilities/<domain>/<capability-name>/CAPABILITY.md`.
 3. Viết trigger + negative boundary rõ ràng.
-4. Thêm path vào đúng `internal-capabilities:` allowlist của manifest.
-5. Chỉ route capability từ Orchestrator khi project evidence + Subtask trigger phù hợp.
-6. Không tạo `agents/openai.yaml` nếu capability không phải public workflow.
+4. Không tạo `SKILL.md` hoặc `agents/openai.yaml` trong capability package.
+5. Thêm path `CAPABILITY.md` vào đúng `internal-capabilities:` allowlist của manifest.
+6. Chỉ route capability từ Orchestrator khi project evidence + Subtask trigger phù hợp.
 7. Giữ reference theo progressive disclosure.
 
 Version được quản lý ở repository level bằng Git tag/GitHub Release.
