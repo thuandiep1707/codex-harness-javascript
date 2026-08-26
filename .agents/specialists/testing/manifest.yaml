@@ -1,6 +1,6 @@
 name: testing
 role: test-implementation-specialist
-description: Implement and execute bounded frontend tests for one specialist Subtask.
+description: Implement and execute bounded frontend tests for one specialist Subtask using only routed internal capabilities.
 accepts:
   - issue-handoff
   - test-plan-artifact
@@ -18,8 +18,8 @@ context:
   forbidden:
     - <working-project>/.docs/**
     - jira-mutation
-skills:
-  - testing
+internal-capabilities:
+  - .agents/capabilities/frontend/testing/CAPABILITY.md
 rules:
   - .agents/specialists/testing/rules/context-boundary.md
   - .agents/rules/testing.md

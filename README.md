@@ -1,102 +1,172 @@
-# Frontend Agent System
+# Codex Multi-Agent Delivery System
 
-Hệ thống multi-agent zero-setup cho Frontend, trước mắt tập trung vào Next.js + Codex.
-
-Không cần cài package, chạy CLI, copy agent vào project sản phẩm hay tạo workflow folder trong source.
-Mở repository này cùng project cần triển khai trong một Codex Project/Workspace và chọn repository này
-làm primary.
+Hệ thống multi-agent zero-setup cho Codex. Repo này là control repo; project sản phẩm mở song song trong cùng workspace.
 
 ```text
 workspace/
-├── codex-subagent-base/          ← primary / control repo
-└── my-nextjs-project/            ← working product repo
+├── codex-subagent-base/   ← primary / control repo
+└── product-project/       ← working repo
 ```
 
 ## 4 nguồn sự thật
 
 ```text
-Control repo   = Agent Behavior Truth
+Control repo   = Workflow + Agent Behavior Truth
 .docs          = Product Truth
 Jira           = Work + Execution Context Truth
 Product source = Implementation Truth
 ```
 
-Chat history không phải workflow truth. Việc xóa chat, đổi máy hoặc đổi developer không được khiến hệ
-thống phải phân tích lại từ đầu nếu Jira context vẫn hợp lệ.
+Chat history không phải workflow truth. Product repo không tạo `.plans/`, `.progresses/`, `.agent/` hoặc workflow database khác.
 
-Project sản phẩm chỉ cần source/config bình thường và `.docs/`:
+## Public Workflow vs Internal Capability
+
+Đây là thay đổi kiến trúc quan trọng nhất của V1 hiện tại.
+
+### Public workflow — user gọi bằng `$`
+
+Chỉ những package dưới `.agents/skills/` được expose ra Codex picker.
+
+Hiện tại:
 
 ```text
-my-nextjs-project/
-├── .docs/
-├── src/
-└── package.json
+$frontend-delivery
+$frontend-planning
 ```
 
-Hệ thống không tạo `.plans/`, `.progresses/`, `.agent/` hoặc workflow database khác trong project sản
-phẩm.
-
-## Workflow entry
-
-Trước khi gọi Brain, primary controller xác định điểm vào nhỏ nhất từ Jira:
+`$frontend-delivery` chạy end-to-end:
 
 ```text
-NEW        → Brain analysis → Orchestrator planning
-RESUME     → Orchestrator resume → specialist cần thiết
-REPLAN     → Brain revalidation → Orchestrator replan phần bị ảnh hưởng
-PAUSE      → Orchestrator pause reconciliation → Jira HANDOFF
-ACCEPTANCE → Brain acceptance
-```
-
-Một tab chat mới hoặc một developer tiếp quản công việc đang làm là `RESUME`, không phải `NEW`.
-
-Khi workflow đang active, các câu tự nhiên như `dừng lại`, `tạm dừng`, `để mai làm tiếp`, hoặc `bàn
-giao ở đây` được primary controller hiểu là `PAUSE`. Đây không phải command syntax bắt buộc; hệ thống
-nhận diện intent. Nếu không có Jira-backed workflow đang active thì yêu cầu dừng chỉ dừng bình thường,
-không tạo handoff giả.
-
-### Resume tối thiểu
-
-Khi resume một Subtask, chỉ dựng lại context từ:
-
-```text
-Feature context
+.docs/source
    ↓
-Parent Functional Task
+Brain analysis + stack discovery
    ↓
-Current Specialist Subtask
-
-+ direct dependency results
-+ latest HANDOFF/RESULT
-+ relevant current source
+Orchestrator Jira planning
+   ↓
+Design / Test Plan khi cần
+   ↓
+Coding
+   ↓
+Testing
+   ↓
+Reconciliation
+   ↓
+Brain Acceptance
 ```
 
-Không đọc lại toàn bộ Jira project/sprint/comment history. Trước khi resume, hệ thống dùng
-`docs-baseline` và danh sách relevant documents để kiểm tra bằng Git metadata xem requirement liên
-quan có thay đổi hay không. Không đổi → skip Brain. Có thay đổi material → REPLAN.
+Nó không dừng chỉ vì Jira Task/Subtask vừa được tạo. Workflow chỉ dừng khi user pause, thiếu capability, có blocker/approval thật sự, hoặc đã hoàn thành acceptance.
 
-### Pause an toàn
-
-`PAUSE` là workflow exit gate chứ không phải đổi status rồi dừng chat.
+`$frontend-planning` chỉ:
 
 ```text
-User: "dừng lại"
-       ↓
-Primary Controller → PAUSE
-       ↓
+.docs/source
+   ↓
+Brain analysis
+   ↓
 Orchestrator
-  ├─ ngừng spawn specialist mới
-  ├─ thu evidence/report hiện có
-  ├─ reconcile source/result ↔ Jira
-  ├─ ghi RESULT/status còn thiếu nếu đã được chứng minh
-  └─ ghi HANDOFF tại continuation point
-       ↓
-status: paused
+   ↓
+Jira Feature / Task / Subtask
+   ↓
+STOP
 ```
 
-Handoff phải đủ để một chat mới hoặc developer khác tiếp tục mà không cần lịch sử chat. Nếu Jira
-không khả dụng, execution mới vẫn dừng nhưng hệ thống phải báo `pause-blocked`, không được nói rằng
-handoff đã được lưu.
+### Internal capability — agent tự load khi cần
+
+Knowledge nội bộ nằm dưới `.agents/capabilities/`, ví dụ:
+
+```text
+.agents/capabilities/common/discover-project-stack/
+.agents/capabilities/frontend/plan-frontend-work/
+.agents/capabilities/frontend/shadcn/
+.agents/capabilities/frontend/nextjs-tanstack-query/
+.agents/capabilities/frontend/testing/
+```
+
+Các capability này không phải user entry point và không nên xuất hiện trong `$` picker.
+
+Agent chỉ được load capability khi:
+
+1. capability nằm trong allowlist của `manifest.yaml`;
+2. Orchestrator/handoff route capability đó cho đúng Subtask.
+
+Không load tất cả capability “cho chắc”.
+
+## Execution intent và lifecycle khác nhau
+
+Hai khái niệm được tách riêng:
+
+```text
+Execution intent
+├── plan-only
+└── deliver
+
+Lifecycle entry
+├── NEW
+├── RESUME
+├── REPLAN
+├── PAUSE
+└── ACCEPTANCE
+```
+
+Ví dụ:
+
+```text
+$frontend-delivery + NEW
+→ Brain → Jira planning → Coding/Testing → Acceptance
+
+$frontend-planning + NEW
+→ Brain → Jira planning → STOP
+
+$frontend-delivery + RESUME
+→ skip Brain nếu docs baseline còn hợp lệ → tiếp tục đúng Subtask
+```
+
+`planning` của Orchestrator không còn đồng nghĩa với “tạo Jira rồi dừng”. Quyết định dừng hay chạy tiếp do execution intent quyết định.
+
+## Project stack discovery
+
+Brain có internal capability `discover-project-stack` để đọc evidence rẻ trước:
+
+```text
+package.json / lockfile
+→ framework config
+→ UI/component config
+→ representative imports khi cần
+→ source sâu hơn chỉ khi evidence conflict
+```
+
+Brain có thể detect các thông tin như:
+
+```text
+framework
+UI library
+icon library
+styling system
+client-state library
+server-state library
+test runner
+package manager
+```
+
+Ví dụ project hiện tại dùng:
+
+```text
+@mui/material
+@mui/icons-material
+@tanstack/react-query
+```
+
+thì Orchestrator route capability phù hợp với MUI/TanStack khi capability tồn tại; Coding không được tự dùng shadcn/Lucide chỉ vì control repo có knowledge đó.
+
+Nếu evidence không đủ:
+
+```text
+ui-library: unresolved
+```
+
+Không tự mặc định shadcn, Lucide, Zustand, TanStack Query hoặc library nào khác.
+
+Detection ≠ adoption. Việc package đã tồn tại không tự cấp quyền cài mới, upgrade, replace hoặc standardize library.
 
 ## Jira hierarchy
 
@@ -106,22 +176,7 @@ Feature context
         └── Subtask: một Specialist Execution Unit
 ```
 
-Ví dụ:
-
-```text
-Feature: Quản lý người dùng
-
-Task: Lọc người dùng theo vai trò
-├── Thiết kế trạng thái bộ lọc       # chỉ khi cần
-├── Lập kế hoạch kiểm thử bộ lọc     # chỉ khi cần
-├── Triển khai bộ lọc người dùng
-└── Kiểm thử bộ lọc người dùng
-```
-
-Parent Task là scope/acceptance boundary, không phải execution unit. Specialist chỉ thực thi Subtask.
-Không bắt buộc mọi Task phải có đủ Design + Test Plan + Coding + Testing.
-
-Orchestrator luôn chia theo thứ tự:
+Orchestrator chia theo:
 
 ```text
 requirement
@@ -131,39 +186,51 @@ requirement
 → specialist Subtasks
 ```
 
-Không chia feature trước theo agent role.
+Không chia feature trước theo agent role hay file/component.
 
-## Jira context inheritance
+Context inheritance:
 
-Để giảm token và tránh duplicate:
+- Feature lưu common product/architecture + implementation-environment metadata cần cho routing.
+- Task lưu functional-slice delta.
+- Subtask lưu specialist delta + capability identifiers cần cho execution/resume.
+- Specialist nhận transient `issue-handoff`, không đọc `.docs`.
 
-- Feature lưu common product/architecture context.
-- Task chỉ lưu functional-slice delta.
-- Subtask chỉ lưu specialist execution delta.
-- Orchestrator ghép ba lớp + direct dependency evidence thành một transient `issue-handoff` khi spawn
-  specialist.
+Jira content hướng tới con người phải bằng tiếng Việt; technical identifiers giữ nguyên khi cần.
 
-Handoff/report YAML là communication object giữa agent, không phải runtime file cần commit hay lưu vào
-product repo.
+## PAUSE / HANDOFF
 
-Tất cả Jira content hướng tới con người như title, description, scope, acceptance criteria, blocker,
-result và handoff note phải dùng tiếng Việt. Technical identifiers như path, API, component name,
-command, Jira key và machine metadata giữ nguyên khi cần.
+Khi workflow active, các câu tự nhiên như:
 
-## Durable execution notes
+```text
+dừng lại
+tạm dừng
+để mai làm tiếp
+bàn giao ở đây
+```
 
-Không ghi nhật ký reasoning từng bước lên Jira. Chỉ dùng các checkpoint ngắn khi cần:
+được hiểu là `PAUSE`.
 
-- `[BLOCKER]`: thiếu context/capability làm dừng Subtask.
-- `[RESULT]`: kết quả hoàn thành + validation evidence.
-- `[REVISION]`: yêu cầu sửa sau review/reconciliation.
-- `[HANDOFF]`: checkpoint để developer/session khác tiếp tục Subtask đang làm.
+Flow:
 
-Khi explicit `PAUSE` và vẫn còn scope chưa hoàn thành, `[HANDOFF]` là bắt buộc. Orchestrator phải
-reconcile các kết quả đã thực sự hoàn thành trước, tránh tình trạng source/test đã xong nhưng Jira vẫn
-hiển thị chưa làm.
+```text
+User pause
+  ↓
+freeze new dispatch
+  ↓
+collect available specialist/source evidence
+  ↓
+reconcile Jira ↔ actual execution
+  ↓
+persist missing RESULT/status corrections
+  ↓
+persist HANDOFF
+  ↓
+status: paused
+```
 
-`[HANDOFF]` ghi ngắn gọn:
+Không được coi việc đổi Jira status là đủ. Nếu Jira không ghi được durable checkpoint thì trả `pause-blocked`.
+
+`[HANDOFF]` chỉ giữ continuation essentials:
 
 ```text
 Source: repository / branch / commit khi relevant
@@ -174,31 +241,29 @@ Blocker: ...
 Tiếp theo: Jira key / hành động tiếp theo
 ```
 
-Assignee + Jira status là execution ownership; không có lock system thứ hai.
-
 ## Agent roles
 
 | Agent | Trách nhiệm |
 | --- | --- |
-| `brain` | Phân tích requirement, architecture, ambiguity; revalidate khi docs đổi; nghiệm thu cuối |
-| `orchestrator` | Planning/resume/pause Jira context, decomposition, specialist routing, reconciliation |
-| `design` | Tạo design evidence qua provider đã kết nối |
-| `test-plan` | Tạo risk-based test-plan evidence |
-| `coding` | Implement một bounded Coding Subtask |
-| `testing` | Viết/chạy test cho một bounded Testing Subtask |
+| `brain` | Requirement, architecture reasoning, stack discovery, revalidation, acceptance |
+| `orchestrator` | Jira planning/resume/pause, capability routing, specialist coordination, reconciliation |
+| `design` | External design-provider execution |
+| `test-plan` | Risk-based test-plan evidence |
+| `coding` | Bounded implementation với capability được route |
+| `testing` | Bounded test implementation/execution với capability được route |
 
-Brain và Orchestrator có thể đọc `.docs/` theo mode được phép. Specialist tuyệt đối không đọc `.docs/`;
-chúng chỉ nhận transient handoff + dependency evidence + source/provider state được allow.
+Specialist không được đọc `.docs`, không update Jira và không tự mở rộng scope.
 
 ## Coding decomposition guard
 
-Coding luôn load một decomposition gate nhỏ. Khi task tạo/chỉnh page, screen hoặc component, gate mới
-load full Atomic component rule và yêu cầu xác định composition root, presentation responsibilities,
-ownership, target files và public contracts trước source write.
+Coding luôn load decomposition gate nhỏ. Khi tạo/chỉnh page/screen/component, gate yêu cầu xác định composition root, responsibilities, ownership và public contract trước source write.
 
-Handwritten TSX từ 300 dòng phải decomposition review; từ 500 dòng không được report `completed` nếu
-chưa split theo responsibility hoặc có developer-approved exception. Đây là safety alarm, không phải
-lý do tách component máy móc theo line count.
+Handwritten TSX:
+
+- `>= 300` dòng: bắt buộc decomposition review;
+- `>= 500` dòng: không được report complete nếu chưa split hoặc có approved exception.
+
+Line count là alarm, không phải nguyên tắc kiến trúc.
 
 ## Repository structure
 
@@ -211,58 +276,40 @@ codex-subagent-base/
 │   ├── orchestrator/
 │   ├── specialists/
 │   ├── rules/
-│   └── skills/
+│   ├── skills/              # PUBLIC workflows only
+│   │   ├── frontend-delivery/
+│   │   └── frontend-planning/
+│   └── capabilities/        # INTERNAL knowledge
+│       ├── common/
+│       ├── frontend/
+│       └── backend/         # future
 ├── .protocols/
 └── .codex/
-    ├── config.toml
-    └── agents/
 ```
 
-- `AGENTS.md`: bootstrap + workflow entry contract của primary controller.
-- `.agents/<agent>/`: role, manifest và local rules.
-- `.agents/skills/`: reusable workflows được manifest allow.
-- `.agents/rules/`: domain coding/testing rules.
-- `.protocols/`: YAML schemas cho transient communication objects.
-- `.codex/agents/`: Codex custom-agent bootstrap.
+Kiến trúc này cho phép mở rộng sau này mà không làm `$` picker phình ra:
+
+```text
+$frontend-delivery
+$frontend-planning
+$backend-delivery      # future
+$backend-planning      # future
+```
+
+trong khi hàng chục capability FE/BE/Design vẫn ẩn và chỉ load theo evidence/trigger.
 
 ## External capabilities
 
-Repo không cài MCP/plugin, không lưu token và không tự cấu hình Jira/Figma/Stitch. Khi capability bắt
-buộc không tồn tại, agent trả `missing-capability` thay vì giả vờ đã tạo external state.
-
-## Prompt examples
-
-New work:
-
-```text
-Trong project my-nextjs-project, triển khai user story quản lý người dùng dựa trên .docs.
-```
-
-Resume rõ Jira key:
-
-```text
-Trong project my-nextjs-project, tiếp tục FE-115.
-```
-
-Pause tự nhiên:
-
-```text
-dừng lại, để mai làm tiếp
-```
-
-Nếu workspace có nhiều product repo, luôn ghi rõ project đích cho `NEW/RESUME`; khi đang có một
-workflow active rõ ràng, `PAUSE` dùng chính workflow đó.
+Repo không tự cài MCP/plugin, không lưu token và không tự cấu hình Jira/Figma/Stitch. Khi capability bắt buộc không tồn tại, agent trả blocker thay vì giả vờ đã tạo external state.
 
 ## Non-goals
 
-- Không có `workspace:init` hoặc `workspace.yaml`.
 - Không có runtime engine/package riêng.
 - Không copy agent definitions vào product repo.
-- Không tạo `.plans/`, `.progresses/`, `.agent/`.
 - Không dùng chat memory làm persistence contract.
-- Không quản lý MCP/token/authentication thay người dùng.
+- Không expose internal capability thành user command.
+- Không hard-code shadcn/Lucide/TanStack/Zustand thành project policy.
 
 ## Version
 
-Không version riêng từng agent trong YAML. Hệ thống được version đồng bộ bằng Git tag và GitHub
-Release.
+Hệ thống được version đồng bộ bằng Git tag/GitHub Release, không version riêng từng agent/capability.

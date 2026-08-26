@@ -1,51 +1,77 @@
-# Frontend skill ownership
+# Workflow and internal capability catalog
 
-Skill discovery is global to the repository, but skill permission is local to each agent manifest.
-An agent must not load a skill outside its allowlist.
+## Public workflows
 
-## Brain
+Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$`.
 
-| Skill | Responsibility |
+| Workflow | Responsibility |
+| --- | --- |
+| `frontend-delivery` | Chạy frontend end-to-end từ analysis/Jira đến specialist execution, testing và acceptance |
+| `frontend-planning` | Phân tích + tạo/reconcile Jira work graph rồi dừng trước specialist execution |
+
+## Common internal capabilities
+
+| Capability | Owner | Responsibility |
+| --- | --- | --- |
+| `discover-project-stack` | Brain | Detect framework/library/testing environment từ source/config evidence mà không tự chọn technology |
+
+## Frontend internal capabilities
+
+### Brain
+
+| Capability | Responsibility |
 | --- | --- |
 | `analyze-frontend-requirements` | Create resumable analysis/revalidation/final acceptance contracts |
 | `design-frontend-module-boundary` | Decide bounded-context ownership and DDD placement from product evidence |
 | `audit-frontend-supply-chain` | Assess dependency/source adoption risk |
 | `audit-frontend-security` | Assess browser/runtime threat surfaces |
 
-## Orchestrator
+### Orchestrator
 
-| Skill | Responsibility |
+| Capability | Responsibility |
 | --- | --- |
-| `plan-frontend-work` | Plan/resume/pause Jira-backed Functional Tasks and specialist Subtasks, compose transient handoffs/pause checkpoints, reconcile results |
+| `plan-frontend-work` | Plan/resume/pause Jira-backed Functional Tasks/Subtasks, capability routing, handoff composition, reconciliation |
 
-## Design
+### Design
 
-| Skill | Responsibility |
+| Capability | Responsibility |
 | --- | --- |
 | `orchestrate-frontend-design` | Use a connected provider and return traceable design evidence |
 
-## Test plan
+### Test Plan
 
-| Skill | Responsibility |
+| Capability | Responsibility |
 | --- | --- |
-| `plan-frontend-testing` | Convert one transient specialist handoff into a risk-based test-plan artifact |
+| `plan-frontend-testing` | Convert one bounded handoff into a risk-based test-plan artifact |
 
-## Coding
+### Coding
 
-| Skill | Responsibility |
+| Capability | Responsibility |
 | --- | --- |
 | `migrate-legacy-frontend-module` | Migrate approved legacy behavior within one bounded Coding Subtask |
 | `integrate-third-party-frontend` | Implement an approved external integration within one bounded Coding Subtask |
-| `nextjs-state-management` | Implement approved state ownership |
-| `nextjs-tanstack-query` | Implement explicit approved TanStack Query flows |
-| `shadcn` | Work with approved shadcn primitives/source mechanics |
+| `nextjs-state-management` | Apply approved state-ownership reasoning when routed |
+| `nextjs-tanstack-query` | Implement explicit approved TanStack Query flows when project evidence supports them |
+| `shadcn` | Work with shadcn primitives/source mechanics only when shadcn is detected/approved and routed |
 
-## Testing
+### Testing
 
-| Skill | Responsibility |
+| Capability | Responsibility |
 | --- | --- |
 | `testing` | Implement, run, debug, and report one bounded Testing Subtask |
 
-Routine lint, typecheck, build, or browser validation does not trigger Testing by itself. Test planning
-and test implementation remain separate specialist responsibilities. No skill creates `.plans/`,
-`.progresses/`, `.agent/`, or another product-repository workflow store.
+## Routing rule
+
+Internal capability availability does not mean it should be loaded.
+
+```text
+project evidence
++ approved architecture/dependency direction
++ current Subtask trigger
++ specialist manifest allowlist
+→ smallest routed internal capability set
+```
+
+Capability không được route thì specialist không load. Nếu stack evidence thiếu/conflict thì giữ unresolved thay vì default sang shadcn/Lucide/TanStack/Zustand hoặc library khác.
+
+Routine lint/typecheck/build/browser validation không tự tạo Testing Subtask. Test planning và test implementation vẫn là specialist responsibilities riêng.

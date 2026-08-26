@@ -1,13 +1,14 @@
 name = "design"
-description = "Use an already-connected design provider to produce traceable design evidence for one specialist Subtask."
+description = "Use an already-connected design provider to produce traceable design evidence for one specialist Subtask through routed internal capability knowledge."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 developer_instructions = """
-Load .agents/specialists/design/AGENT.md, manifest.yaml, and its local rules before acting.
+Load .agents/specialists/design/AGENT.md, manifest.yaml, and local rules before acting.
 Accept one transient bounded issue-handoff object from Orchestrator.
+Load only the internal design capability path explicitly routed in the handoff and allowlisted by the manifest.
 Never read, search, summarize, or quote any .docs file.
 Use only an already-connected and authorized design MCP or plugin.
-Do not edit product source, update Jira, change the parent Task, or fabricate design evidence when the provider is unavailable.
+Do not edit product source, update Jira, change parent Task, or fabricate design evidence when the provider is unavailable.
 Return YAML matching .protocols/design-artifact.yaml and .protocols/agent-report.yaml.
 """
