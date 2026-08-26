@@ -1,6 +1,6 @@
 ---
 name: plan-frontend-work
-description: Create or resume Jira-backed frontend work from approved analysis and durable Jira context. Use only for the Orchestrator; do not perform requirement analysis, product implementation, visual design, test planning, test implementation, or final acceptance.
+description: Create, resume, or safely pause Jira-backed frontend work from approved analysis and durable Jira context. Use only for the Orchestrator; do not perform requirement analysis, product implementation, visual design, test planning, test implementation, or final acceptance.
 ---
 
 # Plan Frontend Work
@@ -11,8 +11,11 @@ Use the workflow mode supplied by the primary controller.
 
 - `planning`: new work or approved replanning.
 - `resume`: continue an existing specialist Subtask from Jira without repeating Brain analysis or task decomposition.
+- `pause`: stop active work safely by reconciling Jira and persisting a durable handoff before exit.
 
-Verify Jira before any external mutation. Return `missing-capability` if it is unavailable.
+Verify Jira before any external mutation. Return `missing-capability` if it is unavailable. In `pause`
+mode, stop new dispatch even when Jira is unavailable, but return `pause-blocked` rather than claiming
+a durable pause.
 
 ## 2. Planning mode
 
@@ -50,7 +53,30 @@ Read [handoff-contracts.md](references/handoff-contracts.md), compose one transi
 A new chat or developer handoff is not a reason to rerun Brain or planning when Jira context remains
 valid.
 
-## 4. Coordinate execution
+## 4. Pause mode
+
+Pause is a workflow exit gate, not a normal specialist assignment.
+
+When the primary controller supplies `pause`:
+
+1. Freeze dispatch. Do not spawn new Design, Test Plan, Coding, Testing, or Brain work.
+2. Resolve only active/incomplete Subtasks, their parent Task/Feature context, available specialist
+   reports, latest durable results/handoffs, and relevant current source identity/state.
+3. If an active specialist can return a bounded current-state report, collect it. Do not wait
+   indefinitely; after cancellation/timeout, use only proven source/report/Jira evidence.
+4. Reconcile execution truth with Jira. Persist any proven missing `[RESULT]` notes and correct stale
+   statuses before writing the handoff.
+5. Determine one continuation point for remaining work. Do not create a new Task merely to represent
+   the pause.
+6. Build one transient object matching `.protocols/pause-checkpoint.yaml`.
+7. Serialize that checkpoint into one concise Vietnamese `[HANDOFF]` Jira note as defined in
+   [handoff-contracts.md](references/handoff-contracts.md).
+8. Confirm the note is durably persisted, then return `status: paused` in the reconciliation report.
+
+If all executable work is already proven complete, persist missing `[RESULT]`/status updates and do
+not invent an unfinished handoff. Return the workflow ready for acceptance instead of `paused`.
+
+## 5. Coordinate execution
 
 - Start only dependency-ready Subtasks.
 - Avoid parallel writes to the same source or public contract.
@@ -63,10 +89,11 @@ valid.
 
 Never perform missing specialist work as a fallback.
 
-## 5. Reconcile
+## 6. Reconcile
 
 Compare returned specialist results with their Jira Subtasks and parent acceptance boundaries. Update
 Jira and return one YAML object matching `.protocols/reconciliation-report.yaml`.
 
 Use `completed` only when the requested executable scope and required evidence are complete. Use
-`revision-required` for recoverable gaps and `blocked` for missing capability or unresolved authority.
+`paused` only after a required durable handoff has been confirmed. Use `revision-required` for
+recoverable gaps and `blocked`/`pause-blocked` for missing capability or unresolved authority.

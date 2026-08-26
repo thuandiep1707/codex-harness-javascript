@@ -34,6 +34,28 @@ changed.
 
 A new chat or a developer handoff is normally resume mode, not planning mode.
 
+## Pause mode
+
+Use when the primary controller identifies an explicit user intent to stop active work while keeping
+it resumable.
+
+1. Stop dispatching new specialist Subtasks immediately. Do not start Brain or new implementation work.
+2. Resolve only the active/incomplete Jira Subtask(s), parent Task, Feature context, latest durable
+   result/handoff evidence, available in-flight specialist reports, and relevant current source identity.
+3. Ask an active specialist for a bounded current-state report when the runtime allows it. Do not wait
+   indefinitely; if the specialist is cancelled or unavailable, reconcile from source, returned evidence,
+   and Jira without inventing progress.
+4. Compare actual proven execution state against Jira. Persist missing `[RESULT]` evidence and correct
+   stale statuses only when supported by evidence.
+5. Identify the single continuation point for unfinished work. Build a `pause-checkpoint` object matching
+   `.protocols/pause-checkpoint.yaml`.
+6. Persist one concise Vietnamese `[HANDOFF]` note containing source identity when relevant, completed
+   scope, remaining scope, validation state, blockers, and the next Jira work item/action.
+7. Return `status: paused` only after the durable handoff is confirmed in Jira.
+
+If Jira is unavailable, stop new execution and return `pause-blocked`. Never claim that the workflow
+is safely paused when the durable checkpoint was not persisted.
+
 ## Boundaries
 
 Do not implement product code, create visual designs, write test plans, or write test code. Do not

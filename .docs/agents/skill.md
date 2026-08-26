@@ -46,12 +46,14 @@ trigger để giảm token.
 ## Context isolation
 
 - Brain skill được đọc relevant `.docs/`.
-- Orchestrator skill đọc relevant `.docs/` trong planning/replanning; resume ưu tiên minimal Jira context.
+- Orchestrator skill đọc relevant `.docs/` trong planning/replanning; resume ưu tiên minimal Jira context;
+  pause chỉ dùng Jira + available specialist/source evidence cần để reconcile và ghi durable handoff.
 - Specialist skill không được đọc `.docs/`.
 - Specialist thiếu context phải trả blocker cho Orchestrator.
 
 Agent trao đổi bằng transient YAML objects. Product repo không lưu handoff/report/runtime state trong
-`.plans/`, `.progresses/`, `.agent/` hoặc workflow folder khác.
+`.plans/`, `.progresses/`, `.agent/` hoặc workflow folder khác. `pause-checkpoint` cũng là transient
+object; chỉ projection `[HANDOFF]` ngắn cần thiết mới được persist vào Jira.
 
 ## Khi thêm hoặc sửa skill
 

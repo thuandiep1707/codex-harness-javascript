@@ -8,7 +8,7 @@ làm primary.
 
 ```text
 workspace/
-├── subagent-for-frontend-base/   ← primary / control repo
+├── codex-subagent-base/          ← primary / control repo
 └── my-nextjs-project/            ← working product repo
 ```
 
@@ -44,10 +44,16 @@ Trước khi gọi Brain, primary controller xác định điểm vào nhỏ nh�
 NEW        → Brain analysis → Orchestrator planning
 RESUME     → Orchestrator resume → specialist cần thiết
 REPLAN     → Brain revalidation → Orchestrator replan phần bị ảnh hưởng
+PAUSE      → Orchestrator pause reconciliation → Jira HANDOFF
 ACCEPTANCE → Brain acceptance
 ```
 
 Một tab chat mới hoặc một developer tiếp quản công việc đang làm là `RESUME`, không phải `NEW`.
+
+Khi workflow đang active, các câu tự nhiên như `dừng lại`, `tạm dừng`, `để mai làm tiếp`, hoặc `bàn
+giao ở đây` được primary controller hiểu là `PAUSE`. Đây không phải command syntax bắt buộc; hệ thống
+nhận diện intent. Nếu không có Jira-backed workflow đang active thì yêu cầu dừng chỉ dừng bình thường,
+không tạo handoff giả.
 
 ### Resume tối thiểu
 
@@ -68,6 +74,29 @@ Current Specialist Subtask
 Không đọc lại toàn bộ Jira project/sprint/comment history. Trước khi resume, hệ thống dùng
 `docs-baseline` và danh sách relevant documents để kiểm tra bằng Git metadata xem requirement liên
 quan có thay đổi hay không. Không đổi → skip Brain. Có thay đổi material → REPLAN.
+
+### Pause an toàn
+
+`PAUSE` là workflow exit gate chứ không phải đổi status rồi dừng chat.
+
+```text
+User: "dừng lại"
+       ↓
+Primary Controller → PAUSE
+       ↓
+Orchestrator
+  ├─ ngừng spawn specialist mới
+  ├─ thu evidence/report hiện có
+  ├─ reconcile source/result ↔ Jira
+  ├─ ghi RESULT/status còn thiếu nếu đã được chứng minh
+  └─ ghi HANDOFF tại continuation point
+       ↓
+status: paused
+```
+
+Handoff phải đủ để một chat mới hoặc developer khác tiếp tục mà không cần lịch sử chat. Nếu Jira
+không khả dụng, execution mới vẫn dừng nhưng hệ thống phải báo `pause-blocked`, không được nói rằng
+handoff đã được lưu.
 
 ## Jira hierarchy
 
@@ -130,15 +159,29 @@ Không ghi nhật ký reasoning từng bước lên Jira. Chỉ dùng các check
 - `[REVISION]`: yêu cầu sửa sau review/reconciliation.
 - `[HANDOFF]`: checkpoint để developer/session khác tiếp tục Subtask đang làm.
 
-`[HANDOFF]` chỉ cần branch/source identity khi relevant, phần đã xong, phần còn lại, validation state và
-blocker. Assignee + Jira status là execution ownership; không có lock system thứ hai.
+Khi explicit `PAUSE` và vẫn còn scope chưa hoàn thành, `[HANDOFF]` là bắt buộc. Orchestrator phải
+reconcile các kết quả đã thực sự hoàn thành trước, tránh tình trạng source/test đã xong nhưng Jira vẫn
+hiển thị chưa làm.
+
+`[HANDOFF]` ghi ngắn gọn:
+
+```text
+Source: repository / branch / commit khi relevant
+Đã hoàn thành: ...
+Còn lại: ...
+Validation: ...
+Blocker: ...
+Tiếp theo: Jira key / hành động tiếp theo
+```
+
+Assignee + Jira status là execution ownership; không có lock system thứ hai.
 
 ## Agent roles
 
 | Agent | Trách nhiệm |
 | --- | --- |
 | `brain` | Phân tích requirement, architecture, ambiguity; revalidate khi docs đổi; nghiệm thu cuối |
-| `orchestrator` | Planning/resume Jira context, decomposition, specialist routing, reconciliation |
+| `orchestrator` | Planning/resume/pause Jira context, decomposition, specialist routing, reconciliation |
 | `design` | Tạo design evidence qua provider đã kết nối |
 | `test-plan` | Tạo risk-based test-plan evidence |
 | `coding` | Implement một bounded Coding Subtask |
@@ -160,7 +203,7 @@ lý do tách component máy móc theo line count.
 ## Repository structure
 
 ```text
-subagent-for-frontend-base/
+codex-subagent-base/
 ├── AGENTS.md
 ├── README.md
 ├── .agents/
@@ -201,7 +244,14 @@ Resume rõ Jira key:
 Trong project my-nextjs-project, tiếp tục FE-115.
 ```
 
-Nếu workspace có nhiều product repo, luôn ghi rõ project đích.
+Pause tự nhiên:
+
+```text
+dừng lại, để mai làm tiếp
+```
+
+Nếu workspace có nhiều product repo, luôn ghi rõ project đích cho `NEW/RESUME`; khi đang có một
+workflow active rõ ràng, `PAUSE` dùng chính workflow đó.
 
 ## Non-goals
 
