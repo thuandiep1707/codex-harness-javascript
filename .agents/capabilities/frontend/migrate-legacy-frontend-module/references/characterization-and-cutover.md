@@ -1,7 +1,6 @@
 # Characterization and cutover
 
-Preserve observable behavior intentionally. Do not claim parity from compilation or visual similarity
-alone.
+Preserve observable behavior intentionally. Do not claim parity from compilation or visual similarity alone.
 
 ## Baseline current behavior
 
@@ -15,9 +14,7 @@ Capture the smallest evidence set that protects critical behavior:
 - supported viewport/runtime constraints and material performance thresholds; and
 - known bugs intentionally preserved or explicitly approved for correction.
 
-Use the `testing` skill for approved pure-behavior, component, integration, contract, or
-characterization coverage and for approved Playwright browser journeys. Do not load it
-skill unless that layer is in scope.
+Coding does not call the Testing specialist's internal capability directly. If characterization, component, integration, contract, or browser test coverage is required beyond Coding's assigned validation scope, return that need to Orchestrator so an appropriate Testing Subtask/capability can be routed through Jira.
 
 ## Build a parity matrix
 
@@ -39,16 +36,16 @@ Use one of: `matched`, `approved-change`, `blocked`, or `not-covered`. Never hid
 Before switching consumers:
 
 1. Verify the approved slice and its direct consumers.
-2. Run targeted tests, lint, typecheck, build, and relevant browser journeys.
+2. Run validation assigned to the Coding Subtask; use existing relevant evidence returned through Jira dependencies when available.
 3. Compare parity evidence and document accepted differences.
-4. Verify monitoring/error evidence and rollback mechanics.
+4. Verify monitoring/error evidence and rollback mechanics when they are in assigned scope.
 5. Confirm no target consumer still depends on an unapproved legacy path.
+
+Do not silently expand Coding scope into independent test implementation. Missing required coverage is returned to Orchestrator for specialist routing.
 
 ## Rollback and removal
 
-- Define the rollback trigger, responsible owner, compatible data/state assumptions, and maximum
-  rollback window.
+- Define rollback trigger, responsible owner, compatible data/state assumptions, and maximum rollback window when required by the handoff.
 - Keep rollback separate from permanent dual-running.
-- Remove bridges, flags, copied assets, obsolete routes, and legacy dependencies only after all
-  consumers and rollback requirements are resolved.
-- Record remaining debt, risk, and follow-up ownership rather than broadening the migration task.
+- Remove bridges, flags, copied assets, obsolete routes, and legacy dependencies only after all consumers and rollback requirements are resolved and the assigned Jira scope authorizes removal.
+- Record remaining debt/risk as structured evidence rather than broadening the migration Subtask.
