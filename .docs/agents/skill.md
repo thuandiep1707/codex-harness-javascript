@@ -1,69 +1,131 @@
-# Skill architecture
+# Workflow and capability architecture
 
-Skill là capability hoặc workflow chuyên biệt. Rule là hành vi bắt buộc. Agent manifest quyết định
-agent nào được dùng skill/rule nào.
+## Taxonomy
 
-## Discovery và ownership
+- **Workflow**: user-facing orchestration entry point. Đây là thứ user gọi bằng `$`.
+- **Internal capability**: reusable knowledge/workflow fragment của một agent. Không expose bằng `$`.
+- **Rule**: mandatory behavior/convention.
+- **Protocol**: structured contract giữa controller/agent.
 
-Codex tự nhận skill trong:
+## Public workflow discovery
+
+Codex chỉ discover public workflow trong:
 
 ```text
-.agents/skills/<skill-name>/SKILL.md
+.agents/skills/<workflow-name>/SKILL.md
 ```
 
-Vị trí discovery dùng chung không đồng nghĩa mọi agent được dùng mọi skill. Ownership chính thức nằm
-trong agent manifest. Mỗi custom agent chỉ được load skill có tên trong `skills` allowlist.
+Vì vậy `.agents/skills/` phải được giữ nhỏ và chỉ chứa entry point mà user thực sự cần nhìn thấy.
 
-## Cấu trúc skill
+Current public workflows:
 
 ```text
-.agents/skills/<skill-name>/
+frontend-delivery
+frontend-planning
+```
+
+Public workflow package:
+
+```text
+.agents/skills/<workflow-name>/
 ├── SKILL.md
-├── agents/
-│   └── openai.yaml
-├── references/        # chỉ tạo khi cần
-├── scripts/           # chỉ tạo khi cần logic deterministic
-└── assets/            # chỉ tạo khi output cần asset
+└── agents/
+    └── openai.yaml
 ```
 
-- `SKILL.md`: trigger, workflow, input, output, guardrail.
-- `agents/openai.yaml`: metadata giao diện; không cấp authority.
-- `references/`: chi tiết chỉ đọc theo nhánh công việc.
-- `scripts/`: helper lặp lại được; không thay thế judgment.
-- `assets/`: template hoặc asset dùng trong output.
+`agents/openai.yaml` chỉ là UI metadata, không cấp execution authority.
 
-Không tạo README, changelog hay tài liệu phụ bên trong từng skill nếu không có nhu cầu runtime rõ ràng.
+## Internal capabilities
+
+Knowledge nội bộ nằm ngoài discovery root:
+
+```text
+.agents/capabilities/
+├── common/
+└── frontend/
+```
+
+Ví dụ:
+
+```text
+.agents/capabilities/common/discover-project-stack/CAPABILITY.md
+.agents/capabilities/frontend/plan-frontend-work/SKILL.md
+.agents/capabilities/frontend/shadcn/SKILL.md
+.agents/capabilities/frontend/testing/SKILL.md
+```
+
+Tên file `SKILL.md` còn tồn tại trong một số capability package do lịch sử repo, nhưng directory `.agents/capabilities/` mới là authority phân loại: các package này không phải public Codex skill và không được user invoke trực tiếp.
+
+Agent manifest dùng `internal-capabilities:` làm allowlist path. Specialist chỉ load capability khi capability đó vừa nằm trong manifest allowlist vừa được Orchestrator route trong `issue-handoff`.
 
 ## Progressive disclosure
 
-1. Codex thấy `name` và `description`.
-2. Agent chỉ đọc `SKILL.md` khi task đúng trigger và skill nằm trong allowlist.
-3. Agent chỉ đọc reference cần cho nhánh hiện tại.
+Public side:
 
-Không quét và nạp toàn bộ skill/reference “cho chắc”. Rule lõi nên ngắn; rule chi tiết chỉ load theo
-trigger để giảm token.
+1. Codex discover workflow name/description.
+2. User hoặc intent routing chọn một workflow.
+3. Chỉ workflow đó được load.
+
+Internal side:
+
+1. Workflow spawn đúng agent.
+2. Agent đọc manifest/rules.
+3. Brain detect project stack bằng evidence rẻ khi cần.
+4. Orchestrator route smallest internal-capability set cho từng Subtask.
+5. Specialist chỉ load capability được route.
+6. Capability chỉ load reference cần cho nhánh hiện tại.
+
+Không scan toàn bộ `.agents/capabilities/**` và không load toàn bộ references “cho chắc”.
+
+## Detection vs decision
+
+`discover-project-stack` được phép detect:
+
+```text
+framework
+UI library
+icon library
+styling system
+state/data libraries
+test runner
+```
+
+nhưng detection không phải adoption authority.
+
+Ví dụ `@mui/material` xuất hiện trong project là evidence để route capability phù hợp; nó không tự cho phép upgrade MUI hoặc thay toàn project sang MUI. Nếu không có evidence rõ thì giữ `unresolved`, không default sang shadcn/Lucide/TanStack/Zustand.
 
 ## Context isolation
 
-- Brain skill được đọc relevant `.docs/`.
-- Orchestrator skill đọc relevant `.docs/` trong planning/replanning; resume ưu tiên minimal Jira context;
-  pause chỉ dùng Jira + available specialist/source evidence cần để reconcile và ghi durable handoff.
-- Specialist skill không được đọc `.docs/`.
-- Specialist thiếu context phải trả blocker cho Orchestrator.
+- Brain có thể đọc relevant `.docs` và bounded source/config evidence cho stack discovery.
+- Orchestrator đọc relevant `.docs` trong planning/replanning; resume/pause ưu tiên minimal Jira/source evidence.
+- Specialist tuyệt đối không đọc `.docs`.
+- Internal capability không mở rộng context authority của agent owner.
 
-Agent trao đổi bằng transient YAML objects. Product repo không lưu handoff/report/runtime state trong
-`.plans/`, `.progresses/`, `.agent/` hoặc workflow folder khác. `pause-checkpoint` cũng là transient
-object; chỉ projection `[HANDOFF]` ngắn cần thiết mới được persist vào Jira.
+Agent trao đổi bằng transient protocol objects. Product repo không lưu `.plans/`, `.progresses/`, `.agent/` hoặc workflow state mirror.
 
-## Khi thêm hoặc sửa skill
+## Khi thêm public workflow
 
-1. Xác định agent owner.
-2. Viết trigger có phạm vi dương và ranh giới âm rõ ràng.
-3. Giữ `SKILL.md` ngắn; chuyển chi tiết có điều kiện xuống `references/`.
-4. Chỉ thêm script khi cần tính deterministic.
-5. Đồng bộ `agents/openai.yaml`.
-6. Thêm skill vào đúng manifest allowlist.
-7. Cập nhật `skill-catalog.md` khi catalog thay đổi.
-8. Validate frontmatter và naming.
+1. Xác định user outcome rõ ràng.
+2. Tạo package dưới `.agents/skills/`.
+3. Giữ workflow ở orchestration level; không nhét implementation knowledge vào đó.
+4. Chỉ expose workflow nếu user có lý do thực tế để gọi trực tiếp bằng `$`.
+5. Cập nhật public workflow catalog.
 
-Version được quản lý ở cấp repository bằng Git tag/GitHub Release, không đặt trong từng skill.
+Ví dụ future:
+
+```text
+$backend-delivery
+$backend-planning
+```
+
+## Khi thêm internal capability
+
+1. Xác định domain và agent owner.
+2. Đặt dưới `.agents/capabilities/<domain>/...`.
+3. Viết trigger + negative boundary rõ ràng.
+4. Thêm path vào đúng `internal-capabilities:` allowlist của manifest.
+5. Chỉ route capability từ Orchestrator khi project evidence + Subtask trigger phù hợp.
+6. Không tạo `agents/openai.yaml` nếu capability không phải public workflow.
+7. Giữ reference theo progressive disclosure.
+
+Version được quản lý ở repository level bằng Git tag/GitHub Release.
