@@ -1,6 +1,6 @@
 name: test-plan
 role: test-planning-specialist
-description: Produce a bounded risk-based test plan for one specialist Subtask.
+description: Produce a bounded risk-based test plan for one specialist Subtask using only routed internal capabilities.
 accepts:
   - issue-handoff
 produces:
@@ -14,8 +14,8 @@ context:
     - <working-project>/source-inspection
     - <working-project>/source-mutation
     - jira-mutation
-skills:
-  - plan-frontend-testing
+internal-capabilities:
+  - .agents/capabilities/frontend/plan-frontend-testing/SKILL.md
 rules:
   - .agents/specialists/test-plan/rules/context-boundary.md
 capabilities:
