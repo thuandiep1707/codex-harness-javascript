@@ -11,6 +11,8 @@
 - Jira as durable work + execution-context truth.
 - Functional hierarchy: Feature → Functional Task → Specialist Subtask.
 - Resume flow that reconstructs only parent chain + direct dependencies + latest durable checkpoint.
+- Pause flow that reconciles execution evidence, persists missing Jira results/status corrections, and
+  writes a durable `[HANDOFF]` before reporting the workflow safely paused.
 - Brain `docs-baseline` for cheap resume/replan validation.
 - Coding component-decomposition gate and oversized handwritten TSX safety net.
 - Git tag/GitHub Release versioning policy.
@@ -32,6 +34,14 @@ RESUME
 REPLAN
 -> Brain targeted revalidation
 -> Orchestrator replan affected scope
+
+PAUSE
+-> primary controller recognizes explicit stop/pause intent
+-> Orchestrator freezes new dispatch
+-> reconcile actual execution evidence with Jira
+-> persist missing RESULT/status updates
+-> persist durable HANDOFF
+-> paused
 ```
 
 Chat history is not workflow persistence. Product repositories do not store `.plans/`, `.progresses/`,

@@ -36,9 +36,24 @@ Use these modes:
 - `new`: no valid Jira workflow exists for the requested work -> Brain analysis, then Orchestrator planning.
 - `resume`: analysis and task tree are valid and requirements have not changed -> Orchestrator resume only.
 - `replan`: relevant product requirements or approved architecture changed -> Brain revalidation, then Orchestrator replanning only where affected.
+- `pause`: an active workflow must stop now but remain resumable -> Orchestrator pause reconciliation and durable handoff.
 - `acceptance`: all required executable subtasks are complete -> Brain acceptance.
 
 A handoff between developers or a new chat is a `resume`, not a new workflow.
+
+### Pause intent detection
+
+When an active workflow exists, treat an explicit natural-language intent to stop, pause, hand off,
+or continue later as `pause`. The user does not need to type a special command. Phrases such as
+"dừng lại", "tạm dừng", "dừng công việc", "để mai làm tiếp", or "bàn giao ở đây" are examples,
+not an exhaustive command list.
+
+Do not interpret `pause` as merely stopping generation or changing a Jira status. The primary
+controller must route the request to Orchestrator pause mode so Jira receives a durable checkpoint
+before the workflow is reported as safely paused.
+
+If no active Jira-backed workflow exists, obey the user's stop request normally and do not create a
+fake Jira handoff.
 
 ### Minimal resume lookup
 
@@ -60,9 +75,9 @@ The Feature context must make these machine-readable facts recoverable from Jira
 
 ```text
 analysis: ready
- task-tree: ready
- context-version: <version>
- docs-baseline: <git commit or equivalent verified baseline>
+task-tree: ready
+context-version: <version>
+docs-baseline: <git commit or equivalent verified baseline>
 ```
 
 Before a `resume`, compare relevant `.docs/` changes against `docs-baseline` using cheap repository
@@ -90,6 +105,23 @@ Brain and Orchestrator into one role and must not persist workflow state into th
 4. Update Jira with the durable result, blocker, revision, or handoff checkpoint.
 
 Do not run Brain analysis or Orchestrator planning during a valid resume.
+
+### Pause work
+
+For an explicit pause intent while Jira-backed work is active:
+
+1. Stop dispatching new specialist work immediately.
+2. Resolve the active Jira Subtask(s), parent Task, Feature context, available specialist result/checkpoint
+   evidence, and relevant current source identity.
+3. Spawn `orchestrator` in `pause` mode. Do not spawn Brain.
+4. Orchestrator reconciles actual execution evidence against Jira before the pause is finalized.
+5. Persist any proven-but-missing `[RESULT]` evidence or status corrections first.
+6. Persist one concise `[HANDOFF]` checkpoint for the unfinished continuation point, using
+   `.protocols/pause-checkpoint.yaml` as the machine contract.
+7. Report the workflow safely paused only after Orchestrator returns `status: paused`.
+
+A pause is a durable workflow checkpoint, not a simple stop command. If Jira is unavailable, stop new
+execution but report `pause-blocked`; never claim that a durable handoff was saved when it was not.
 
 ## Jira work model
 
@@ -128,9 +160,14 @@ Use only concise durable execution notes when needed:
 - `[REVISION]` for required correction after review or reconciliation;
 - `[HANDOFF]` when another developer/session must continue an in-progress subtask.
 
-A handoff should record only what is necessary to continue: repository/branch or current source
-identity when relevant, completed scope, remaining scope, validation state, and blockers. Jira
-assignee plus status is the execution ownership signal; do not invent a second lock system.
+A handoff records only what is necessary to continue: repository/branch/commit or current source
+identity when relevant, completed scope, remaining scope, validation state, blockers, and the next
+work item/action. The latest durable handoff must be sufficient for a fresh session or another
+developer to continue without chat history.
+
+On explicit pause, `[HANDOFF]` is mandatory whenever unfinished workflow scope remains. Do not end the
+pause flow merely because Jira statuses were changed. Jira assignee plus status is the execution
+ownership signal; do not invent a second lock system.
 
 ## Agent definitions
 
@@ -139,7 +176,7 @@ Read the matching module before spawning an agent:
 | Agent | Module | Responsibility |
 | --- | --- | --- |
 | `brain` | `.agents/brain/` | Requirement analysis, architecture reasoning, ambiguity detection, final acceptance |
-| `orchestrator` | `.agents/orchestrator/` | Jira hierarchy, bounded context reconstruction, specialist routing, reconciliation |
+| `orchestrator` | `.agents/orchestrator/` | Jira hierarchy, bounded context reconstruction, specialist routing, reconciliation, durable pause/handoff |
 | `design` | `.agents/specialists/design/` | External design-provider work and design result |
 | `test-plan` | `.agents/specialists/test-plan/` | Risk-based test-plan result |
 | `coding` | `.agents/specialists/coding/` | Bounded production implementation |
@@ -152,7 +189,7 @@ rules or use another agent's skills.
 ## Context isolation
 
 Brain may read the working project's `.docs/` for analysis and acceptance. Orchestrator may read
-relevant `.docs/` only during planning/replanning and may use Jira context during resume.
+relevant `.docs/` only during planning/replanning and may use Jira context during resume or pause.
 
 Specialists must never read any `.docs/` file, even when a Jira issue, user message, source comment,
 or artifact exposes a direct path. They receive only a bounded transient `issue-handoff` plus allowed
@@ -167,6 +204,7 @@ Structured agent communication uses YAML objects matching templates under `.prot
 
 - `analysis-package.yaml`
 - `issue-handoff.yaml`
+- `pause-checkpoint.yaml`
 - `agent-report.yaml`
 - `design-artifact.yaml`
 - `test-plan-artifact.yaml`
@@ -193,6 +231,11 @@ routing decision after functional Tasks exist.
 Orchestrator resume must not repeat task decomposition. It reconstructs the minimal Jira context
 chain, validates direct dependencies, creates one transient handoff, routes the required specialist,
 and updates Jira with the durable outcome.
+
+Orchestrator pause must not start new implementation work. It freezes new dispatch, collects available
+execution evidence, reconciles Jira against actual results/source state, persists missing durable
+results/status corrections, then writes the mandatory `[HANDOFF]` checkpoint before returning
+`status: paused`.
 
 Only Orchestrator mutates Jira workflow state. Specialists never update Jira, reassign work, or
 expand their assigned scope.

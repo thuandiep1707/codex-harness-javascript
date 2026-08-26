@@ -34,6 +34,53 @@ Include:
 The packet must be sufficient for a fresh specialist with no chat memory to execute or return a
 precise blocker.
 
+## Durable pause checkpoint
+
+A user-requested pause is not a specialist handoff packet. Orchestrator builds a separate transient
+object matching `.protocols/pause-checkpoint.yaml`, then persists its human-facing projection to Jira
+as one `[HANDOFF]` note.
+
+The durable Jira note must be concise, in Vietnamese, and contain only fields needed to continue:
+
+```text
+[HANDOFF]
+
+Source:
+- repository: <repository when relevant>
+- branch: <branch when relevant>
+- commit: <commit when relevant>
+
+Đã hoàn thành:
+- <proven completed scope/result>
+
+Còn lại:
+- <unfinished scope>
+
+Validation:
+- <latest proven validation state>
+
+Blocker:
+- <blocker or "Không có">
+
+Tiếp theo:
+- <next Jira key and/or concrete next action>
+```
+
+Omit source fields that are genuinely irrelevant, but for changed code prefer repository + branch +
+commit so another machine can verify that it has the checkpointed source. Never infer completion from
+status alone; use specialist reports, validation evidence, and current source state.
+
+Before writing `[HANDOFF]`, persist any missing `[RESULT]` evidence and status corrections that are
+already proven. Do not use the handoff note to hide a stale Jira state.
+
+Write the handoff at the single unfinished continuation point. If a current Subtask remains active,
+that Subtask owns the note. If the active Subtask is proven complete and another existing Subtask is
+the deterministic next continuation point, finish the first result/status reconciliation and attach
+the handoff to the next Subtask. Do not create a synthetic pause Task.
+
+A pause is complete only when this durable note is confirmed in Jira. If persistence fails, return
+`pause-blocked`; do not claim safe handoff.
+
 ## Design
 
 Provide the design brief, fixed constraints, required screens/states, provider requirement, and

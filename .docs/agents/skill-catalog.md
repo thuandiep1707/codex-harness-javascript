@@ -16,7 +16,7 @@ An agent must not load a skill outside its allowlist.
 
 | Skill | Responsibility |
 | --- | --- |
-| `plan-frontend-work` | Plan/resume Jira-backed Functional Tasks and specialist Subtasks, compose transient handoffs, reconcile results |
+| `plan-frontend-work` | Plan/resume/pause Jira-backed Functional Tasks and specialist Subtasks, compose transient handoffs/pause checkpoints, reconcile results |
 
 ## Design
 

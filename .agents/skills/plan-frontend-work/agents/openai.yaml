@@ -1,4 +1,4 @@
 interface:
   display_name: "Plan Frontend Work"
-  short_description: "Create Jira-backed specialist execution plans"
-  default_prompt: "Use $plan-frontend-work to turn an approved analysis package into Jira-backed specialist work."
+  short_description: "Plan, resume, or pause Jira-backed specialist work"
+  default_prompt: "Use $plan-frontend-work to plan, resume, or safely pause Jira-backed specialist work according to the supplied workflow mode."

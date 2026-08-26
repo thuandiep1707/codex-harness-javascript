@@ -4,9 +4,9 @@
 
 | Role | Codex agent | Responsibility |
 | --- | --- | --- |
-| Primary controller | main chat | Discover target, resolve `new/resume/replan/acceptance`, spawn roles, report outcome |
+| Primary controller | main chat | Discover target, resolve `new/resume/replan/pause/acceptance`, spawn roles, report outcome |
 | Brain | `brain` | Analyze relevant `.docs`, record baseline, targeted revalidation, final acceptance |
-| Orchestrator | `orchestrator` | Jira functional hierarchy, resume context reconstruction, routing, reconciliation |
+| Orchestrator | `orchestrator` | Jira functional hierarchy, resume context reconstruction, pause reconciliation/handoff, routing, reconciliation |
 | Design | `design` | Use connected design provider and return design evidence |
 | Test plan | `test-plan` | Produce a bounded risk-based test-plan result |
 | Coding | `coding` | Implement one bounded Coding Subtask |
@@ -14,6 +14,9 @@
 
 The primary controller is intentionally thin. Brain does not create tasks. Orchestrator does not
 perform specialist work. Chat history is never required to resume valid Jira work.
+
+When active Jira-backed work exists, the primary controller treats explicit natural-language stop,
+pause, handoff, or continue-later intent as `pause`; no special command syntax is required.
 
 ## Jira hierarchy
 
@@ -29,8 +32,8 @@ only the specialist Subtasks actually required by a functional slice.
 ## Context boundary
 
 Brain may read relevant `.docs/` for analysis/revalidation/acceptance. Orchestrator may read relevant
-`.docs/` during planning/replanning and uses minimal Jira context during resume. Specialists may not
-read `.docs/`.
+`.docs/` during planning/replanning and uses minimal Jira/source evidence during resume or pause.
+Specialists may not read `.docs/`.
 
 Every specialist receives a transient handoff object composed from Feature context + Task delta +
 Subtask delta + direct dependency evidence. It returns structured YAML objects to Orchestrator.
@@ -53,6 +56,17 @@ Orchestrator alone updates Jira.
 3. Orchestrator loads only Feature + parent Task + current Subtask + direct dependencies + latest
    durable checkpoint/result.
 4. Run only the required specialist and continue from current source state.
+
+### Pause
+
+1. Primary controller recognizes explicit pause intent and stops new dispatch.
+2. Orchestrator collects available specialist reports and current source identity/state without
+   starting new implementation work.
+3. Reconcile proven execution state against Jira; write missing `[RESULT]` notes and correct stale
+   statuses first.
+4. Build `.protocols/pause-checkpoint.yaml` and persist one concise Vietnamese `[HANDOFF]` at the
+   unfinished continuation point.
+5. Return `paused` only after Jira persistence succeeds; otherwise return `pause-blocked`.
 
 Custom agent TOML files intentionally omit MCP server configuration. External capabilities are
 inherited from the user's session and must already be connected.
