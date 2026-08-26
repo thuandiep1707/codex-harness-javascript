@@ -1,6 +1,6 @@
 name: brain
 role: analysis-and-acceptance
-description: Analyze authoritative project documents, revalidate changed requirements, and perform final acceptance.
+description: Analyze authoritative project documents, detect the existing implementation environment, revalidate changed requirements, and perform final acceptance.
 accepts:
   - user-objective
   - project-documents
@@ -19,11 +19,12 @@ context:
     - external-task-management-mutation
     - product-source-mutation
     - product-runtime-workflow-files
-skills:
-  - analyze-frontend-requirements
-  - design-frontend-module-boundary
-  - audit-frontend-security
-  - audit-frontend-supply-chain
+internal-capabilities:
+  - .agents/capabilities/common/discover-project-stack/CAPABILITY.md
+  - .agents/capabilities/frontend/analyze-frontend-requirements/SKILL.md
+  - .agents/capabilities/frontend/design-frontend-module-boundary/SKILL.md
+  - .agents/capabilities/frontend/audit-frontend-security/SKILL.md
+  - .agents/capabilities/frontend/audit-frontend-supply-chain/SKILL.md
 rules:
   - .agents/brain/rules/context-and-authority.md
 capabilities:
