@@ -1,0 +1,25 @@
+kind: pause-checkpoint
+working-project: "<project-name>"
+jira:
+  feature-key: "<feature-key>"
+  task-key: "<parent-task-key>"
+  subtask-key: "<continuation-subtask-key>"
+source:
+  repository: ""
+  branch: ""
+  commit: ""
+reconciliation:
+  persisted-results: []
+  corrected-statuses: []
+completed-scope: []
+remaining-scope: []
+validation-state: []
+blockers: []
+next:
+  jira-key: ""
+  action: ""
+durable-note:
+  type: "[HANDOFF]"
+  language: vi
+  persisted: false
+status: "<ready-to-pause|pause-blocked>"
