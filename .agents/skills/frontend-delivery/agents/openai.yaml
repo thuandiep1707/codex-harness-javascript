@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Delivery"
+  short_description: "Deliver frontend work end-to-end"
+  default_prompt: "Use $frontend-delivery to run this frontend work end-to-end through analysis, Jira orchestration, implementation, testing, and acceptance."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Frontend Planning"
+  short_description: "Analyze and create Jira frontend work"
+  default_prompt: "Use $frontend-planning to analyze this frontend request and create the Jira work graph without starting implementation."
