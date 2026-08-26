@@ -1,124 +1,63 @@
 # Design handoff
 
-Normalize provider responses into this handoff before developer review or downstream code planning.
-Do not reinterpret a provider artifact as approved application code.
-
-## Contents
-
-- [Required record](#required-record)
-- [Artifact rules](#artifact-rules)
-- [Approval gate](#approval-gate)
-- [Downstream routing](#downstream-routing)
+Normalize provider responses into bounded design evidence for Orchestrator. This capability does not create a second workflow state, implementation plan, or downstream agent routing system.
 
 ## Required record
 
-```yaml
-design_handoff:
-  task: <approved design objective>
-  status: design-approval-required | blocked
-  provider:
-    name: <provider>
-    channel: <MCP server or plugin>
-    capability: <discovered external-design capability>
-    session_or_project: <stable provider ID when available>
-  context:
-    sources: [<paths, document titles, URLs, existing artifact IDs>]
-    sent: [<summaries or excerpts supplied>]
-    excluded: [<sensitive, irrelevant, or deferred material>]
-  orchestration:
-    mode: single-prompt | prompt-chain
-    checkpoints:
-      - stage: <stage ID>
-        prompt_summary: <purpose, not a replacement for the recorded exact prompt>
-        response_id: <provider evidence>
-        artifact_ids: [<IDs>]
-        result: accepted | corrected | pending
-  artifacts:
-    - type: image | html | design-file | node | prototype | structured-response | other
-      id: <stable ID>
-      location: <provider URL or approved local path>
-      preview: <preview/screenshot reference when available>
-      editable: true | false | unknown
-      provenance: provider-generated | provider-edited | imported-reference
-  checks:
-    satisfied: [<objective requirements>]
-    mismatches: [<remaining evidence-backed gaps>]
-    deferred: [<items not approved by this design>]
-  generated_code:
-    present: true | false
-    assumptions: [<libraries, framework, assets, mock data, or unsafe patterns>]
-    disposition: design-reference-only
-  approval:
-    developer: pending | approved | rejected
-    approved_artifact_ids: []
-  downstream:
-    ownership: <approved context/layer or unresolved>
-    recommended_skills: [<only evidence-required skills>]
-    next_gate: implementation-plan-approval-required
-```
+Return evidence compatible with `.protocols/design-artifact.yaml` and the assigned Jira Subtask. Preserve:
 
-Keep exact prompts and provider responses in the active runtime progress record or provider session.
-Use the handoff to index that evidence, not to erase it.
+- provider/channel and stable project/session/artifact identifiers;
+- artifact type/location/preview/editability/provenance;
+- objective requirements satisfied;
+- evidence-backed mismatches, assumptions, and deferred items;
+- generated-code assumptions with disposition `design-reference-only`;
+- approval state when human selection is genuinely required.
+
+Do not persist runtime progress files in the product repository. Orchestrator owns durable Jira `[RESULT]`, `[BLOCKER]`, `[REVISION]`, or `[HANDOFF]` projection.
 
 ## Artifact rules
 
 ### Images and screenshots
 
-- Preserve the provider artifact ID, original location, dimensions when known, and the screen/state
-  represented.
-- Mark whether the image is a final design, a variant, or only a reference.
+- Preserve provider artifact ID, location, known dimensions, and represented screen/state.
+- Mark whether the image is final design, variant, or reference.
 - Do not infer hidden interaction, responsive behavior, or component contracts from pixels alone.
 
 ### HTML, CSS, or generated code
 
-- Mark all returned code `design-reference-only`.
-- Record external packages, CDN URLs, fonts, images, mock data, scripts, global styles, and runtime
-  assumptions visible in the artifact.
-- Do not install dependencies, copy files into `src`, or treat generated structure as DDD/Atomic
-  ownership evidence.
-- Route adoption of an actual third-party runtime or package through the repository's supply-chain
-  and integration skills when applicable.
+- Mark returned code `design-reference-only`.
+- Record packages, CDN URLs, fonts, images, mock data, scripts, global styles, and runtime assumptions visible in the artifact.
+- Do not install dependencies, copy files into product source, or treat generated structure as DDD/Atomic ownership evidence.
+- If adoption would require a dependency/integration decision, return that fact to Orchestrator; do not invoke another agent capability directly.
 
-### Figma or other editable design files
+### Editable/provider-native artifacts
 
-- Preserve file/project key, page/frame/node IDs, branch/version information when available, and a
-  node-specific review URL.
-- Record whether nodes are provider-generated, mechanically imported, or agent-constructed. Only
-  provider-generated or provider-edited visual work satisfies the external-designer requirement.
-- Capture a screenshot or preview when the provider supports it so reviewers can verify the linked
-  artifact.
-
-### Provider-native projects or screens
-
-- Preserve project, conversation, screen, revision, and export identifiers returned by the tool.
-- Distinguish initial generation from later edits and variants.
-- Record retrieval URLs as evidence; do not assume short-lived URLs are permanent.
+- Preserve file/project key, page/frame/node/screen/revision IDs and review URL when available.
+- Record whether the artifact is provider-generated, provider-edited, imported, or agent-constructed.
+- Capture an inspectable preview when the provider supports it.
 
 ## Approval gate
 
-Return `design-approval-required` when the provider artifact exists and objective checks are ready.
-The developer must identify the approved artifact or variant. Approval of the skill plan does not
-pre-approve an unknown provider result.
+Human approval is required only when the assigned handoff explicitly requires it or multiple materially different valid provider outcomes remain without an objective criterion.
 
-If the developer rejects or changes the design direction:
+If the provider result is objectively compliant and no approval gate is required by the handoff, return the evidence to Orchestrator and allow the parent `$frontend-delivery` workflow to continue automatically.
 
-- continue the provider prompt chain when the change stays within the approved design scope;
-- revise the plan when the change materially affects scope, provider roles, data exposure,
-  architecture, or expected output; and
-- preserve rejected artifact IDs and reasons so later prompts do not accidentally restore them.
+If the user rejects/changes design direction:
 
-## Downstream routing
+- continue the provider prompt chain only when the change stays inside assigned Design Subtask scope;
+- return a revision/replan blocker when the change materially affects product scope, architecture, data exposure, provider role, or expected output;
+- preserve rejected artifact IDs/reasons as evidence when useful.
 
-After design approval:
+Do not create or revise a local implementation plan.
 
-1. Resolve module/shared UI ownership with `design-frontend-module-boundary` when still unclear.
-2. Revise or create the implementation plan with file-level `Why`, `Affected`, `Risk`, and
-   `Control` based on the approved artifact.
-3. Use `.agents/rules/frontend-coding.md` for implementation ownership and repository conventions.
-4. Add migration, third-party integration, security, unit/component, or Playwright skills only when
-   their documented triggers are present.
-5. Validate implementation against the approved artifact without treating pixel similarity as the
-   only correctness criterion.
+## Downstream boundary
 
-Do not write application code from this orchestration skill. The design handoff ends the skill's
-authority.
+The Design specialist ends after returning the structured design result. Orchestrator decides downstream Jira routing and internal capabilities.
+
+Do not:
+
+- call Brain/Coding/Testing capabilities directly;
+- select implementation libraries because provider code happens to use them;
+- write application code;
+- update Jira directly;
+- persist a second design workflow/progress database.
