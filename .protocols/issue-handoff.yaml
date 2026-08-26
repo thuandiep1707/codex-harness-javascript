@@ -1,5 +1,6 @@
 kind: issue-handoff
 workflow-mode: "<planning|resume>"
+execution-intent: "<plan-only|deliver>"
 working-project: "<project-name>"
 target-agent: "<design|test-plan|coding|testing>"
 jira:
@@ -25,6 +26,7 @@ forbidden-paths:
 dependencies:
   completed: []
   evidence: []
+internal-capabilities: []
 acceptance-criteria: []
 required-validation: []
 required-capabilities: []
