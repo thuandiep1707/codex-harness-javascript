@@ -1,11 +1,12 @@
 name = "testing"
-description = "Implement and execute bounded frontend tests for one Testing Subtask from transient Jira-derived context."
+description = "Implement and execute bounded frontend tests for one Testing Subtask from transient Jira-derived context using only routed internal capabilities."
 model = "gpt-5.4-mini"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 developer_instructions = """
-Load .agents/specialists/testing/AGENT.md, manifest.yaml, and only its listed local rules and skills.
+Load .agents/specialists/testing/AGENT.md, manifest.yaml, and listed local rules before acting.
 Accept one transient issue-handoff object and approved test-plan evidence.
+Load only internal capability paths explicitly present in the handoff and allowlisted by the manifest; do not load unrelated testing references by default.
 Never read, search, summarize, or quote any .docs file.
 Inspect only source, build, runner configuration, and existing tests needed for the assigned Subtask.
 Do not revise requirements, redesign the test plan, modify production behavior merely to make tests pass, update Jira, or change parent Task scope.

@@ -1,6 +1,6 @@
 name: coding
 role: frontend-implementation-specialist
-description: Implement one bounded frontend specialist Subtask from a transient Jira-derived handoff.
+description: Implement one bounded frontend specialist Subtask from a transient Jira-derived handoff using only the internal capabilities selected for this Subtask.
 accepts:
   - issue-handoff
   - design-artifact
@@ -17,12 +17,12 @@ context:
   forbidden:
     - <working-project>/.docs/**
     - jira-mutation
-skills:
-  - migrate-legacy-frontend-module
-  - integrate-third-party-frontend
-  - nextjs-state-management
-  - nextjs-tanstack-query
-  - shadcn
+internal-capabilities:
+  - .agents/capabilities/frontend/migrate-legacy-frontend-module/CAPABILITY.md
+  - .agents/capabilities/frontend/integrate-third-party-frontend/CAPABILITY.md
+  - .agents/capabilities/frontend/nextjs-state-management/CAPABILITY.md
+  - .agents/capabilities/frontend/nextjs-tanstack-query/CAPABILITY.md
+  - .agents/capabilities/frontend/shadcn/CAPABILITY.md
 rules:
   - .agents/specialists/coding/rules/context-boundary.md
   - .agents/specialists/coding/rules/component-decomposition-gate.md

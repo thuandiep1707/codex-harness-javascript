@@ -1,4 +1,0 @@
-interface:
-  display_name: 'Audit Frontend Security'
-  short_description: 'Find and report frontend security weaknesses'
-  default_prompt: 'Use $audit-frontend-security to perform an authorized evidence-backed frontend security review.'

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Implement Frontend Tests"
-  short_description: "Implement and run tests from an approved test plan"
-  default_prompt: "Use $testing to implement and run the approved bounded frontend tests."
