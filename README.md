@@ -11,6 +11,18 @@ A workflow-driven multi-agent harness for OpenAI Codex that turns product docs a
 
 > This repository is a declarative control plane, not a standalone agent runtime. Codex provides the execution environment; this repository provides workflows, agent behavior, rules, protocols, and progressively loaded capability knowledge.
 
+## Architecture Overview
+
+<p align="center">
+  <img
+    src=".github/assets/architecture-overview.jpg"
+    alt="Codex Harness for JavaScript architecture overview"
+    width="100%"
+  />
+</p>
+
+This overview shows how public workflows move through Brain, Orchestrator, Specialists, internal Capabilities, and Jira-backed durable state across the full delivery lifecycle.
+
 ## Why this exists
 
 Long-running AI coding work becomes unreliable when important context lives only in chat history.
