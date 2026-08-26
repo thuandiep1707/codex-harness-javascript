@@ -17,6 +17,11 @@ architecture-direction:
   summary: ""
   decisions: []
   protected-boundaries: []
+implementation-environment:
+  detected: []
+  unresolved: []
+  conflicting: []
+  evidence: []
 acceptance-criteria:
   - id: "ac-1"
     statement: ""
