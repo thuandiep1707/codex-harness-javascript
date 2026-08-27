@@ -27,6 +27,17 @@
   safe pause.
 - Compose one transient `issue-handoff` per specialist execution. Do not persist it into the product
   repository.
+- Dispatch Brain, Orchestrator, and specialist execution only through Codex native subagent/multi-agent
+  delegation. Internal agent execution must remain a private child-agent execution surface.
+- Never use a user-visible conversation, new-chat action, thread creation, or thread fork as a fallback
+  transport for internal delegation. Do not substitute `create_thread`, `fork_thread`, or equivalent
+  conversation APIs for native subagent dispatch.
+- If native subagent delegation is unavailable or cannot be invoked, stop before specialist execution
+  and return `runtime-capability-blocked`. Never perform the delegated work in the primary chat and
+  never create a visible chat/thread to bypass the missing runtime capability.
+- A Codex UI regression may expose a legitimate native child thread in Recent. Treat that as runtime/UI
+  behavior; the harness must still never intentionally create an independent user-visible conversation
+  for internal agent execution.
 - Use Jira context inheritance: Feature owns common context, Task owns functional-slice delta, Subtask
   owns specialist delta. Do not duplicate the full parent context at lower levels.
 - Use only concise durable Jira execution notes: `[BLOCKER]`, `[RESULT]`, `[REVISION]`, `[HANDOFF]`.

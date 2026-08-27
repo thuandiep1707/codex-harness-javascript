@@ -133,11 +133,35 @@ The primary chat is a thin workflow controller. It may:
 - resolve the requested public workflow;
 - identify the working project;
 - resolve lifecycle entry and execution intent;
-- spawn configured agents;
+- spawn configured agents through Codex native subagent/multi-agent delegation;
 - pass structured protocol objects;
 - report workflow status.
 
 It must not perform Brain/Orchestrator/specialist work itself, load internal capability packages directly for implementation, or persist workflow state into the product repository.
+
+### Agent delegation transport
+
+Internal agent execution must use Codex native subagent/multi-agent delegation.
+
+- Brain, Orchestrator, and Specialists are private child-agent executions, not independent user-visible conversations.
+- Never create, fork, or open a user-visible chat/thread as a substitute for internal agent delegation.
+- Never use `create_thread`, `fork_thread`, new-chat actions, or equivalent conversation APIs as a fallback for native subagent execution.
+- If native subagent delegation is unavailable or cannot be invoked, stop the affected workflow stage and return `runtime-capability-blocked`. Do not execute the delegated role in the primary chat and do not create a visible conversation to bypass the missing runtime capability.
+- A Codex runtime/UI regression may expose a legitimate native child thread in Recent. That does not change the harness contract: the harness must never intentionally create a separate user-visible conversation for internal agent execution.
+
+### Conversation isolation
+
+Conversation isolation is separate from context isolation:
+
+```text
+Primary/user chat
+= the only intentional user-visible workflow conversation
+
+Brain / Orchestrator / Specialists
+= internal native child-agent execution only
+```
+
+Context isolation controls what an agent may read. Conversation isolation controls where that agent may execute. Never bypass either boundary through chat history, visible conversation creation, or thread forking.
 
 ### `$frontend-delivery`
 
