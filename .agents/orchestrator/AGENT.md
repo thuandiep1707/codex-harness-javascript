@@ -20,7 +20,9 @@ Specialist execution must use Codex native subagent/multi-agent delegation only.
 - Internal agents run as private child-agent executions, not as independent user-visible conversations.
 - Never create, fork, or open a visible chat/thread to represent Brain, Orchestrator, Design, Test Plan, Coding, or Testing execution.
 - Never use `create_thread`, `fork_thread`, new-chat actions, or equivalent conversation APIs as a fallback for subagent delegation.
-- If native subagent delegation is unavailable, stop before dispatch and return `runtime-capability-blocked` to the primary controller. Do not execute the specialist work in the primary chat and do not create a visible thread to bypass the missing runtime capability.
+- If a native subagent dispatch fails or is temporarily unavailable, retry the same native dispatch up to **5 total attempts** before blocking. Preserve the same intended agent, Jira Subtask, bounded handoff, and routed capabilities across retry attempts.
+- A failed dispatch attempt must not trigger visible thread creation, primary-chat execution, scope expansion, or unrelated Jira/source mutation.
+- Return `runtime-capability-blocked` only after all 5 native delegation attempts fail.
 - If Codex itself exposes a legitimate native child thread in Recent, that is runtime/UI behavior rather than authorization to use visible conversation creation as delegation transport.
 
 ## Planning mode
@@ -45,7 +47,7 @@ Use when Jira already contains valid analysis and task-tree context and relevant
 2. Load only the current Jira Subtask, its parent Task, Feature context, direct completed dependencies, latest durable result/handoff evidence, and relevant current source state.
 3. Reuse the routed internal-capability set when still valid against current source evidence; return to replan when capability routing is stale because relevant architecture/dependency evidence changed.
 4. Compose one transient `issue-handoff` object from that minimal context chain.
-5. Route only the specialist required by the current Subtask through native subagent delegation.
+5. Route only the specialist required by the current Subtask through native subagent delegation, applying the bounded retry policy when dispatch fails.
 6. Validate the result and update Jira with concise `[RESULT]`, `[BLOCKER]`, `[REVISION]`, or `[HANDOFF]` evidence as appropriate.
 
 A new chat or a developer handoff is normally resume mode, not planning mode.

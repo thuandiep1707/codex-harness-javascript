@@ -32,9 +32,13 @@
 - Never use a user-visible conversation, new-chat action, thread creation, or thread fork as a fallback
   transport for internal delegation. Do not substitute `create_thread`, `fork_thread`, or equivalent
   conversation APIs for native subagent dispatch.
-- If native subagent delegation is unavailable or cannot be invoked, stop before specialist execution
-  and return `runtime-capability-blocked`. Never perform the delegated work in the primary chat and
-  never create a visible chat/thread to bypass the missing runtime capability.
+- When native subagent delegation fails or is temporarily unavailable, retry the same native dispatch
+  up to **5 total attempts**. Preserve the intended agent role, Jira Subtask, bounded handoff, and routed
+  capabilities across retries. Do not broaden scope or change transport between attempts.
+- A failed native dispatch attempt must not authorize product work in the primary chat, visible chat/thread
+  creation, unrelated Jira mutation, or source mutation. Treat it only as a runtime transport failure.
+- Return `runtime-capability-blocked` only after all 5 native delegation attempts fail. Never perform the
+  delegated work in the primary chat and never create a visible chat/thread to bypass the exhausted runtime capability.
 - A Codex UI regression may expose a legitimate native child thread in Recent. Treat that as runtime/UI
   behavior; the harness must still never intentionally create an independent user-visible conversation
   for internal agent execution.

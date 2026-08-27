@@ -146,7 +146,9 @@ Internal agent execution must use Codex native subagent/multi-agent delegation.
 - Brain, Orchestrator, and Specialists are private child-agent executions, not independent user-visible conversations.
 - Never create, fork, or open a user-visible chat/thread as a substitute for internal agent delegation.
 - Never use `create_thread`, `fork_thread`, new-chat actions, or equivalent conversation APIs as a fallback for native subagent execution.
-- If native subagent delegation is unavailable or cannot be invoked, stop the affected workflow stage and return `runtime-capability-blocked`. Do not execute the delegated role in the primary chat and do not create a visible conversation to bypass the missing runtime capability.
+- If a native subagent spawn attempt fails or is temporarily unavailable, retry the same native delegation up to **5 total attempts** before blocking. Each retry must target the same intended agent role and bounded handoff; do not broaden scope or switch transport.
+- A failed spawn attempt is a runtime transport failure, not authorization to execute the delegated role in the primary chat, mutate unrelated workflow state, or create a visible conversation.
+- Only after all 5 native delegation attempts fail may the affected stage return `runtime-capability-blocked`.
 - A Codex runtime/UI regression may expose a legitimate native child thread in Recent. That does not change the harness contract: the harness must never intentionally create a separate user-visible conversation for internal agent execution.
 
 ### Conversation isolation
