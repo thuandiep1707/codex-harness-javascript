@@ -4,7 +4,7 @@ jira:
   feature-key: "<feature-key>"
   requested-task-key: ""
   requested-subtask-key: ""
-status: "<completed|paused|blocked|pause-blocked|revision-required>"
+status: "<completed|paused|blocked|runtime-capability-blocked|pause-blocked|revision-required>"
 subtask-results: []
 durable-jira-updates: []
 pause-checkpoint: null
