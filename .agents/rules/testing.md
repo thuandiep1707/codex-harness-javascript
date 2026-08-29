@@ -4,7 +4,8 @@ Apply this rule only to a Testing specialist Subtask that creates, changes, runs
 tests. The Jira Subtask and transient handoff already decide that testing work is in scope; do not
 create a local test plan, ask a separate yes/no testing decision gate, or update `.analysis/`/`.docs/`.
 
-Load the specialized `.agents/skills/testing/SKILL.md` for concrete test workflow and runner guidance.
+Load only the routed internal testing capability allowed by the Testing manifest for concrete runner
+and test-workflow guidance.
 
 ## Authority and boundary
 
@@ -13,7 +14,7 @@ Use this order:
 1. assigned Testing Subtask + transient handoff;
 2. approved test-plan evidence supplied by Orchestrator when required;
 3. relevant production contract/source and current test-runner configuration;
-4. this rule + testing skill.
+4. this rule + routed testing capability.
 
 Never read `.docs/`, infer missing product behavior from chat history, modify Jira, or expand parent
 Task scope. Return a blocker when expected behavior/test authority is insufficient.
@@ -68,12 +69,22 @@ repository evidence.
 Run the narrowest targeted command first, then the baseline validation explicitly required by the
 handoff/current repository contract.
 
+If execution starts a long-lived process such as `npm run dev`, `npm run preview`, a framework server,
+watcher, browser server, or background service, apply `.agents/rules/runtime-resource-lifecycle.md`:
+
+- register ownership immediately when the process starts;
+- track actual PID/process identity and actual bound ports when available;
+- clean the owned process tree on every exit path;
+- verify known owned ports are released;
+- never terminate an unrelated process based only on port occupancy.
+
 Record:
 
 - commands run;
 - pass/fail results;
 - relevant failure cause and correction;
 - skipped required validation and reason;
+- runtime resources acquired/released/unresolved;
 - residual risk or blocker.
 
 If a test exposes a production defect, report it to Orchestrator. Do not silently alter production
@@ -84,4 +95,5 @@ it does not).
 
 Return one `test-report` and one `agent-report` object to Orchestrator. Do not persist runtime reports
 into the product repository and do not update Jira directly. `completed` requires the assigned test
-scope and required validation evidence to be satisfied deterministically.
+scope, required validation evidence, and cleanup of owned runtime resources to be satisfied
+deterministically.
