@@ -128,26 +128,45 @@ A detected installed dependency is evidence of current usage/availability, not p
 
 ## Primary controller boundary
 
-The primary chat is a thin workflow controller. It may:
+The primary chat is a thin workflow controller and the only runtime transport owner. It may:
 
 - resolve the requested public workflow;
 - identify the working project;
 - resolve lifecycle entry and execution intent;
-- spawn configured agents through Codex native subagent/multi-agent delegation;
-- pass structured protocol objects;
-- supervise direct child-agent lifecycle;
+- spawn, retry, interrupt, wait for, close, and verify configured native child agents;
+- execute Jira connector calls explicitly requested by Orchestrator;
+- pass structured protocol objects and confirmed controller-action results;
+- maintain transient child-agent/runtime-resource supervision;
 - report workflow status.
 
-It must not perform Brain/Orchestrator/specialist work itself, load internal capability packages directly for implementation, or persist workflow state into the product repository.
+It must not perform Brain/Orchestrator/specialist reasoning itself, load internal capability packages directly for implementation, invent or modify an Orchestrator Jira payload, choose a specialist without an Orchestrator dispatch decision, or persist workflow state into the product repository.
+
+### Controller action loop
+
+Orchestrator owns workflow decisions. Primary Controller owns runtime execution.
+
+When Orchestrator needs a Jira operation or specialist execution, it returns `status: awaiting-controller` with exact `controller-actions` in `.protocols/reconciliation-report.yaml`.
+
+Supported actions are intentionally small:
+
+- `jira-call`: execute the exact connector operation/input supplied by Orchestrator;
+- `dispatch-specialist`: spawn the exact specialist with the supplied bounded `issue-handoff`.
+
+Primary Controller executes each requested action without changing its intent/payload and sends the confirmed result back to the **same Orchestrator child**. Orchestrator reconciles that result and returns the next controller action(s) or a terminal status.
+
+Keep one Orchestrator child alive across an active workflow while it still has coordination decisions to make. Do not restart Orchestrator after every Coding/Testing result.
+
+A tool missing inside the Orchestrator child is not proof that the capability is unavailable to the Primary Controller. Only a failed Primary Controller transport attempt can establish that runtime/connector failure.
 
 ### Agent delegation transport
 
-Internal agent execution must use Codex native subagent/multi-agent delegation.
+Internal agent execution must use Codex native subagent/multi-agent delegation through the Primary Controller.
 
 - Brain, Orchestrator, and Specialists are private child-agent executions, not independent user-visible conversations.
+- Orchestrator never invokes native child-agent lifecycle APIs; it requests specialist dispatch through `controller-actions`.
 - Never create, fork, or open a user-visible chat/thread as a substitute for internal agent delegation.
 - Never use `create_thread`, `fork_thread`, new-chat actions, or equivalent conversation APIs as a fallback for native subagent execution.
-- If a native subagent spawn attempt fails or is temporarily unavailable, retry the same native delegation up to **5 total attempts** before blocking. Each retry must target the same intended agent role and bounded handoff; do not broaden scope or switch transport.
+- If a native subagent spawn attempt fails or is temporarily unavailable, Primary Controller retries the same native delegation up to **5 total attempts** before blocking. Each retry must target the same intended agent role and bounded handoff; do not broaden scope or switch transport.
 - A failed spawn attempt is a runtime transport failure, not authorization to execute the delegated role in the primary chat, mutate unrelated workflow state, or create a visible conversation.
 - Only after all 5 native delegation attempts fail may the affected stage return `runtime-capability-blocked`.
 - A Codex runtime/UI regression may expose a legitimate native child thread in Recent. That does not change the harness contract: the harness must never intentionally create a separate user-visible conversation for internal agent execution.
@@ -168,20 +187,20 @@ Context isolation controls what an agent may read. Conversation isolation contro
 
 ### Child-agent lifecycle
 
-Every parent agent owns every child agent it successfully spawns until explicit close has been requested and closure is verified.
+Primary Controller owns every native child agent it successfully spawns until explicit close has been requested and closure is verified.
 
 A completed `wait_agent`, returned report, disconnected subchat, hidden panel, or completed Jira Subtask does not mean the child has been disposed.
 
-Parent lifecycle contract:
+Primary lifecycle contract:
 
 1. register each successfully spawned child-agent identifier in a transient runtime ledger;
 2. capture the child result and any runtime-resource cleanup evidence;
 3. if the child still has an active turn when it must stop, interrupt that turn when the runtime supports it;
 4. explicitly close the child agent;
-5. verify that the child is no longer active before releasing its slot or completing the parent stage;
+5. verify that the child is no longer active before releasing its slot or completing the relevant stage;
 6. apply the same cleanup on completed, blocked, failed, timeout, interrupted, pause, cancel, and revision paths.
 
-Primary Controller owns Brain and Orchestrator child cleanup. Orchestrator owns Design, Test Plan, Coding, and Testing child cleanup.
+Brain and specialist children are normally short-lived. Orchestrator is workflow-lived and remains open across controller turns until coordination reaches a terminal state, then Primary Controller closes/verifies it.
 
 If an owned child cannot be closed or closure cannot be verified, return `runtime-cleanup-blocked`. Never silently detach and rely on the desktop application to eventually dispose it.
 
@@ -195,9 +214,10 @@ Apply `.agents/rules/runtime-resource-lifecycle.md` whenever an agent starts a d
 - Track command, cwd, PID/process-group identity, known descendants, actual bound ports, and ownership evidence when available.
 - Actual auto-selected ports must be tracked; do not assume the requested port was used.
 - The creating specialist is responsible for first-pass cleanup on every exit path.
-- Orchestrator is fallback cleanup supervisor when a specialist crashes, times out, is interrupted, or becomes unavailable.
+- Primary Controller maintains the cross-agent transient resource ledger and is fallback cleanup supervisor when a specialist crashes, times out, is interrupted, or becomes unavailable.
+- Orchestrator consumes cleanup evidence for workflow decisions but does not execute process/port cleanup itself.
 - Never terminate a process merely because it owns a port. Port occupancy alone is not ownership evidence.
-- Runtime cleanup must verify the owned process tree is stopped and known owned ports are released before the child is considered ready to close.
+- Runtime cleanup must verify the owned process tree is stopped and known owned ports are released before the specialist child is considered ready to close.
 - If cleanup cannot be completed safely or verified, return `runtime-cleanup-blocked` and record unresolved resources.
 
 The runtime resource ledger is transient. Do not persist it as a product-repository workflow database or use Jira as a live process registry.
@@ -206,25 +226,26 @@ The runtime resource ledger is transient. Do not persist it as a product-reposit
 
 For `new`:
 
-1. Spawn Brain with user objective, working-project identity, relevant `.docs`, and bounded source/config evidence.
+1. Primary Controller spawns Brain with user objective, working-project identity, relevant `.docs`, and bounded source/config evidence.
 2. Brain returns `analysis-package`, including `implementation-environment` evidence when relevant.
-3. Close and verify the Brain analysis child after its result is captured.
-4. Spawn Orchestrator with lifecycle `planning` and execution intent `deliver`.
-5. Orchestrator creates/reconciles Jira Feature context, functional Tasks, required specialist Subtasks, dependencies, and routed internal-capability identifiers.
-6. Do not stop for plan confirmation. Continue into dependency-ready specialist Subtasks.
-7. Orchestrator reconciles each specialist result, cleans owned runtime resources, closes/verifies each specialist child, and only then unblocks downstream work.
-8. When all required executable Subtasks are complete and Orchestrator has no unresolved runtime/child cleanup, capture its reconciliation result and close/verify the Orchestrator child.
-9. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting `accepted`.
+3. Primary Controller captures the result, then closes/verifies the Brain analysis child.
+4. Primary Controller spawns one Orchestrator child with lifecycle `planning` and execution intent `deliver`, supplying approved analysis and Jira context.
+5. Orchestrator decides Jira Feature/Task/Subtask operations and dependency-ready specialist work, returning exact `controller-actions` with `status: awaiting-controller` whenever runtime execution is required.
+6. Primary Controller executes Jira calls and specialist dispatches exactly as requested, returning confirmed results to the same Orchestrator child.
+7. For each specialist, Primary Controller applies native dispatch retries, collects the specialist report/runtime-resource evidence, ensures owned resources are cleaned, closes/verifies the specialist child, then sends that confirmed result to Orchestrator.
+8. Repeat the controller-action loop until Orchestrator returns a terminal reconciliation result with Brain acceptance inputs ready.
+9. Capture the Orchestrator result and close/verify the Orchestrator child.
+10. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting `accepted`.
 
-For `resume`, skip Brain analysis and Orchestrator decomposition when Jira validity markers and relevant `.docs` baseline remain valid.
+For `resume`, skip Brain analysis and Orchestrator decomposition when Jira validity markers and relevant `.docs` baseline remain valid. Spawn or continue one Orchestrator child for the resumed workflow and use the same controller-action loop.
 
-For `replan`, revalidate only changed relevant requirements/evidence and replan only affected scope. Close/verify every Brain/Orchestrator child used for the replan stage after its result is captured.
+For `replan`, revalidate only changed relevant requirements/evidence and replan only affected scope, then continue through the same controller-action loop.
 
-Interrupt continuous delivery only for real authority/capability gates such as material ambiguity, unapproved dependency/architecture adoption, destructive or sensitive external action, unresolved human design choice, missing required provider, material scope expansion, or unresolved runtime cleanup.
+Interrupt continuous delivery only for real authority/capability gates such as material ambiguity, unapproved dependency/architecture adoption, destructive or sensitive external action, unresolved human design choice, a missing required provider confirmed by Primary Controller transport, material scope expansion, or unresolved runtime cleanup.
 
 ### `$frontend-planning`
 
-Run Brain analysis/revalidation as required, close/verify the Brain child after its result is captured, then spawn Orchestrator with execution intent `plan-only`. Stop after the Jira task graph is valid, capture the Orchestrator result, and close/verify the Orchestrator child. Do not dispatch Design, Test Plan, Coding, or Testing specialists.
+Run Brain analysis/revalidation as required, close/verify the Brain child after its result is captured, then spawn one Orchestrator child with execution intent `plan-only`. Orchestrator returns exact `jira-call` controller actions; Primary Controller executes them and returns confirmed results to the same Orchestrator child until the Jira task graph is valid. Capture the final result, close/verify Orchestrator, and stop before Design, Test Plan, Coding, or Testing specialist execution.
 
 ### Resume work
 
@@ -243,16 +264,15 @@ Do not read the entire Jira project, sprint, comment history, or unrelated task 
 
 For explicit pause while Jira-backed work is active:
 
-1. Stop new specialist dispatch immediately.
-2. Resolve active/incomplete Jira scope, available specialist evidence, active child-agent identifiers, runtime-resource ledger, and relevant current source identity.
-3. Spawn Orchestrator in `pause` mode if a usable Orchestrator child is not already active. Do not spawn Brain.
-4. Reconcile proven execution results/status against Jira.
-5. Clean specialist-owned runtime resources and close/verify active specialist children.
-6. Persist proven missing `[RESULT]` evidence/status corrections first.
-7. Persist one concise `[HANDOFF]` checkpoint for the unfinished continuation point using `.protocols/pause-checkpoint.yaml`.
-8. Capture the Orchestrator pause result, close/verify the Orchestrator child, then report safe pause.
+1. Primary Controller stops executing new `dispatch-specialist` actions immediately.
+2. Primary Controller collects available specialist evidence, active child-agent identifiers, runtime-resource ledger, and relevant current source identity; clean/close specialist execution where safely possible.
+3. Continue the active Orchestrator child in `pause` mode, or spawn one if no usable Orchestrator child exists. Do not spawn Brain.
+4. Orchestrator reconciles proven state and returns required Jira `[RESULT]`/status/HANDOFF operations as exact `jira-call` controller actions.
+5. Primary Controller executes those Jira calls and sends confirmations back to the same Orchestrator child.
+6. Orchestrator returns `paused` only after the durable handoff is confirmed and no unresolved runtime cleanup remains.
+7. Primary Controller captures the pause result, closes/verifies Orchestrator, then reports safe pause.
 
-If Jira persistence fails, stop new execution but return `pause-blocked`. If known runtime resources or child agents cannot be cleaned/closed and verified, return `runtime-cleanup-blocked`; never claim a safe pause while known execution resources remain active.
+If a required Jira call fails, return that exact connector result to Orchestrator; if durable handoff cannot be confirmed, the workflow returns `pause-blocked`. If known runtime resources or child agents cannot be cleaned/closed and verified, return `runtime-cleanup-blocked`.
 
 ## Jira validity markers
 
@@ -311,7 +331,7 @@ On explicit pause, `[HANDOFF]` is mandatory whenever unfinished scope remains. J
 | Agent | Module | Responsibility |
 | --- | --- | --- |
 | `brain` | `.agents/brain/` | Requirements, architecture reasoning, stack detection, ambiguity, revalidation, final acceptance |
-| `orchestrator` | `.agents/orchestrator/` | Jira hierarchy, execution intent, capability routing, resume, pause/handoff, specialist coordination, reconciliation, child/resource cleanup supervision |
+| `orchestrator` | `.agents/orchestrator/` | Jira/workflow decisions, capability routing, resume, pause/handoff decisions, specialist coordination, reconciliation |
 | `design` | `.agents/specialists/design/` | External design-provider execution |
 | `test-plan` | `.agents/specialists/test-plan/` | Risk-based test-plan result |
 | `coding` | `.agents/specialists/coding/` | Bounded production implementation using routed internal capabilities |
@@ -351,8 +371,8 @@ These are transient communication contracts, not product-repository runtime file
 
 ## Missing external capabilities
 
-MCP servers, plugins, tokens, and authentication are user-managed. Never install/connect/configure them unless explicitly requested. When required capability is unavailable, return a blocker rather than fabricating external state.
+MCP servers, plugins, tokens, and authentication are user-managed. Never install/connect/configure them unless explicitly requested. A missing tool inside a child agent is not by itself a workflow blocker when the Primary Controller owns that transport. Treat an external capability as unavailable only after the relevant Primary Controller transport call fails; then return the exact failure to Orchestrator instead of fabricating external state.
 
 ## Final acceptance
 
-Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. Return `accepted` only when requirements/acceptance criteria are covered, implementation matches approved architecture/design, intended behavior is proven, no blocking gap remains, all known child agents have been explicitly closed/verified, and all owned runtime resources are released or safely resolved.
+Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. Return `accepted` only when requirements/acceptance criteria are covered, implementation matches approved architecture/design, intended behavior is proven, no blocking gap remains, all known child agents have been explicitly closed/verified by the Primary Controller, and all owned runtime resources are released or safely resolved.

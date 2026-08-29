@@ -47,7 +47,7 @@ When evidence is absent or conflicting, keep the technology decision unresolved 
 
 ## Durable pause checkpoint
 
-A user-requested pause is not a specialist handoff packet. Orchestrator builds a separate transient object matching `.protocols/pause-checkpoint.yaml`, then persists its human-facing projection to Jira as one `[HANDOFF]` note.
+A user-requested pause is not a specialist handoff packet. Orchestrator builds a separate transient object matching `.protocols/pause-checkpoint.yaml`, then asks the Primary Controller to persist its human-facing projection to Jira through an exact `jira-call` controller action.
 
 The durable Jira note must be concise, in Vietnamese, and contain only fields needed to continue:
 
@@ -77,11 +77,11 @@ Tiếp theo:
 
 Omit source fields that are genuinely irrelevant, but for changed code prefer repository + branch + commit so another machine can verify that it has the checkpointed source. Never infer completion from status alone; use specialist reports, validation evidence, and current source state.
 
-Before writing `[HANDOFF]`, persist any missing `[RESULT]` evidence and status corrections that are already proven. Do not use the handoff note to hide a stale Jira state.
+Before requesting `[HANDOFF]`, request any missing `[RESULT]` evidence and status corrections that are already proven. Do not use the handoff note to hide a stale Jira state.
 
 Write the handoff at the single unfinished continuation point. If a current Subtask remains active, that Subtask owns the note. If the active Subtask is proven complete and another existing Subtask is the deterministic next continuation point, finish the first result/status reconciliation and attach the handoff to the next Subtask. Do not create a synthetic pause Task.
 
-A pause is complete only when this durable note is confirmed in Jira. If persistence fails, return `pause-blocked`; do not claim safe handoff.
+A pause is complete only when the Primary Controller returns confirmation that this durable note was persisted in Jira. If persistence fails, return `pause-blocked`; do not claim safe handoff.
 
 ## Design
 
