@@ -23,29 +23,43 @@ Resolve the current entry before spawning agents:
 
 Natural-language pause intent such as `dừng lại`, `tạm dừng`, `để mai làm tiếp`, or equivalent must route to `PAUSE`.
 
+## Controller execution rule
+
+The Primary Controller owns runtime transport for the whole workflow:
+
+- native child-agent spawn/retry/interrupt/close/verification;
+- Jira connector calls requested by Orchestrator;
+- cross-agent runtime-resource cleanup supervision.
+
+Orchestrator owns workflow decisions. It must not call native agent lifecycle APIs or Jira directly. It returns `controller-actions`; the Primary Controller executes them exactly and returns confirmed results to the same Orchestrator child.
+
+Keep one Orchestrator child alive across the active delivery workflow. Do not restart it after every Coding/Testing result.
+
 ## Continuous delivery
 
 For `NEW`:
 
-1. Spawn Brain for bounded requirement analysis and project-stack discovery.
-2. Pass the approved analysis package to Orchestrator in planning mode.
-3. Orchestrator creates Jira Feature/Task/Subtask context and selects only evidence-backed internal capabilities needed by each specialist Subtask.
-4. Continue automatically into dependency-ready specialist Subtasks. Do not ask for confirmation merely because planning finished.
-5. For every specialist execution, reconcile its result, clean owned runtime resources, explicitly close the child agent, and verify closure before dependent work is unblocked.
-6. When all required executable Subtasks are complete and no known child/runtime resource remains active, spawn Brain for final acceptance.
-7. After Brain acceptance returns, explicitly close and verify the Brain child before reporting the workflow complete.
+1. Primary Controller spawns Brain for bounded requirement analysis and project-stack discovery.
+2. Capture Brain result, then explicitly close and verify the Brain child.
+3. Primary Controller spawns one Orchestrator child in planning mode with execution intent `deliver` and supplies the approved analysis/Jira context.
+4. Orchestrator returns `status: awaiting-controller` with exact `jira-call` and/or `dispatch-specialist` actions as needed.
+5. Primary Controller executes those actions without changing their intent/payload and sends confirmed action results back to the same Orchestrator child.
+6. For `dispatch-specialist`, Primary Controller applies the native retry policy, collects the specialist result/runtime-resource evidence, ensures owned resources are cleaned, explicitly closes/verifies the specialist child, then returns the result to Orchestrator.
+7. Repeat the controller-action loop until Orchestrator returns a terminal reconciliation result with acceptance inputs ready.
+8. Close and verify the Orchestrator child.
+9. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting the workflow complete.
 
-For `RESUME`, skip Brain analysis and Orchestrator decomposition when Jira validity markers and relevant `.docs` baseline remain valid. Resume only the minimal current Jira chain and required specialist.
+For `RESUME`, skip Brain analysis and Orchestrator decomposition when Jira validity markers and relevant `.docs` baseline remain valid. Spawn/keep one Orchestrator child for the resumed workflow and continue through the same controller-action loop.
 
-For `REPLAN`, revalidate only changed relevant requirements and replan only affected Jira scope.
+For `REPLAN`, revalidate only changed relevant requirements and replan only affected Jira scope, then continue through the same controller-action loop.
 
-For `PAUSE`, stop new dispatch and require Orchestrator runtime-resource cleanup, child-agent cleanup, pause reconciliation, and durable Jira `[HANDOFF]` before reporting a safe pause.
+For `PAUSE`, stop new specialist dispatch, let the Primary Controller collect/clean active runtime execution, then use the active Orchestrator (or spawn one in pause mode if none is usable) to decide required Jira result/handoff calls. Report a safe pause only after those calls and cleanup are confirmed.
 
 ## Execution resource lifecycle
 
 A returned child-agent report is not the end of the child lifecycle.
 
-Parent agents must keep transient ownership of every spawned child until explicit close is requested and closure is verified. Long-lived processes created by Coding/Testing or another specialist must be registered when created and released before child close.
+Primary Controller keeps transient ownership of every spawned child until explicit close is requested and closure is verified. Long-lived processes created by Coding/Testing or another specialist must be registered when created and released before child close.
 
 Do not intentionally leave child agents, dev/preview servers, watchers, browser processes, or known owned ports active after the workflow stage that created them.
 
@@ -59,7 +73,7 @@ Interrupt continuous delivery only when progress requires authority that the wor
 - architecture or dependency adoption not already approved by project evidence;
 - destructive or externally sensitive action requiring explicit approval;
 - unresolved design choice where multiple valid outcomes require human selection;
-- missing required external capability;
+- missing required external capability confirmed at the Primary Controller transport layer;
 - scope change that exceeds the current approved Jira boundary;
 - runtime cleanup that cannot be safely completed or verified.
 
