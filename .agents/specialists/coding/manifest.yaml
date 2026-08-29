@@ -9,6 +9,7 @@ produces:
   - source-code-change
   - implementation-report
   - agent-report
+  - runtime-resource-events
 context:
   allowed:
     - transient-issue-handoff
@@ -27,6 +28,7 @@ rules:
   - .agents/specialists/coding/rules/context-boundary.md
   - .agents/specialists/coding/rules/component-decomposition-gate.md
   - .agents/rules/frontend-coding.md
+  - .agents/rules/runtime-resource-lifecycle.md
 capabilities:
   required:
     - workspace-read
