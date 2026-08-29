@@ -23,7 +23,7 @@ Only packages under `.agents/skills/` are user-facing `$` entry points discovera
 
 Current frontend workflows:
 
-- `$frontend-delivery`: run frontend work continuously from the smallest valid entry through analysis, Jira orchestration, specialist execution, testing, and final acceptance.
+- `$frontend-delivery`: run frontend work continuously from the smallest valid entry through analysis, Jira orchestration, specialist execution, testing, runtime cleanup, child-agent cleanup, and final acceptance.
 - `$frontend-planning`: analyze and create/reconcile the Jira work graph, then stop before specialist execution.
 
 Do not place agent implementation knowledge under `.agents/skills/`.
@@ -92,7 +92,7 @@ A new chat or developer handoff is normally `resume`, not `new`.
 
 When active Jira-backed work exists, treat explicit natural-language intent to stop, pause, hand off, or continue later as `pause`. The user does not need a special command. Phrases such as `dừng lại`, `tạm dừng`, `dừng công việc`, `để mai làm tiếp`, or `bàn giao ở đây` are examples, not an exhaustive command list.
 
-Do not interpret `pause` as merely stopping generation or changing Jira status. Route it to Orchestrator pause mode so Jira receives a durable checkpoint before the workflow is reported safely paused.
+Do not interpret `pause` as merely stopping generation or changing Jira status. Route it to Orchestrator pause mode so runtime resources, active child agents, and Jira continuation state are reconciled before the workflow is reported safely paused.
 
 If no active Jira-backed workflow exists, obey the user's stop request normally and do not create a fake Jira handoff.
 
@@ -135,6 +135,7 @@ The primary chat is a thin workflow controller. It may:
 - resolve lifecycle entry and execution intent;
 - spawn configured agents through Codex native subagent/multi-agent delegation;
 - pass structured protocol objects;
+- supervise direct child-agent lifecycle;
 - report workflow status.
 
 It must not perform Brain/Orchestrator/specialist work itself, load internal capability packages directly for implementation, or persist workflow state into the product repository.
@@ -165,27 +166,65 @@ Brain / Orchestrator / Specialists
 
 Context isolation controls what an agent may read. Conversation isolation controls where that agent may execute. Never bypass either boundary through chat history, visible conversation creation, or thread forking.
 
+### Child-agent lifecycle
+
+Every parent agent owns every child agent it successfully spawns until explicit close has been requested and closure is verified.
+
+A completed `wait_agent`, returned report, disconnected subchat, hidden panel, or completed Jira Subtask does not mean the child has been disposed.
+
+Parent lifecycle contract:
+
+1. register each successfully spawned child-agent identifier in a transient runtime ledger;
+2. capture the child result and any runtime-resource cleanup evidence;
+3. if the child still has an active turn when it must stop, interrupt that turn when the runtime supports it;
+4. explicitly close the child agent;
+5. verify that the child is no longer active before releasing its slot or completing the parent stage;
+6. apply the same cleanup on completed, blocked, failed, timeout, interrupted, pause, cancel, and revision paths.
+
+Primary Controller owns Brain and Orchestrator child cleanup. Orchestrator owns Design, Test Plan, Coding, and Testing child cleanup.
+
+If an owned child cannot be closed or closure cannot be verified, return `runtime-cleanup-blocked`. Never silently detach and rely on the desktop application to eventually dispose it.
+
+### Runtime resource lifecycle
+
+Long-lived runtime resources created inside a child execution are transient execution resources, not product state.
+
+Apply `.agents/rules/runtime-resource-lifecycle.md` whenever an agent starts a dev/preview server, watcher, browser process, background service, or other process that may outlive the immediate command.
+
+- Register ownership immediately using `.protocols/runtime-resource-event.yaml`; do not wait for the final report.
+- Track command, cwd, PID/process-group identity, known descendants, actual bound ports, and ownership evidence when available.
+- Actual auto-selected ports must be tracked; do not assume the requested port was used.
+- The creating specialist is responsible for first-pass cleanup on every exit path.
+- Orchestrator is fallback cleanup supervisor when a specialist crashes, times out, is interrupted, or becomes unavailable.
+- Never terminate a process merely because it owns a port. Port occupancy alone is not ownership evidence.
+- Runtime cleanup must verify the owned process tree is stopped and known owned ports are released before the child is considered ready to close.
+- If cleanup cannot be completed safely or verified, return `runtime-cleanup-blocked` and record unresolved resources.
+
+The runtime resource ledger is transient. Do not persist it as a product-repository workflow database or use Jira as a live process registry.
+
 ### `$frontend-delivery`
 
 For `new`:
 
 1. Spawn Brain with user objective, working-project identity, relevant `.docs`, and bounded source/config evidence.
 2. Brain returns `analysis-package`, including `implementation-environment` evidence when relevant.
-3. Spawn Orchestrator with lifecycle `planning` and execution intent `deliver`.
-4. Orchestrator creates/reconciles Jira Feature context, functional Tasks, required specialist Subtasks, dependencies, and routed internal-capability identifiers.
-5. Do not stop for plan confirmation. Continue into dependency-ready specialist Subtasks.
-6. Orchestrator reconciles each specialist result into Jira before unblocking downstream work.
-7. When all required executable Subtasks are complete, spawn Brain for final acceptance.
+3. Close and verify the Brain analysis child after its result is captured.
+4. Spawn Orchestrator with lifecycle `planning` and execution intent `deliver`.
+5. Orchestrator creates/reconciles Jira Feature context, functional Tasks, required specialist Subtasks, dependencies, and routed internal-capability identifiers.
+6. Do not stop for plan confirmation. Continue into dependency-ready specialist Subtasks.
+7. Orchestrator reconciles each specialist result, cleans owned runtime resources, closes/verifies each specialist child, and only then unblocks downstream work.
+8. When all required executable Subtasks are complete and Orchestrator has no unresolved runtime/child cleanup, capture its reconciliation result and close/verify the Orchestrator child.
+9. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting `accepted`.
 
 For `resume`, skip Brain analysis and Orchestrator decomposition when Jira validity markers and relevant `.docs` baseline remain valid.
 
-For `replan`, revalidate only changed relevant requirements/evidence and replan only affected scope.
+For `replan`, revalidate only changed relevant requirements/evidence and replan only affected scope. Close/verify every Brain/Orchestrator child used for the replan stage after its result is captured.
 
-Interrupt continuous delivery only for real authority/capability gates such as material ambiguity, unapproved dependency/architecture adoption, destructive or sensitive external action, unresolved human design choice, missing required provider, or material scope expansion.
+Interrupt continuous delivery only for real authority/capability gates such as material ambiguity, unapproved dependency/architecture adoption, destructive or sensitive external action, unresolved human design choice, missing required provider, material scope expansion, or unresolved runtime cleanup.
 
 ### `$frontend-planning`
 
-Run Brain analysis/revalidation as required, then spawn Orchestrator with execution intent `plan-only`. Stop after the Jira task graph is valid. Do not dispatch Design, Test Plan, Coding, or Testing specialists.
+Run Brain analysis/revalidation as required, close/verify the Brain child after its result is captured, then spawn Orchestrator with execution intent `plan-only`. Stop after the Jira task graph is valid, capture the Orchestrator result, and close/verify the Orchestrator child. Do not dispatch Design, Test Plan, Coding, or Testing specialists.
 
 ### Resume work
 
@@ -205,14 +244,15 @@ Do not read the entire Jira project, sprint, comment history, or unrelated task 
 For explicit pause while Jira-backed work is active:
 
 1. Stop new specialist dispatch immediately.
-2. Resolve active/incomplete Jira scope, available specialist evidence, and relevant current source identity.
-3. Spawn Orchestrator in `pause` mode. Do not spawn Brain.
+2. Resolve active/incomplete Jira scope, available specialist evidence, active child-agent identifiers, runtime-resource ledger, and relevant current source identity.
+3. Spawn Orchestrator in `pause` mode if a usable Orchestrator child is not already active. Do not spawn Brain.
 4. Reconcile proven execution results/status against Jira.
-5. Persist proven missing `[RESULT]` evidence/status corrections first.
-6. Persist one concise `[HANDOFF]` checkpoint for the unfinished continuation point using `.protocols/pause-checkpoint.yaml`.
-7. Report safe pause only after Jira persistence is confirmed.
+5. Clean specialist-owned runtime resources and close/verify active specialist children.
+6. Persist proven missing `[RESULT]` evidence/status corrections first.
+7. Persist one concise `[HANDOFF]` checkpoint for the unfinished continuation point using `.protocols/pause-checkpoint.yaml`.
+8. Capture the Orchestrator pause result, close/verify the Orchestrator child, then report safe pause.
 
-If Jira persistence fails, stop new execution but return `pause-blocked`; never claim a durable handoff exists when it does not.
+If Jira persistence fails, stop new execution but return `pause-blocked`. If known runtime resources or child agents cannot be cleaned/closed and verified, return `runtime-cleanup-blocked`; never claim a safe pause while known execution resources remain active.
 
 ## Jira validity markers
 
@@ -271,7 +311,7 @@ On explicit pause, `[HANDOFF]` is mandatory whenever unfinished scope remains. J
 | Agent | Module | Responsibility |
 | --- | --- | --- |
 | `brain` | `.agents/brain/` | Requirements, architecture reasoning, stack detection, ambiguity, revalidation, final acceptance |
-| `orchestrator` | `.agents/orchestrator/` | Jira hierarchy, execution intent, capability routing, resume, pause/handoff, specialist coordination, reconciliation |
+| `orchestrator` | `.agents/orchestrator/` | Jira hierarchy, execution intent, capability routing, resume, pause/handoff, specialist coordination, reconciliation, child/resource cleanup supervision |
 | `design` | `.agents/specialists/design/` | External design-provider execution |
 | `test-plan` | `.agents/specialists/test-plan/` | Risk-based test-plan result |
 | `coding` | `.agents/specialists/coding/` | Bounded production implementation using routed internal capabilities |
@@ -299,6 +339,7 @@ Use templates under `.protocols/`:
 - `issue-handoff.yaml`
 - `pause-checkpoint.yaml`
 - `agent-report.yaml`
+- `runtime-resource-event.yaml`
 - `design-artifact.yaml`
 - `test-plan-artifact.yaml`
 - `implementation-report.yaml`
@@ -314,4 +355,4 @@ MCP servers, plugins, tokens, and authentication are user-managed. Never install
 
 ## Final acceptance
 
-Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. Return `accepted` only when requirements/acceptance criteria are covered, implementation matches approved architecture/design, intended behavior is proven, and no blocking gap remains.
+Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. Return `accepted` only when requirements/acceptance criteria are covered, implementation matches approved architecture/design, intended behavior is proven, no blocking gap remains, all known child agents have been explicitly closed/verified, and all owned runtime resources are released or safely resolved.
