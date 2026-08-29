@@ -1,0 +1,23 @@
+kind: runtime-resource-event
+action: "<acquire|release|cleanup-failed>"
+resource-id: "<runtime-resource-id>"
+owner:
+  agent: "<agent-name>"
+  child-agent-id: ""
+  jira-subtask-key: ""
+resource:
+  kind: "<process|process-group|server|watcher|browser|other>"
+  command: ""
+  cwd: ""
+  pid: null
+  process-group-id: null
+  parent-pid: null
+  descendant-pids: []
+  ports: []
+  ownership-evidence: []
+cleanup:
+  attempted: false
+  process-stopped: false
+  ports-released: false
+  unresolved-reason: ""
+status: "<active|released|unresolved>"

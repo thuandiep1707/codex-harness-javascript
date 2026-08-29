@@ -5,11 +5,11 @@
 [![GitHub Template](https://img.shields.io/badge/GitHub-Template-181717?logo=github)](https://github.com/thuandiep1707/codex-harness-javascript/generate)
 [![JavaScript](https://img.shields.io/badge/JavaScript-Harness-F7DF1E?logo=javascript&logoColor=000)](https://github.com/thuandiep1707/codex-harness-javascript)
 
-A workflow-driven multi-agent harness for OpenAI Codex that turns product docs and current source into Jira-backed planning, implementation, testing, pause/resume handoff, and final acceptance.
+A workflow-driven multi-agent harness for OpenAI Codex that turns product docs and current source into Jira-backed planning, implementation, testing, pause/resume handoff, execution-resource cleanup, and final acceptance.
 
 **Public workflows:** `$frontend-delivery` · `$frontend-planning`
 
-> This repository is a declarative control plane, not a standalone agent runtime. Codex provides the execution environment; this repository provides workflows, agent behavior, rules, protocols, and progressively loaded capability knowledge.
+> This repository is a declarative control plane, not a standalone agent runtime. Codex provides the execution environment; this repository provides workflows, agent behavior, rules, protocols, lifecycle controls, and progressively loaded capability knowledge.
 
 ## Architecture Overview
 
@@ -27,14 +27,15 @@ This overview shows how public workflows move through Brain, Orchestrator, Speci
 
 Long-running AI coding work becomes unreliable when important context lives only in chat history.
 
-A session can end. A different developer may continue the work. Requirements can change after planning. Multiple specialists may need different context. A project may already use MUI, HeroUI, Radix, TanStack Query, Zustand, or another stack that should not be silently replaced by a hard-coded default.
+A session can end. A different developer may continue the work. Requirements can change after planning. Multiple specialists may need different context. A project may already use MUI, HeroUI, Radix, TanStack Query, Zustand, or another stack that should not be silently replaced by a hard-coded default. Child agents and dev/test servers can also outlive their intended task unless their lifecycle is explicitly managed.
 
-This harness is built around four ideas:
+This harness is built around five ideas:
 
 - workflow state should survive chat sessions and developer handoffs;
 - users should launch complete workflows, not dozens of internal skills;
 - specialists should receive bounded context and load only the knowledge they need;
-- existing project evidence should drive implementation routing instead of library assumptions.
+- existing project evidence should drive implementation routing instead of library assumptions;
+- child agents and runtime resources should be explicitly cleaned up instead of relying on desktop/runtime garbage collection.
 
 ## What makes it different
 
@@ -45,8 +46,9 @@ This harness is built around four ideas:
 | **Pause / Resume by design** | A natural-language pause request creates a durable handoff before the workflow stops. A later session resumes from the smallest valid Jira context. |
 | **Progressive capability loading** | Agents load only routed capabilities for the current subtask instead of loading the whole knowledge base. |
 | **Evidence-based stack discovery** | The harness inspects the existing project before routing UI, state, data, testing, or framework capabilities. |
+| **Explicit execution cleanup** | Parent agents close and verify child agents; Coding/Testing clean owned dev servers, process trees, and actual bound ports before the lifecycle is complete. |
 | **Strict agent boundaries** | Brain reasons about requirements, Orchestrator owns Jira and routing, Specialists execute bounded work. |
-| **Acceptance beyond green tests** | Completion requires final acceptance against authoritative docs, Jira context, source changes, and validation evidence. |
+| **Acceptance beyond green tests** | Completion requires final acceptance against authoritative docs, Jira context, source changes, validation evidence, and clean execution resources. |
 
 ## Quick Start
 
@@ -93,7 +95,7 @@ $frontend-delivery
 Implement the recruitment scope from .docs end-to-end.
 ```
 
-`$frontend-delivery` does **not** stop just because Jira Tasks/Subtasks were created. It continues through dependency-ready specialist work, testing, reconciliation, and final acceptance unless it reaches a real blocker, approval gate, or explicit pause.
+`$frontend-delivery` does **not** stop just because Jira Tasks/Subtasks were created. It continues through dependency-ready specialist work, testing, reconciliation, runtime cleanup, child-agent closure, and final acceptance unless it reaches a real blocker, approval gate, or explicit pause.
 
 ## Example
 
@@ -119,6 +121,8 @@ Coding
         ↓
 Testing
         ↓
+runtime cleanup + child-agent close
+        ↓
 Reconciliation
         ↓
 Brain Acceptance
@@ -133,9 +137,13 @@ If the work is interrupted:
     ↓
 stop new dispatch
     ↓
-reconcile current results
+collect execution evidence
     ↓
-persist Jira [HANDOFF]
+clean owned runtime resources
+    ↓
+close active child agents
+    ↓
+reconcile Jira + persist [HANDOFF]
     ↓
 paused
 ```
@@ -148,7 +156,7 @@ Only packages under `.agents/skills/` are user-facing workflow entry points.
 
 | Workflow | Purpose |
 | --- | --- |
-| `$frontend-delivery` | Run frontend work end-to-end from authoritative docs/source through Jira planning, specialist execution, testing, reconciliation, and final acceptance. |
+| `$frontend-delivery` | Run frontend work end-to-end from authoritative docs/source through Jira planning, specialist execution, testing, cleanup, reconciliation, and final acceptance. |
 | `$frontend-planning` | Analyze the requested frontend scope, create the Jira Feature/Task/Subtask graph, and stop before implementation. |
 
 Everything else is internal capability knowledge and should not appear in the `$` picker.
@@ -187,7 +195,7 @@ Examples:
 
 ```text
 $frontend-delivery + NEW
-→ Brain → Jira planning → specialist execution → Acceptance
+→ Brain → Jira planning → specialist execution → cleanup → Acceptance
 
 $frontend-planning + NEW
 → Brain → Jira planning → STOP
@@ -301,6 +309,8 @@ When the user expresses clear pause intent, the Primary Controller routes it to 
 ```text
 freezes new dispatch
 → collects available execution evidence
+→ cleans specialist-owned runtime resources
+→ closes and verifies active specialist children
 → reconciles source/results with Jira
 → persists missing RESULT/status updates
 → persists [HANDOFF]
@@ -309,18 +319,43 @@ freezes new dispatch
 
 A handoff records only continuation essentials such as source identity, completed scope, remaining scope, validation state, blockers, and the next Jira action.
 
-If the durable checkpoint cannot be written, the harness must report `pause-blocked` rather than claiming the workflow was safely paused.
+If the durable checkpoint cannot be written, the harness reports `pause-blocked`. If known child agents or owned runtime resources cannot be safely cleaned and verified, it reports `runtime-cleanup-blocked` rather than claiming the workflow was safely paused.
+
+## Execution Resource Lifecycle
+
+A returned agent report is not the end of the execution lifecycle.
+
+```text
+spawn child
+→ execute
+→ capture result
+→ clean owned runtime resources
+→ close child
+→ verify child closed
+→ release slot / continue
+```
+
+Parent ownership is explicit:
+
+- Primary Controller owns Brain and Orchestrator child lifecycle;
+- Orchestrator owns Design, Test Plan, Coding, and Testing child lifecycle;
+- Coding/Testing own long-lived processes they create and must clean them before declaring themselves ready to close;
+- Orchestrator performs fallback cleanup when a specialist crashes or becomes unavailable, but only when ownership evidence is sufficient.
+
+Runtime resource ownership can include command, working directory, PID/process group, known descendants, and actual bound ports. Port occupancy alone is never enough evidence to terminate a process. This prevents the harness from stopping a developer-managed server simply because it uses the same port.
+
+Runtime-resource events and child/resource ledgers are transient control-plane evidence. They are not stored as product workflow files and Jira is not used as a live process registry.
 
 ## Agent Roles
 
 | Agent | Responsibility |
 | --- | --- |
 | `brain` | Requirement reasoning, architecture analysis, project-stack discovery, revalidation, final acceptance |
-| `orchestrator` | Jira planning/resume/pause, dependency routing, capability selection, specialist coordination, reconciliation |
+| `orchestrator` | Jira planning/resume/pause, dependency routing, capability selection, specialist coordination, reconciliation, resource/child cleanup supervision |
 | `design` | Bounded external design-provider execution |
 | `test-plan` | Risk-based test-plan evidence |
-| `coding` | Bounded implementation using only routed capabilities |
-| `testing` | Bounded test implementation/execution using only routed capabilities |
+| `coding` | Bounded implementation using only routed capabilities and cleanup of owned runtime resources |
+| `testing` | Bounded test implementation/execution and cleanup of owned test runtime resources |
 
 Specialists do not own Jira mutation, do not read the full product truth independently, and do not expand their scope without returning a blocker to the Orchestrator.
 
@@ -358,7 +393,7 @@ The core harness is intentionally domain-extensible. Planned directions include:
 - more evidence-routed frontend capabilities such as MUI, HeroUI, Radix, and other project stacks;
 - a machine-readable capability registry as the knowledge base grows;
 - harness validation / doctor tooling;
-- workflow-level evals for planning, delivery, pause/resume, replan, and acceptance;
+- workflow-level evals for planning, delivery, pause/resume, replan, acceptance, and cleanup;
 - stronger reliability controls for stale context, idempotent planning, and concurrent sessions.
 
 The goal is to grow the internal capability graph without turning the public `$` picker into a long list of implementation skills.
@@ -373,6 +408,7 @@ When extending the harness, keep the architecture boundary clear:
 - add reusable implementation knowledge as an **internal capability**;
 - keep specialist responsibilities bounded;
 - prefer durable Jira/source evidence over chat-memory assumptions;
+- clean child agents and owned runtime resources on every exit path;
 - avoid hard-coding a project library when stack discovery can resolve it from evidence.
 
 ## License
