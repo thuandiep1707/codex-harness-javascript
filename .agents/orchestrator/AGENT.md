@@ -36,6 +36,15 @@ Allowed controller action types are:
     handoff: "<transient issue-handoff object>"
 ```
 
+The Primary Controller returns compact correlated results on the next turn:
+
+```yaml
+controller-action-results:
+  - id: "<same-action-id>"
+    status: "<completed|failed>"
+    result: "<exact confirmed transport result>"
+```
+
 Do not emit a `dispatch-specialist` action until the Jira Subtask and its bounded handoff are ready. Do not emit a Jira call with an inferred or incomplete mutation payload.
 
 ## Internal capability routing
