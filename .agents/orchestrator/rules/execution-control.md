@@ -22,9 +22,9 @@
 - When unfinished scope remains, persist exactly one concise latest `[HANDOFF]` checkpoint at the
   continuation point. It must contain source repository/branch/commit when relevant, completed scope,
   remaining scope, validation state, blockers, and the next Jira work item/action.
-- Do not report `status: paused` until the handoff is durably confirmed in Jira. If Jira is unavailable
-  or the checkpoint cannot be persisted, stop new work but return `pause-blocked` instead of claiming a
-  safe pause.
+- Do not report `status: paused` until runtime-resource cleanup, child-agent cleanup, and the handoff are
+  confirmed. If Jira is unavailable or the checkpoint cannot be persisted, return `pause-blocked`.
+  If child/resource cleanup remains unresolved, return `runtime-cleanup-blocked`.
 - Compose one transient `issue-handoff` per specialist execution. Do not persist it into the product
   repository.
 - Dispatch Brain, Orchestrator, and specialist execution only through Codex native subagent/multi-agent
@@ -39,16 +39,34 @@
   creation, unrelated Jira mutation, or source mutation. Treat it only as a runtime transport failure.
 - Return `runtime-capability-blocked` only after all 5 native delegation attempts fail. Never perform the
   delegated work in the primary chat and never create a visible chat/thread to bypass the exhausted runtime capability.
-- A Codex UI regression may expose a legitimate native child thread in Recent. Treat that as runtime/UI
-  behavior; the harness must still never intentionally create an independent user-visible conversation
-  for internal agent execution.
+- Treat every successfully spawned child agent as parent-owned until explicit close is requested and
+  closure is verified. A returned report, `wait_agent` completion, disconnection, or hidden child panel
+  does not release that ownership.
+- Track spawned child-agent identifiers transiently. After a child result is captured, ensure its owned
+  runtime resources are cleaned, then explicitly close the child and verify that it is no longer active.
+- When an active child must stop because of pause, timeout, cancellation, failure, or revision, interrupt
+  the active turn when supported, then perform resource cleanup, close the child, and verify closure.
+- Never finish a workflow stage while a known child agent remains active unless the stage returns
+  `runtime-cleanup-blocked` with the unresolved child recorded.
+- Maintain a transient runtime-resource ledger from `.protocols/runtime-resource-event.yaml` acquire and
+  release events. Do not persist this ledger into the product repository or use Jira as a live process registry.
+- A specialist owns only runtime resources it can prove it created. Track command, cwd, PID/process-group
+  identity, known descendants, actual bound ports, and ownership evidence when available.
+- The resource creator has first cleanup responsibility. On every exit path it must stop owned long-lived
+  resources, stop owned descendants/process group when applicable, and verify known owned ports are released.
+- If a specialist crashes, times out, is interrupted, or becomes unavailable before cleanup, Orchestrator
+  performs fallback cleanup only for resources with sufficient ownership evidence.
+- Never terminate a process merely because it occupies a port. Port occupancy is not ownership evidence.
+  When a framework auto-selects a fallback port, track the actual bound port rather than assuming the requested one.
+- Persist a specialist result to Jira only after its execution evidence is captured. Do not unblock dependent
+  work until runtime-resource cleanup and child-agent close are complete, or explicitly return
+  `runtime-cleanup-blocked`.
 - Use Jira context inheritance: Feature owns common context, Task owns functional-slice delta, Subtask
   owns specialist delta. Do not duplicate the full parent context at lower levels.
 - Use only concise durable Jira execution notes: `[BLOCKER]`, `[RESULT]`, `[REVISION]`, `[HANDOFF]`.
   Never store hidden reasoning or routine step-by-step activity.
-- Persist a specialist result to Jira before unblocking dependent work. Reject output that violates
-  assigned scope, context boundary, protocol, or required evidence.
-- Jira assignee plus workflow status is execution ownership. Do not invent a second lock or ownership
-  database.
+- Reject output that violates assigned scope, context boundary, protocol, or required evidence.
+- Jira assignee plus workflow status is execution ownership. Do not invent a second durable lock or ownership
+  database. Child/resource ledgers are transient runtime supervision only.
 - Never perform specialist work as an invisible fallback. Stop with `missing-capability` when Jira or
   another required provider is unavailable.
