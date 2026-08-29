@@ -10,6 +10,7 @@ produces:
   - test-code-change
   - test-report
   - agent-report
+  - runtime-resource-events
 context:
   allowed:
     - transient-issue-handoff
@@ -23,6 +24,7 @@ internal-capabilities:
 rules:
   - .agents/specialists/testing/rules/context-boundary.md
   - .agents/rules/testing.md
+  - .agents/rules/runtime-resource-lifecycle.md
 capabilities:
   required:
     - workspace-read
