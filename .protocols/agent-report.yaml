@@ -8,6 +8,14 @@ changes: []
 validation:
   commands: []
   results: []
+runtime-resources:
+  acquired: []
+  released: []
+  unresolved: []
+cleanup:
+  processes: "<not-applicable|complete|incomplete>"
+  ports: "<not-applicable|complete|incomplete>"
+  agent-ready-to-close: false
 assumptions: []
 deviations: []
 issues: []
