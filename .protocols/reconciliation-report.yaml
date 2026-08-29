@@ -4,7 +4,16 @@ jira:
   feature-key: "<feature-key>"
   requested-task-key: ""
   requested-subtask-key: ""
-status: "<completed|paused|blocked|runtime-capability-blocked|runtime-cleanup-blocked|pause-blocked|revision-required>"
+status: "<awaiting-controller|completed|paused|blocked|runtime-capability-blocked|runtime-cleanup-blocked|pause-blocked|revision-required>"
+controller-actions:
+  - id: "<action-id>"
+    type: "<jira-call|dispatch-specialist>"
+    jira:
+      operation: ""
+      input: {}
+    specialist:
+      agent: "<design|test-plan|coding|testing>"
+      handoff: null
 subtask-results: []
 durable-jira-updates: []
 pause-checkpoint: null
