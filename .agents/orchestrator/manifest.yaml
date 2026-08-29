@@ -28,6 +28,7 @@ internal-capabilities:
 rules:
   - .agents/orchestrator/rules/execution-control.md
   - .agents/orchestrator/rules/task-decomposition.md
+  - .agents/rules/runtime-resource-lifecycle.md
 capabilities:
   required:
     - jira
