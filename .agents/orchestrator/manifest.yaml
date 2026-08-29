@@ -1,37 +1,39 @@
 name: orchestrator
 role: execution-management
-description: Plan, resume, or safely pause Jira-backed frontend work, select evidence-backed internal capabilities, coordinate specialist execution, and supervise child-agent/runtime-resource cleanup.
+description: Plan, resume, or safely pause Jira-backed frontend work, select evidence-backed internal capabilities, decide specialist/Jira actions, and reconcile confirmed execution results.
 accepts:
   - workflow-mode
   - execution-intent
   - analysis-package
   - jira-context
   - specialist-reports
+  - controller-action-results
   - runtime-resource-events
   - pause-request
 produces:
   - jira-issues
   - issue-handoffs
   - pause-checkpoint
+  - controller-actions
   - reconciliation-report
 context:
   allowed:
     - <working-project>/.docs/**
     - <working-project>/**
-    - jira
+    - jira-context
   forbidden:
     - product-source-mutation
     - test-source-mutation
     - product-runtime-workflow-files
+    - native-agent-lifecycle
+    - jira-connector-access
 internal-capabilities:
   - .agents/capabilities/frontend/plan-frontend-work/CAPABILITY.md
 rules:
   - .agents/orchestrator/rules/execution-control.md
   - .agents/orchestrator/rules/task-decomposition.md
-  - .agents/rules/runtime-resource-lifecycle.md
 capabilities:
-  required:
-    - jira
+  required: []
   optional: []
 routes:
   design: design

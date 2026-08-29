@@ -1,6 +1,6 @@
 # Task decomposition gate
 
-Apply this rule before creating Jira Tasks for new or replanned work.
+Apply this rule before requesting Jira Task creation for new or replanned work.
 
 ## Decomposition order
 
@@ -38,8 +38,9 @@ details unless they independently deliver an approved functional outcome.
 
 ## Specialist Subtasks
 
-Only Subtasks are executable by specialists. For each parent Task create only the specialist Subtasks
-that are actually required by evidence.
+Only Subtasks are executable by specialists. For each parent Task decide only the specialist Subtasks
+that are actually required by evidence, then request the corresponding Jira mutations through the
+Primary Controller.
 
 Examples:
 
@@ -57,6 +58,6 @@ would otherwise be ambiguous.
 
 ## Final granularity check
 
-Before Jira mutation, reject and split any proposed Task that is effectively a whole feature, contains
-multiple independently acceptable user outcomes, or would require one coding specialist to own several
-unrelated presentation/business responsibilities.
+Before emitting any Jira mutation request, reject and split any proposed Task that is effectively a whole
+feature, contains multiple independently acceptable user outcomes, or would require one coding specialist
+to own several unrelated presentation/business responsibilities.

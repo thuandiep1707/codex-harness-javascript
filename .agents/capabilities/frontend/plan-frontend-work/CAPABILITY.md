@@ -13,17 +13,21 @@ Use both values supplied by the primary workflow:
 
 - lifecycle `planning`: new work or approved replanning;
 - lifecycle `resume`: continue an existing specialist Subtask without repeating Brain analysis/decomposition;
-- lifecycle `pause`: stop active work safely by reconciling Jira and persisting a durable handoff;
+- lifecycle `pause`: stop active work safely by reconciling Jira and producing a durable handoff decision;
 - execution intent `plan-only`: create/reconcile the Jira task graph and stop before specialist execution;
 - execution intent `deliver`: continue from a valid task graph into dependency-ready specialist execution without an artificial confirmation gate.
 
 Lifecycle and execution intent are separate. Never interpret `planning` as automatically meaning `plan-only`.
 
-Verify Jira before any external mutation. Return `missing-capability` if it is unavailable. In `pause` mode, stop new dispatch even when Jira is unavailable, but return `pause-blocked` rather than claiming a durable pause.
+Orchestrator owns workflow decisions only. The Primary Controller owns native child-agent lifecycle and Jira connector transport. Never call Jira or native agent lifecycle APIs directly from this capability.
+
+When a Jira call or specialist execution is required, emit an exact `controller-action` in the reconciliation report and use `status: awaiting-controller`. Continue in the same Orchestrator child after the Primary Controller supplies the confirmed action result.
+
+A tool missing inside the Orchestrator child is not evidence that the workflow capability is unavailable. Treat Jira or native dispatch as unavailable only after the Primary Controller returns a failed transport result.
 
 ## 2. Planning mode
 
-Read the approved analysis package, [task-graph.md](references/task-graph.md), and only relevant project evidence needed to make Jira work executable.
+Read the approved analysis package, [task-graph.md](references/task-graph.md), supplied Jira context, and only relevant project evidence needed to make Jira work executable.
 
 Decompose in this order:
 
@@ -31,7 +35,9 @@ Decompose in this order:
 requirement -> functional slices -> parent Tasks -> required specialist Subtasks
 ```
 
-Create Jira Feature context first, then parent Tasks, then specialist Subtasks. Human-facing Jira content must be Vietnamese. Store common context once at Feature level, functional deltas at Task level, and execution deltas at Subtask level.
+Decide the Jira Feature context first, then parent Tasks, then specialist Subtasks. Human-facing Jira content must be Vietnamese. Store common context once at Feature level, functional deltas at Task level, and execution deltas at Subtask level.
+
+Request all required Jira reads/creates/updates through exact `jira-call` controller actions. Do not assume a mutation succeeded until the Primary Controller returns connector confirmation.
 
 ### Capability routing
 
@@ -47,10 +53,10 @@ Rules:
 
 Do not reopen Brain decisions. Route requirement, scope, architecture, dependency-adoption, or acceptance conflicts back to Brain/user as `replan` evidence.
 
-After the task graph is valid:
+After the Jira task graph is confirmed valid:
 
-- `plan-only` -> return the Jira hierarchy and stop before specialist dispatch;
-- `deliver` -> continue immediately into dependency-ready specialist execution. Do not ask for user confirmation merely because planning completed.
+- `plan-only` -> return the confirmed hierarchy and stop before specialist dispatch;
+- `deliver` -> continue immediately by emitting the next dependency-ready `dispatch-specialist` controller action. Do not ask for user confirmation merely because planning completed.
 
 ## 3. Resume mode
 
@@ -65,7 +71,7 @@ Load only:
 5. routed internal-capability identifiers for the Subtask;
 6. relevant current source/provider state.
 
-Read [handoff-contracts.md](references/handoff-contracts.md), compose one transient `issue-handoff`, and route only the specialist required by the current Subtask.
+Read [handoff-contracts.md](references/handoff-contracts.md), compose one transient `issue-handoff`, and emit one `dispatch-specialist` controller action for the specialist required by the current Subtask.
 
 Revalidate capability routing only against cheap current source/config evidence. If relevant architecture/dependency evidence changed materially, return `replan`; do not silently swap libraries during resume.
 
@@ -75,26 +81,29 @@ A new chat or developer handoff is not a reason to rerun Brain or planning when 
 
 Pause is a workflow exit gate, not a normal specialist assignment.
 
-When the primary controller supplies `pause`:
+When the Primary Controller supplies `pause`:
 
-1. Freeze dispatch. Do not spawn new Design, Test Plan, Coding, Testing, or Brain work.
-2. Resolve only active/incomplete Subtasks, parent Task/Feature context, available specialist reports, latest durable results/handoffs, and relevant current source identity/state.
-3. If an active specialist can return a bounded current-state report, collect it. Do not wait indefinitely; after cancellation/timeout, use only proven source/report/Jira evidence.
-4. Reconcile execution truth with Jira. Persist any proven missing `[RESULT]` notes and correct stale statuses before writing the handoff.
+1. Freeze new specialist dispatch decisions. Do not request new Design, Test Plan, Coding, Testing, or Brain work.
+2. Consume only active/incomplete Subtasks, parent Task/Feature context, available specialist reports, runtime cleanup evidence, latest durable results/handoffs, and relevant current source identity/state supplied by the controller.
+3. Reconcile execution truth without inventing progress.
+4. Request any proven missing `[RESULT]` notes and stale-status corrections through exact `jira-call` controller actions.
 5. Determine one continuation point for remaining work. Do not create a new Task merely to represent the pause.
 6. Build one transient object matching `.protocols/pause-checkpoint.yaml`.
-7. Serialize that checkpoint into one concise Vietnamese `[HANDOFF]` Jira note as defined in [handoff-contracts.md](references/handoff-contracts.md).
-8. Confirm the note is durably persisted, then return `status: paused` in the reconciliation report.
+7. Serialize that checkpoint into one concise Vietnamese `[HANDOFF]` Jira note as defined in [handoff-contracts.md](references/handoff-contracts.md), then request that write through a `jira-call` controller action.
+8. Return `status: paused` only after the Primary Controller confirms the durable handoff and no unresolved runtime cleanup remains.
 
-If all executable work is already proven complete, persist missing `[RESULT]`/status updates and return the workflow ready for acceptance instead of inventing an unfinished handoff.
+If all executable work is already proven complete, request missing `[RESULT]`/status updates and return the workflow ready for acceptance instead of inventing an unfinished handoff.
+
+If a required Jira call fails, reason over the exact controller result. Return `pause-blocked` when the durable handoff cannot be confirmed.
 
 ## 5. Coordinate execution
 
-- Start only dependency-ready Subtasks.
+- Start only dependency-ready Subtasks by emitting `dispatch-specialist` controller actions.
 - Avoid parallel writes to the same source or public contract.
 - Compose each `issue-handoff` with only the internal capabilities selected for that Subtask.
-- Validate each returned structured result against its Subtask scope and required evidence.
-- Update Jira before unblocking dependent work.
+- Validate each confirmed specialist result against its Subtask scope and required evidence.
+- Request Jira updates through `jira-call` controller actions before unblocking dependent work.
+- Consume Primary Controller runtime-resource/child-close evidence; do not execute process cleanup or child lifecycle operations here.
 - Use concise `[RESULT]`, `[BLOCKER]`, `[REVISION]`, or `[HANDOFF]` notes only when durable execution evidence is needed.
 - Never write runtime state, handoff files, artifacts, or reports into `.plans/`, `.progresses/`, `.agent/`, or another product-repository workflow folder.
 
@@ -102,6 +111,10 @@ Never perform missing specialist work as a fallback.
 
 ## 6. Reconcile
 
-Compare returned specialist results with their Jira Subtasks and parent acceptance boundaries. Update Jira and return one YAML object matching `.protocols/reconciliation-report.yaml`.
+Compare confirmed specialist results with their Jira Subtasks and parent acceptance boundaries.
 
-Use `completed` only when the requested executable scope and required evidence are complete. Use `paused` only after a required durable handoff has been confirmed. Use `revision-required` for recoverable gaps and `blocked`/`pause-blocked` for missing capability or unresolved authority.
+- If a Jira operation or specialist dispatch is required next, return one YAML object matching `.protocols/reconciliation-report.yaml` with `status: awaiting-controller` and the exact `controller-actions`.
+- Use `completed` only when the requested executable scope and required evidence are complete and no controller action remains pending.
+- Use `paused` only after a required durable handoff has been confirmed.
+- Use `revision-required` for recoverable gaps.
+- Use `blocked`, `runtime-capability-blocked`, `runtime-cleanup-blocked`, or `pause-blocked` only from confirmed evidence/results rather than missing child-local tools.
