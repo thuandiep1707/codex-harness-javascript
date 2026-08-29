@@ -26,7 +26,7 @@ context:
     - test-source-mutation
     - product-runtime-workflow-files
     - native-agent-lifecycle
-    - jira-connector-mutation
+    - jira-connector-access
 internal-capabilities:
   - .agents/capabilities/frontend/plan-frontend-work/CAPABILITY.md
 rules:
