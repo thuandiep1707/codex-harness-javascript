@@ -18,7 +18,7 @@ For an owned process, record the strongest available runtime identity:
 - actual bound port(s), including auto-redirected ports;
 - ownership evidence tying the resource to the current child agent and Jira Subtask.
 
-Emit a transient `.protocols/runtime-resource-event.yaml` acquire event when a long-lived owned resource is created, and a release or cleanup-failed event when its lifecycle ends.
+Emit a transient `.protocols/runtime-resource-event.yaml` acquire event as soon as a long-lived owned resource is created, and a release or cleanup-failed event when its lifecycle ends. The parent Primary Controller maintains the cross-agent runtime ledger; Orchestrator receives only the cleanup evidence needed for workflow decisions.
 
 Runtime resource events are transient coordination evidence. Do not persist them as workflow files in the product repository and do not use Jira as a live process registry.
 
@@ -52,14 +52,14 @@ Never kill a process merely because it occupies a port.
 
 Port occupancy is not ownership evidence. A port may belong to a developer-managed server or another workflow. Kill a process only when process identity/ancestry or equivalent evidence proves that the current child agent created or owns it.
 
-If ownership is ambiguous, do not kill the process. Mark the resource unresolved and return cleanup evidence to Orchestrator.
+If ownership is ambiguous, do not kill the process. Mark the resource unresolved and return cleanup evidence to the Primary Controller.
 
 When a framework automatically redirects from an occupied requested port to another port, track and clean the **actual bound port**, not the requested port.
 
 ## Parent fallback
 
-Orchestrator maintains the transient resource ledger for specialist executions from acquire/release events and returned reports.
+The Primary Controller owns child-agent lifecycle and the transient resource ledger across specialist executions.
 
-If a specialist crashes, times out, is interrupted, or becomes unavailable before cleanup completes, Orchestrator becomes cleanup supervisor and attempts cleanup only for resources with sufficient ownership evidence.
+If a specialist crashes, times out, is interrupted, or becomes unavailable before cleanup completes, the Primary Controller becomes fallback cleanup supervisor and attempts cleanup only for resources with sufficient ownership evidence. Orchestrator may decide that unresolved cleanup blocks workflow progress, but it does not execute process/port cleanup itself.
 
-If safe cleanup cannot be completed or verified, return `runtime-cleanup-blocked`. Never hide an unresolved child process, process tree, or owned port leak behind a successful specialist result.
+If safe cleanup cannot be completed or verified, report `runtime-cleanup-blocked`. Never hide an unresolved child process, process tree, or owned port leak behind a successful specialist result.
