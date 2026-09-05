@@ -49,19 +49,45 @@ Do not scan the full repository by default. Use the smallest evidence set needed
 
 If multiple materially different interpretations remain after checking available project evidence, record the ambiguity and ask only when it prevents a reliable scope or output. Otherwise continue with the strongest evidence-backed interpretation.
 
+## Document target resolution
+
+Resolve where the documentation work belongs without imposing a harness-specific structure on the target project.
+
+Use this priority order:
+
+1. explicit user-provided document/path target;
+2. relevant existing documentation already present in the project;
+3. the project's established documentation convention;
+4. if no reliable target can be established, keep the result as a working draft and resolve the final location only at finalization.
+
+Treat an explicit document or path hint from the user as the strongest target signal. When the referenced documents already exist, analyze and update those documents rather than creating a parallel package elsewhere.
+
+When relevant existing documents are found without an explicit user path, prefer updating them over creating duplicates such as versioned, generated, or replacement folders.
+
+Do not require downstream projects to use `.docs/`, `docs/features/`, or any other harness-defined layout. Follow the target project's existing documentation organization when it is clear.
+
+Apply changes only to the requested and affected document scope. If a large document contains multiple sections and the request concerns only one section or behavior, preserve unrelated sections instead of rewriting the whole document.
+
+During analysis, authoring, clarification, and review, work against drafts. Do not mutate the target project's documentation files while the package is still being reasoned about or reviewed.
+
+Finalize into the resolved target only after the package has passed internal review and the user has approved it.
+
+Core rule: user target wins; existing project convention comes second; never impose a harness-specific documentation structure. Update existing documents instead of creating duplicates whenever the intended document already exists.
+
 ## Workflow
 
 1. Resolve the execution context from the free-form request and available project evidence.
-2. Analyze source code, relevant existing docs, and the developer prompt into one reconciled working context.
-3. Author the Product / Feature Requirement.
-4. Author the Functional Specification using the working context plus the Product Requirement.
-5. Author the UI / UX Specification using the working context, Product Requirement, and Functional Specification.
-6. Review the full package for truth alignment, traceability, scope integrity, unsupported assumptions, contradictions, completeness, acceptance coverage, regression risk, and development readiness.
-7. If clarification is required, consolidate unresolved development-relevant questions and ask them at one clarification checkpoint after all unaffected work is complete.
-8. Apply answers only to affected documents by rerunning the necessary authoring capabilities rather than regenerating the whole package by default.
-9. Run review again after revision.
-10. Present the reviewed package for user approval.
-11. Finalize only after approval.
+2. Resolve the intended document targets from explicit hints, existing docs, and project convention.
+3. Analyze source code, relevant existing docs, and the developer prompt into one reconciled working context.
+4. Author the Product / Feature Requirement.
+5. Author the Functional Specification using the working context plus the Product Requirement.
+6. Author the UI / UX Specification using the working context, Product Requirement, and Functional Specification.
+7. Review the full package for truth alignment, traceability, scope integrity, unsupported assumptions, contradictions, completeness, acceptance coverage, regression risk, and development readiness.
+8. If clarification is required, consolidate unresolved development-relevant questions and ask them at one clarification checkpoint after all unaffected work is complete.
+9. Apply answers only to affected documents by rerunning the necessary authoring capabilities rather than regenerating the whole package by default.
+10. Run review again after revision.
+11. Present the reviewed package for user approval.
+12. Finalize the approved changes into the resolved document targets.
 
 ## Non-blocking clarification
 
@@ -69,7 +95,7 @@ Do not interrupt between document stages merely because one point is uncertain. 
 
 ## Boundary
 
-This workflow coordinates context resolution, document analysis, authoring, review, clarification, revision, approval, and finalization. It does not own technical architecture, package/library selection, coding conventions, API contract design, database design, or implementation planning.
+This workflow coordinates context resolution, document-target resolution, document analysis, authoring, review, clarification, revision, approval, and finalization. It does not own technical architecture, package/library selection, coding conventions, API contract design, database design, or implementation planning.
 
 ## Output
 
