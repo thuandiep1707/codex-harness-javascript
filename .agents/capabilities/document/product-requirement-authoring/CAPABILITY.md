@@ -12,16 +12,34 @@ It does not rediscover source, rebuild source truth, reconcile source/doc/prompt
 
 ## Input contract
 
-Consume the normalized context from `document/analysis`, including when available:
+Consume the single normalized `working_context` object produced by `document/analysis`:
+
+```yaml
+working_context:
+  current_state:
+  existing_intent:
+  requested_change:
+  conflicts:
+  change_map:
+    keep: []
+    change: []
+    add: []
+    remove: []
+  uncertainties: []
+  resolved_clarifications: []
+```
+
+Use the fields for these purposes:
 
 - `current_state`: relevant current behavior established from source;
 - `existing_intent`: relevant product/design intent retained from existing docs;
 - `requested_change`: the newest requested change from the developer prompt;
+- `conflicts`: unresolved or reconciled source/doc/prompt conflicts relevant to authoring;
 - `change_map`: scoped keep/change/add/remove deltas;
 - `uncertainties`: unresolved product-level questions;
 - `resolved_clarifications`: confirmed answers from clarification checkpoints.
 
-The capability must not construct an alternate truth model that conflicts with the normalized working context.
+The capability must not construct an alternate truth model that conflicts with or sits beside the normalized `working_context`.
 
 ## Responsibilities
 
