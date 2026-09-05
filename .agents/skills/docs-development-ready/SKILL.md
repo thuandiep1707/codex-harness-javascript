@@ -25,7 +25,7 @@ The Primary Controller owns runtime transport and user interaction. Documentatio
 2. Keep the same Document Agent child alive across analysis, authoring, review, clarification, revision, approval, and finalization when the runtime permits it.
 3. The Document Agent loads and executes only its allowlisted document capabilities. The Primary Controller must not perform document capability reasoning itself.
 4. If the child returns `needs-clarification`, Primary Controller asks the consolidated questions, then sends the user's answers back to the same child.
-5. If the child returns `ready-for-approval`, Primary Controller presents the reviewed package to the user without mutating target documents.
+5. If the child returns `ready-for-approval` after review passes with no blocking clarification remaining, Primary Controller presents the reviewed package to the user without mutating target documents.
 6. After explicit user approval, Primary Controller relays that approval to the same child so it can finalize only the approved documentation changes.
 7. When the child returns `finalized` or `blocked`, Primary Controller captures the result and applies the normal child-agent close/verification lifecycle.
 
@@ -108,4 +108,4 @@ Return one coordinated development-ready package containing:
 - UI / UX Specification;
 - unresolved questions only when clarification is still required.
 
-The package is ready for user approval only after the document review capability passes or all blocking clarification has been surfaced.
+The package is ready for user approval only when the document review capability passes and no blocking clarification remains unresolved.
