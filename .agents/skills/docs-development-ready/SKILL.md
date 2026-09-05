@@ -29,18 +29,39 @@ Use the internal document capabilities in this order:
 
 Each downstream capability consumes the relevant upstream outputs. Do not author a later document directly from an individual source before the earlier normalization and authoring stages are complete.
 
+## Context resolution
+
+The workflow is natural-language first. Do not require users to provide a fixed prompt schema or mandatory fields.
+
+Accept free-form requests such as a short goal statement, or richer optional hints such as repository, module, document path, feature/page name, or task description. Structured hints are accelerators, not requirements.
+
+Resolve execution context in this order:
+
+1. extract any explicit hints from the user prompt;
+2. resolve the current working project/repository when not explicitly named;
+3. identify the most likely target feature, module, page, or behavior from project evidence;
+4. discover only the source and existing docs relevant to that target;
+5. build the internal normalized context required by `document/analysis`.
+
+Internally, the workflow may normalize resolved context into fields such as project, target scope, request, relevant source, and relevant existing docs, but this schema is not part of the user-facing contract.
+
+Do not scan the full repository by default. Use the smallest evidence set needed to establish the target scope and current truth.
+
+If multiple materially different interpretations remain after checking available project evidence, record the ambiguity and ask only when it prevents a reliable scope or output. Otherwise continue with the strongest evidence-backed interpretation.
+
 ## Workflow
 
-1. Analyze source code, relevant existing docs, and the developer prompt into one reconciled working context.
-2. Author the Product / Feature Requirement.
-3. Author the Functional Specification using the working context plus the Product Requirement.
-4. Author the UI / UX Specification using the working context, Product Requirement, and Functional Specification.
-5. Review the full package for truth alignment, traceability, scope integrity, unsupported assumptions, contradictions, completeness, acceptance coverage, regression risk, and development readiness.
-6. If clarification is required, consolidate unresolved development-relevant questions and ask them at one clarification checkpoint after all unaffected work is complete.
-7. Apply answers only to affected documents by rerunning the necessary authoring capabilities rather than regenerating the whole package by default.
-8. Run review again after revision.
-9. Present the reviewed package for user approval.
-10. Finalize only after approval.
+1. Resolve the execution context from the free-form request and available project evidence.
+2. Analyze source code, relevant existing docs, and the developer prompt into one reconciled working context.
+3. Author the Product / Feature Requirement.
+4. Author the Functional Specification using the working context plus the Product Requirement.
+5. Author the UI / UX Specification using the working context, Product Requirement, and Functional Specification.
+6. Review the full package for truth alignment, traceability, scope integrity, unsupported assumptions, contradictions, completeness, acceptance coverage, regression risk, and development readiness.
+7. If clarification is required, consolidate unresolved development-relevant questions and ask them at one clarification checkpoint after all unaffected work is complete.
+8. Apply answers only to affected documents by rerunning the necessary authoring capabilities rather than regenerating the whole package by default.
+9. Run review again after revision.
+10. Present the reviewed package for user approval.
+11. Finalize only after approval.
 
 ## Non-blocking clarification
 
@@ -48,7 +69,7 @@ Do not interrupt between document stages merely because one point is uncertain. 
 
 ## Boundary
 
-This workflow coordinates document analysis, authoring, review, clarification, revision, approval, and finalization. It does not own technical architecture, package/library selection, coding conventions, API contract design, database design, or implementation planning.
+This workflow coordinates context resolution, document analysis, authoring, review, clarification, revision, approval, and finalization. It does not own technical architecture, package/library selection, coding conventions, API contract design, database design, or implementation planning.
 
 ## Output
 
