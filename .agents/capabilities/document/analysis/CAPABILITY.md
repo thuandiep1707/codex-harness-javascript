@@ -26,7 +26,7 @@ Inspect only the relevant scope needed for the requested work. Do not scan the e
 - reconcile the three sources before any document section is authored;
 - identify the meaningful delta between current state and requested state;
 - collect unresolved questions without interrupting work that can continue;
-- produce one normalized working context for downstream document capabilities.
+- produce one normalized `working_context` for downstream document capabilities.
 
 ## Internal process
 
@@ -41,40 +41,43 @@ identify current state + requested delta
         ↓
 collect unresolved uncertainties
         ↓
-unified working context
+working_context
 ```
 
 ## Output contract
 
-Return a compact analysis package with these logical sections:
+Return exactly one normalized working-context object:
 
 ```yaml
-current_state:
-  ...
-
-existing_intent:
-  ...
-
-requested_change:
-  ...
-
-conflicts:
-  ...
-
-change_map:
-  keep: []
-  change: []
-  add: []
-  remove: []
-
-uncertainties:
-  ...
-
 working_context:
-  ...
+  current_state:
+    ...
+
+  existing_intent:
+    ...
+
+  requested_change:
+    ...
+
+  conflicts:
+    ...
+
+  change_map:
+    keep: []
+    change: []
+    add: []
+    remove: []
+
+  uncertainties:
+    []
+
+  resolved_clarifications:
+    []
 ```
 
-Downstream document authoring must use `working_context` rather than independently re-reading one source and composing from it in isolation.
+`resolved_clarifications` is initially empty unless the capability is rerun after a clarification checkpoint. Confirmed answers are added to the same working context rather than creating a second truth model.
+
+Every downstream document capability must consume this same `working_context` contract. Do not independently re-read one source and construct an alternate truth model in isolation.
 
 ## Boundaries
 
