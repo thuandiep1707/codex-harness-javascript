@@ -7,7 +7,7 @@ This repository is the control project for a zero-setup Codex multi-agent workfl
 Use exactly these durable sources of truth:
 
 - **Control repository:** workflow entry points, agent behavior, internal capabilities, rules, protocols, and Codex configuration.
-- **Working project `.docs/`:** human-owned product truth.
+- **Working project documentation:** human-owned product truth at an explicit user-resolved target or the project's established documentation convention. `.docs/` remains a valid/default surface when that is the project convention.
 - **Jira:** work state and durable execution context.
 - **Working project source:** implementation truth.
 
@@ -25,6 +25,7 @@ Current frontend workflows:
 
 - `$frontend-delivery`: run frontend work continuously from the smallest valid entry through analysis, Jira orchestration, specialist execution, testing, runtime cleanup, child-agent cleanup, and final acceptance.
 - `$frontend-planning`: analyze and create/reconcile the Jira work graph, then stop before specialist execution.
+- `$docs-development-ready`: create or complete the coordinated Product / Feature Requirement, Functional Specification, and UI / UX Specification package, review it as one unit, then finalize only after user approval.
 
 Do not place agent implementation knowledge under `.agents/skills/`.
 
@@ -60,7 +61,7 @@ Do not scan or load all capabilities "for safety".
 ## Repository roles
 
 - **Control project:** this repository. Never use it as the target for product implementation.
-- **Working project:** the product repository selected by the user in the same workspace. It owns `.docs/`, source, tests, and product configuration only.
+- **Working project:** the product repository selected by the user in the same workspace. It owns authoritative product documentation at the resolved project path, source, tests, and product configuration. Do not require `.docs/` when the user or project convention establishes another documentation target.
 
 ## Frontend workflow intent
 

@@ -14,82 +14,63 @@ The flow does not duplicate knowledge that belongs to implementation skills or c
 
 ## Brownfield-first model
 
-The default case is an existing project. Current source is read before the requested change is documented.
+The default case is an existing project. Current source, relevant existing documentation, and the user's requested change are reconciled before final document content is produced.
 
 ```text
 Existing project
       ↓
-1. Source Discovery
+1. Context Resolution
       ↓
-2. Requirement Intake
+2. Analysis / Reconciliation
       ↓
-3. Gap Analysis
+3. Sequential Authoring
       ↓
-4. Clarification
+4. Review & Clarification
       ↓
-5. Document Structuring
+5. User Approval
       ↓
-6. Draft
-      ↓
-7. Consistency Review
-      ↓
-8. User Approval
-      ↓
-9. Finalize
+6. Finalize
 ```
 
 ## Flow
 
-### 1. Source Discovery
+### 1. Context Resolution
 
-Read the relevant current source to establish the existing feature/module behavior and identify what already exists.
+Resolve the requested scope from the user's free-form request, relevant current source, and relevant existing documentation. Use explicit user-provided document targets first; otherwise follow the project's existing documentation convention.
 
-### 2. Requirement Intake
+### 2. Analysis / Reconciliation
 
-Capture the user's requested change, addition, removal, or correction after the current behavior is understood.
+Build one working truth from:
 
-### 3. Gap Analysis
+- current source behavior;
+- existing documented intent/context;
+- the newest requested change.
 
-Compare current behavior with requested behavior and identify the delta:
+Identify what stays unchanged, what changes, what is added, and what is removed. Record unresolved uncertainty instead of guessing.
 
-- what stays unchanged;
-- what changes;
-- what is added;
-- what is removed.
+### 3. Sequential Authoring
 
-Documentation should describe the required delta instead of redesigning an existing feature from scratch.
+Create, update, or complete the required Type 1 documents in dependency order:
 
-### 4. Clarification
+1. Product / Feature Requirement;
+2. Functional Specification;
+3. UI / UX Design Specification.
 
-Ask only for information that cannot be determined from the relevant source and the user's requirement. Do not guess unresolved product or UI behavior.
+Preserve valid existing content that is outside the affected scope. Do not rewrite an entire feature when only a bounded part changes.
 
-### 5. Document Structuring
+### 4. Review & Clarification
 
-Map the confirmed information into the required Type 1 frontend documents:
+Review the coordinated document package for truth alignment, cross-document consistency, scope integrity, unsupported assumptions, and development readiness.
 
-- Product / Feature Requirement;
-- Functional Specification;
-- UI / UX Design Specification.
+Uncertainty must not unnecessarily block earlier work. Continue all unaffected authoring first, then consolidate only unresolved development-relevant questions at the clarification checkpoint. After answers are provided, revise only the affected parts and review again.
 
-### 6. Draft
+### 5. User Approval
 
-Write the initial document content from the confirmed source context, requested change, and clarified decisions.
+Present the reviewed package only after review passes and no blocking clarification remains unresolved. The user reviews, corrects, and approves the documentation before it becomes final development input.
 
-### 7. Consistency Review
+### 6. Finalize
 
-Check consistency across:
-
-- documentation and the user's requirement;
-- documentation and current source behavior;
-- the three Type 1 documents.
-
-### 8. User Approval
-
-The user reviews, corrects, and approves the documentation before it becomes final development input.
-
-### 9. Finalize
-
-Write the approved documentation to the product `.docs/` surface and mark the scope development-ready.
+Write only the approved documentation changes into the resolved target documents or project documentation location. Preserve unrelated content and do not impose a harness-specific folder such as `.docs/` when the user or project already establishes another authoritative target.
 
 ## Development-ready gate
 
