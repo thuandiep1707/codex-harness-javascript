@@ -12,16 +12,21 @@ It does not define visual presentation or technical implementation.
 
 ## Input contract
 
-Consume:
+Consume the same normalized `working_context` object produced by `document/analysis`, plus the upstream Product / Feature Requirement:
 
 ```yaml
 working_context:
   current_state:
   existing_intent:
   requested_change:
+  conflicts:
   change_map:
-  uncertainties:
-  resolved_clarifications:
+    keep: []
+    change: []
+    add: []
+    remove: []
+  uncertainties: []
+  resolved_clarifications: []
 
 product_requirement:
   goal:
@@ -33,7 +38,7 @@ product_requirement:
   open_questions:
 ```
 
-Use `working_context` to preserve brownfield behavior and `product_requirement` to establish product intent. Do not derive a new truth model that conflicts with either input.
+Use `working_context` to preserve brownfield behavior and `product_requirement` to establish product intent. Do not derive, reconstruct, or maintain another truth model beside `working_context`.
 
 ## Responsibilities
 
