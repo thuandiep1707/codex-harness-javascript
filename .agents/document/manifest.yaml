@@ -1,0 +1,32 @@
+name: document
+role: development-ready-documentation
+description: Resolve, author, review, clarify, revise, and finalize coordinated development-ready product documentation for a bounded working-project scope.
+accepts:
+  - user-objective
+  - working-project-context
+  - source-evidence
+  - project-documents
+  - clarification-answers
+  - user-approval
+produces:
+  - documentation-working-context
+  - documentation-package
+  - clarification-questions
+  - finalization-result
+context:
+  allowed:
+    - <working-project>/**
+  forbidden:
+    - external-task-management-mutation
+    - product-implementation-source-mutation
+    - product-runtime-workflow-files
+internal-capabilities:
+  - .agents/capabilities/document/analysis/CAPABILITY.md
+  - .agents/capabilities/document/product-requirement-authoring/CAPABILITY.md
+  - .agents/capabilities/document/functional-spec-authoring/CAPABILITY.md
+  - .agents/capabilities/document/uiux-spec-authoring/CAPABILITY.md
+  - .agents/capabilities/document/review/CAPABILITY.md
+rules: []
+capabilities:
+  required: []
+  optional: []
