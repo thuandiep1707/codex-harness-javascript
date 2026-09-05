@@ -1,11 +1,11 @@
 ---
 name: docs-development-ready
-description: Create a coordinated development-ready documentation package for an existing feature by analyzing current truth, authoring Product / Feature Requirement, Functional Specification, and UI / UX Specification in sequence, reviewing them as one package, and resolving only development-relevant uncertainties before final approval.
+description: Create or complete a coordinated development-ready documentation package for an existing feature by resolving project context from a free-form request, analyzing current truth, authoring Product / Feature Requirement, Functional Specification, and UI / UX Specification in sequence, reviewing them as one package, and finalizing only approved changes.
 ---
 
 # Development-Ready Documentation Workflow
 
-This is a user-facing documentation workflow for producing the coordinated Type 1 document set required before frontend development begins.
+This is a user-facing workflow for producing the coordinated Type 1 document set required before frontend development begins.
 
 ## Goal
 
@@ -15,11 +15,11 @@ Produce three aligned documents in dependency order:
 2. Functional Specification;
 3. UI / UX Specification.
 
-The workflow is brownfield-first: establish current project truth before documenting the requested delta. The three documents are authored as one coordinated package rather than as independent workflows.
+The workflow is brownfield-first: establish current project truth before documenting the requested delta. Treat the three documents as one coordinated package, not independent workflows.
 
-## Capability composition
+## Internal capabilities
 
-Use the internal document capabilities in this order:
+Use the document capabilities in this order:
 
 1. `document/analysis` -> normalized `working_context`;
 2. `document/product-requirement-authoring` -> `product_requirement`;
@@ -27,83 +27,73 @@ Use the internal document capabilities in this order:
 4. `document/uiux-spec-authoring` -> `uiux_spec`;
 5. `document/review` -> package-level quality gate.
 
-Each downstream capability consumes the relevant upstream outputs. Do not author a later document directly from an individual source before the earlier normalization and authoring stages are complete.
-
-## Context resolution
-
-The workflow is natural-language first. Do not require users to provide a fixed prompt schema or mandatory fields.
-
-Accept free-form requests such as a short goal statement, or richer optional hints such as repository, module, document path, feature/page name, or task description. Structured hints are accelerators, not requirements.
-
-Resolve execution context in this order:
-
-1. extract any explicit hints from the user prompt;
-2. resolve the current working project/repository when not explicitly named;
-3. identify the most likely target feature, module, page, or behavior from project evidence;
-4. discover only the source and existing docs relevant to that target;
-5. build the internal normalized context required by `document/analysis`.
-
-Internally, the workflow may normalize resolved context into fields such as project, target scope, request, relevant source, and relevant existing docs, but this schema is not part of the user-facing contract.
-
-Do not scan the full repository by default. Use the smallest evidence set needed to establish the target scope and current truth.
-
-If multiple materially different interpretations remain after checking available project evidence, record the ambiguity and ask only when it prevents a reliable scope or output. Otherwise continue with the strongest evidence-backed interpretation.
-
-## Document target resolution
-
-Resolve where the documentation work belongs without imposing a harness-specific structure on the target project.
-
-Use this priority order:
-
-1. explicit user-provided document/path target;
-2. relevant existing documentation already present in the project;
-3. the project's established documentation convention;
-4. if no reliable target can be established, keep the result as a working draft and resolve the final location only at finalization.
-
-Treat an explicit document or path hint from the user as the strongest target signal. When the referenced documents already exist, analyze and update those documents rather than creating a parallel package elsewhere.
-
-When relevant existing documents are found without an explicit user path, prefer updating them over creating duplicates such as versioned, generated, or replacement folders.
-
-Do not require downstream projects to use `.docs/`, `docs/features/`, or any other harness-defined layout. Follow the target project's existing documentation organization when it is clear.
-
-Apply changes only to the requested and affected document scope. If a large document contains multiple sections and the request concerns only one section or behavior, preserve unrelated sections instead of rewriting the whole document.
-
-During analysis, authoring, clarification, and review, work against drafts. Do not mutate the target project's documentation files while the package is still being reasoned about or reviewed.
-
-Finalize into the resolved target only after the package has passed internal review and the user has approved it.
-
-Core rule: user target wins; existing project convention comes second; never impose a harness-specific documentation structure. Update existing documents instead of creating duplicates whenever the intended document already exists.
+Later stages consume the relevant upstream outputs. Do not author later documents directly from isolated source evidence before analysis and upstream authoring are complete.
 
 ## Workflow
 
-1. Resolve the execution context from the free-form request and available project evidence.
-2. Resolve the intended document targets from explicit hints, existing docs, and project convention.
-3. Analyze source code, relevant existing docs, and the developer prompt into one reconciled working context.
-4. Author the Product / Feature Requirement.
-5. Author the Functional Specification using the working context plus the Product Requirement.
-6. Author the UI / UX Specification using the working context, Product Requirement, and Functional Specification.
-7. Review the full package for truth alignment, traceability, scope integrity, unsupported assumptions, contradictions, completeness, acceptance coverage, regression risk, and development readiness.
-8. If clarification is required, consolidate unresolved development-relevant questions and ask them at one clarification checkpoint after all unaffected work is complete.
-9. Apply answers only to affected documents by rerunning the necessary authoring capabilities rather than regenerating the whole package by default.
-10. Run review again after revision.
-11. Present the reviewed package for user approval.
-12. Finalize the approved changes into the resolved document targets.
+### 1. Context resolution
 
-## Non-blocking clarification
+Accept free-form user requests. Do not require a fixed prompt schema or mandatory fields.
 
-Do not interrupt between document stages merely because one point is uncertain. Record uncertainty, continue every unaffected part of the workflow, and defer questions to the review/clarification checkpoint unless the ambiguity prevents all remaining useful work.
+Optional hints such as repository, module, feature/page, document path, or task description are accelerators only. Resolve missing context from the current project and the smallest relevant evidence set before asking the user.
+
+Identify the target scope, relevant source, relevant existing docs, and requested change. Do not scan the full repository by default. Ask only when materially different interpretations remain and the ambiguity prevents reliable work.
+
+When resolving document targets, use explicit user targets first, then existing relevant docs, then the project's established documentation convention. Never impose a harness-specific docs structure.
+
+If target docs already exist, preserve and update them instead of creating duplicates. If a document or section is missing or incomplete, create or complete only what is needed. Do not rewrite unaffected content.
+
+### 2. Analysis
+
+Use `document/analysis` to reconcile:
+
+- current implementation truth from source;
+- existing intent/context from relevant old docs;
+- newest requested change from the user prompt.
+
+Build one normalized working context before authoring. Record uncertainty without interrupting unaffected work.
+
+### 3. Sequential authoring
+
+Author in dependency order:
+
+1. Product / Feature Requirement;
+2. Functional Specification using the working context and Product Requirement;
+3. UI / UX Specification using the working context, Product Requirement, and Functional Specification.
+
+Create, update, or complete only the documents and sections affected by the resolved scope. Preserve valid existing content whenever its meaning is unchanged.
+
+### 4. Review and clarification
+
+Run `document/review` across the full package as the final internal quality gate.
+
+The review must check truth alignment, cross-document traceability, scope integrity, unsupported assumptions, contradictions, completeness, acceptance coverage, regression risk, and whether development would still require product/functional/UI guessing.
+
+If the review finds issues that can be resolved from existing context, revise the affected drafts and review again without asking the user.
+
+If user clarification is required, consolidate only the development-relevant unresolved questions and ask them at one checkpoint after all unaffected work is complete. Apply answers only to affected drafts, then review again.
+
+### 5. Finalize
+
+Present the reviewed package for user approval.
+
+Until approval, keep changes as working drafts and do not mutate target project documentation.
+
+After approval, finalize only the affected target documents or sections. Preserve unrelated content and follow the target project's existing documentation organization. Do not perform Git commit, push, or PR operations unless separately requested.
 
 ## Boundary
 
-This workflow coordinates context resolution, document-target resolution, document analysis, authoring, review, clarification, revision, approval, and finalization. It does not own technical architecture, package/library selection, coding conventions, API contract design, database design, or implementation planning.
+This workflow owns documentation context resolution, analysis, coordinated authoring, review, clarification, revision, approval, and finalization.
+
+It does not own technical architecture, package/library selection, coding conventions, API contract design, database design, or implementation planning.
 
 ## Output
 
-Return one coordinated development-ready documentation package containing:
+Return one coordinated development-ready package containing:
 
 - Product / Feature Requirement;
 - Functional Specification;
 - UI / UX Specification;
-- unresolved questions only when user clarification is still required.
+- unresolved questions only when clarification is still required.
 
-The package is considered internally ready for user approval only after the document review capability passes or all blocking clarification has been surfaced.
+The package is ready for user approval only after the document review capability passes or all blocking clarification has been surfaced.
