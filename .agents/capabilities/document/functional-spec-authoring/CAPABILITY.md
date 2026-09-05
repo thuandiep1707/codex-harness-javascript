@@ -4,7 +4,7 @@ Internal document capability. Do not expose this package as a user-facing `$` wo
 
 ## Purpose
 
-Transform the normalized `working_context` plus an approved Product / Feature Requirement into a Functional Specification draft that defines the behavioral contract of the requested change.
+Transform the normalized `working_context` plus the upstream Product / Feature Requirement draft into a Functional Specification draft that defines the behavioral contract of the requested change.
 
 This capability answers: who can do what, under which conditions, how the system must respond, how relevant states change, how related behaviors interact, which rules must remain true, and which product-level uncertainties are still unresolved.
 
