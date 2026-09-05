@@ -17,9 +17,21 @@ Produce three aligned documents in dependency order:
 
 The workflow is brownfield-first: establish current project truth before documenting the requested delta. Treat the three documents as one coordinated package, not independent workflows.
 
+## Execution
+
+The Primary Controller owns runtime transport and user interaction. Documentation reasoning and authoring belong to one dedicated `document` child agent configured to use GPT-5.6 Sol.
+
+1. Primary Controller resolves the working project and spawns one Document Agent child with the free-form user objective and available project context.
+2. Keep the same Document Agent child alive across analysis, authoring, review, clarification, revision, approval, and finalization when the runtime permits it.
+3. The Document Agent loads and executes only its allowlisted document capabilities. The Primary Controller must not perform document capability reasoning itself.
+4. If the child returns `needs-clarification`, Primary Controller asks the consolidated questions, then sends the user's answers back to the same child.
+5. If the child returns `ready-for-approval`, Primary Controller presents the reviewed package to the user without mutating target documents.
+6. After explicit user approval, Primary Controller relays that approval to the same child so it can finalize only the approved documentation changes.
+7. When the child returns `finalized` or `blocked`, Primary Controller captures the result and applies the normal child-agent close/verification lifecycle.
+
 ## Internal capabilities
 
-Use the document capabilities in this order:
+The Document Agent owns these internal capabilities and uses them in this order when required by the resolved scope:
 
 1. `document/analysis` -> normalized `working_context`;
 2. `document/product-requirement-authoring` -> `product_requirement`;
