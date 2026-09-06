@@ -1,6 +1,6 @@
 name = "testing"
 description = "Implement and execute bounded frontend tests for one Testing Subtask from transient Jira-derived context using only routed internal capabilities."
-model = "gpt-5.4-mini"
+model = "gpt-5.5"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 developer_instructions = """
