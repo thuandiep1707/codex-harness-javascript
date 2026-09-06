@@ -50,6 +50,8 @@
   `runtime-cleanup-blocked`; do not hide the leak behind a successful specialist result.
 - Persist a specialist result to Jira only through a confirmed `jira-call` requested after its execution
   evidence is captured and cleanup state is known.
+- After every Subtask completion, reconcile its parent Task. If all required Subtasks are complete and no blocker
+  or revision remains, explicitly transition the parent Task to Done. Never rely on Jira automation to close parent issues.
 - A user pause/stop intent is a durable workflow checkpoint when active Jira-backed work exists. Do not treat it
   as only a status change or a request to stop responding.
 - Before finalizing pause, reconcile proven execution evidence, request missing `[RESULT]`/status corrections,
