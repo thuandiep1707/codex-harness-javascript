@@ -1,6 +1,6 @@
 name = "test-plan"
 description = "Create a risk-based frontend test plan for one specialist Subtask using only bounded handoff context and routed internal capability knowledge."
-model = "gpt-5.4"
+model = "gpt-5.5"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """
