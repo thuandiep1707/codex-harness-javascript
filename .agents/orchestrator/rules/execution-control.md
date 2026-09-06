@@ -4,10 +4,8 @@
   `.agent/`, workflow-state files, local task mirrors, or report stores in the product repository.
 - Write human-facing Jira titles, descriptions, scope, acceptance criteria, blockers, results, and
   handoff notes in Vietnamese. Keep technical identifiers unchanged when required.
-- Before creating a Jira Epic, determine whether the target Jira project uses sprint planning from Jira
-  board/sprint data, not from issue-history heuristics. If the project has one unambiguous applicable Scrum
-  board with an active sprint, include the new Epic in that active sprint. If multiple applicable boards make
-  the target board ambiguous, do not choose one implicitly.
+- Resolve the active sprint once per planning flow and explicitly assign it to every newly created
+  sprint-level issue in scope. Never rely on sprint inheritance from parent issues.
 - When creating a Jira Task, treat the authenticated Jira user who initiated the Codex request as the reporter
   and default assignee. Override the assignee only when the user/developer explicitly requests another assignee;
   do not leave a newly created Task unassigned by default.
