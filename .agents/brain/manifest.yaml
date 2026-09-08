@@ -26,7 +26,6 @@ internal-capabilities:
   - .agents/capabilities/frontend/audit-frontend-security/CAPABILITY.md
   - .agents/capabilities/frontend/audit-frontend-supply-chain/CAPABILITY.md
 rules:
-  - .agents/rules/scope-usage-reporting.md
   - .agents/brain/rules/context-and-authority.md
 capabilities:
   required: []

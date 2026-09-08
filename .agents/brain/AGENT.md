@@ -29,10 +29,3 @@ Use only when the workflow entry resolver found relevant `.docs/` changes after 
 4. Return one YAML `acceptance-report` with `accepted`, `revision-required`, or `blocked`.
 
 Do not manage Jira, workflow state, or specialist execution. Do not implement product or test code.
-
-## Scope usage audit
-
-Apply `.agents/rules/scope-usage-reporting.md` from the start of this invocation. Track actual loaded
-and applied skill/rule paths, and embed `scope-usage` matching `.protocols/scope-usage.yaml` in every
-controller response, including blocked/failed and intermediate returns. Report only this child's
-own usage; preserve the existing response shape and domain artifact contract.

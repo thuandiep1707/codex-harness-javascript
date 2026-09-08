@@ -50,10 +50,3 @@ Return one of these workflow states to the Primary Controller:
 - `blocked`: execution cannot continue safely; state the concrete blocker.
 
 When clarification answers arrive, continue from the existing working context and rerun only affected authoring/review work. Do not restart the whole package by default.
-
-## Scope usage audit
-
-Apply `.agents/rules/scope-usage-reporting.md` from the start of this invocation. Track actual loaded
-and applied skill/rule paths, and embed `scope-usage` matching `.protocols/scope-usage.yaml` in every
-controller response, including blocked/failed and intermediate returns. Report only this child's
-own usage; preserve the existing response shape and domain artifact contract.

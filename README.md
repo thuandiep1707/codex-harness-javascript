@@ -384,47 +384,6 @@ codex-harness-javascript/
 
 For implementation-level rules and protocol details, start with [`AGENTS.md`](AGENTS.md) and the files under `.protocols/`.
 
-## Inspect child skill and rule usage
-
-Every child role returns `scope-usage` metadata in its existing response. The Primary Controller
-shows a `Scope usage` audit in the main conversation after each report and includes the latest
-per-child snapshot in the final workflow response. This also covers Brain, Orchestrator controller
-turns, Document approval/clarification, and blocked specialist results.
-
-Look for these fields:
-
-| Field | Meaning |
-| --- | --- |
-| `used_scope_skills` | Exact paths of skills/capabilities actually applied by this child |
-| `used_scope_rules` | Exact paths of rules actually applied, including evaluated guards |
-| `loaded_scope_skills` / `loaded_scope_rules` | Content actually read or supplied; not the whole allowlist |
-| `usage-evidence` | Short observable application for each used path |
-| `report-id` / `completeness` | Invocation/response correlation and complete, partial, or unavailable observations |
-
-Illustrative conversation record (identifiers and observations below are examples, not a real run):
-
-```text
-Scope usage — coding — child=<native-child-id> — report=delivery-coding-1:1 — work=EX-12
-completeness: complete
-used_scope_skills: []
-used_scope_rules: [.agents/rules/scope-usage-reporting.md,
-  .agents/specialists/coding/rules/context-boundary.md]
-loaded-but-unused skills: []
-loaded-but-unused rules: [.agents/rules/runtime-resource-lifecycle.md]
-limitations: []
-```
-
-Compare loaded-but-unused entries with the bounded task to find possible excess context; do not
-automatically remove mandatory rules. `[]` means known none, while `partial`/`unavailable` makes
-missing observations explicit. Reports are self-reported evidence, not measured token savings or
-proof of all runtime-injected context. No external telemetry service or product log folder is added.
-
-The shared [reporting rule](.agents/rules/scope-usage-reporting.md) defines collection, validation,
-exit paths, and display; [scope-usage.yaml](.protocols/scope-usage.yaml) defines the embedded format.
-Separating correlation from attributes follows the general approach in the
-[OpenTelemetry log data model](https://opentelemetry.io/docs/specs/otel/logs/data-model/);
-this harness does not implement an OpenTelemetry exporter.
-
 ## Roadmap
 
 The core harness is intentionally domain-extensible. Planned directions include:
