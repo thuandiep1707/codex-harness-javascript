@@ -362,12 +362,67 @@ If context/routing is insufficient, return a blocker. Never bypass isolation usi
 
 ## Structured protocols
 
+### Controller-supplied scope usage metadata
+
+For every native child dispatch and continuation, Primary Controller appends the following common
+instruction alongside the role-specific handoff. Do not edit an Orchestrator-supplied business payload
+or require per-agent manifest/bootstrap changes. This applies to every child role, including future roles.
+
+```text
+Preserve your existing response kind and business fields. Add scope-usage metadata for this turn
+(since your previous response, or invocation start on your first turn):
+scope-usage:
+  completeness: complete|partial
+  loaded: {skills: [exact-path], rules: [exact-path]}
+  applied:
+    skills: [{path: exact-path, evidence: brief-observable-application}]
+    rules: [{path: exact-path, evidence: brief-observable-application}]
+  limitations: []
+Loaded means content newly read/supplied this turn, not paths merely listed in a manifest/handoff.
+Applied means actually used this turn, including material loaded in earlier turns. Use [] for known
+none, partial with limitations for uncertainty or lost context. Skills include SKILL.md/CAPABILITY.md;
+rules include applicable rule documents/sections. Keep canonical paths, deduplicate within each list,
+and give brief observable evidence, not hidden reasoning or copied content. An evaluated rule guard
+counts as application. Do not read extra documents merely to populate this report. Include metadata
+on intermediate and terminal returns when possible. If returning an artifact plus agent-report,
+include scope-usage only in agent-report. Otherwise embed it in your existing response object.
+```
+
+`.protocols/scope-usage.yaml` is the shared format. Control-repository paths use `/` separators;
+external identifiers retain their supplied canonical form. A known section may use a `#section-anchor`.
+Track observations during the turn; do not reconstruct a whole session's usage from memory. Missing
+pre-compaction observations make the report partial rather than guessed. A Document Agent response
+embeds this field alongside its existing workflow state and payload. The common metadata extension
+does not replace any role's response contract or authorize new capabilities.
+
+Primary Controller captures usage with the actual child ID, role, work item/mode, and response turn
+before closing the child. Keep attribution when forwarding results; Orchestrator must not count
+forwarded specialist usage as its own. Aggregate only received observations in transient controller
+context, not a product-repository log or Jira telemetry stream. If controller context loses earlier
+observations, mark the aggregate partial; conversation history is an audit surface, not workflow truth.
+
+Check shape, canonical identifiers, duplicates, completeness/limitations, and evidence for applied
+entries. Applied entries need not occur in this turn's loaded lists. Compare known routing/allowlists
+without loading extra skills. A scope violation follows existing scope gates, but missing/malformed
+usage only marks the audit incomplete: never infer empty usage, rerun product work, delay cleanup,
+or keep a child alive solely to obtain telemetry. A crash without a response is recorded as missing
+by the controller, not fabricated as child testimony.
+
+At workflow completion, pause, or blocker, display one compact `Scope usage` summary in the primary
+conversation: per-child applied paths, observed loaded-but-not-observed-applied paths, and limitations.
+Compute this difference across all retained turns for that child, not separately for each turn.
+When observations are partial, label these as candidates rather than proven unused content. Show
+known-empty sets explicitly. Do not rely on hidden child panels or counts alone. No extra reporting
+turns or new runtime services are required. These are self-reported observations, not measured token
+savings; do not automatically remove mandatory rules based on this audit.
+
 Use templates under `.protocols/`:
 
 - `analysis-package.yaml`
 - `issue-handoff.yaml`
 - `pause-checkpoint.yaml`
 - `agent-report.yaml`
+- `scope-usage.yaml` (shared embedded metadata)
 - `runtime-resource-event.yaml`
 - `design-artifact.yaml`
 - `test-plan-artifact.yaml`

@@ -384,6 +384,25 @@ codex-harness-javascript/
 
 For implementation-level rules and protocol details, start with [`AGENTS.md`](AGENTS.md) and the files under `.protocols/`.
 
+## Inspect scope usage
+
+Primary Controller supplies a common usage-report instruction with every child dispatch/continuation,
+including new agent roles. No per-agent manifest or bootstrap registration is needed. Existing response
+payloads retain their shape and add `scope-usage` using the shared
+[metadata format](.protocols/scope-usage.yaml).
+
+Each report covers one turn: `loaded` lists skill/rule content newly read or supplied, while `applied`
+lists material used with brief evidence, including material loaded earlier. A path merely present in
+an allowlist is not loaded content. Known-empty lists are `[]`; uncertainty is `partial` with limitations.
+
+At completion, pause, or blocker, the controller displays a `Scope usage` summary in the main
+conversation for each child: applied paths, observed loaded-but-not-applied candidates across retained
+turns, and missing observations. Missing metadata does not rerun work or delay child cleanup.
+
+This is a declarative reporting contract, not a runtime hook or token measurement. Self-reporting and
+context loss limit completeness. Use the audit to investigate excess context, not to automatically
+remove mandatory rules. See the controller contract in [AGENTS.md](AGENTS.md#controller-supplied-scope-usage-metadata).
+
 ## Roadmap
 
 The core harness is intentionally domain-extensible. Planned directions include:
