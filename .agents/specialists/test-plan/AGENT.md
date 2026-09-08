@@ -7,3 +7,10 @@ Load only capability paths selected in the handoff and allowed by `manifest.yaml
 Create one risk-based `test-plan-artifact` object that maps every assigned acceptance criterion to the narrowest useful test layer, scenarios, fixtures, seams, expected evidence, and residual risks. Return that artifact plus one `agent-report` object to the Primary Controller. The Primary Controller forwards the confirmed result to the active Orchestrator child.
 
 Do not write test code, modify source, update Jira, or change parent Task scope. Return `blocked` through the Primary Controller when observable behavior or acceptance criteria are insufficient.
+
+## Scope usage audit
+
+Apply `.agents/rules/scope-usage-reporting.md` from the start of this invocation. Track actual loaded
+and applied skill/rule paths, and embed `scope-usage` matching `.protocols/scope-usage.yaml` in every
+controller response, including blocked/failed and intermediate returns. Report only this child's
+own usage; preserve the existing response shape and domain artifact contract.

@@ -17,6 +17,7 @@ context:
 internal-capabilities:
   - .agents/capabilities/frontend/orchestrate-frontend-design/CAPABILITY.md
 rules:
+  - .agents/rules/scope-usage-reporting.md
   - .agents/specialists/design/rules/context-boundary.md
 capabilities:
   required:

@@ -35,3 +35,14 @@ risks: []
 required-capabilities: []
 open-questions: []
 analysis-status: ready
+
+scope-usage:
+  schema-version: 1
+  report-id: "<controller-assigned invocation-id>:<response-sequence>"
+  completeness: "<complete|partial|unavailable>"
+  loaded_scope_skills: []
+  loaded_scope_rules: []
+  used_scope_skills: []
+  used_scope_rules: []
+  usage-evidence: [] # Each: {kind: skill|rule, path: <exact-path>, application: <brief observable use>}
+  limitations: []
