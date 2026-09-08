@@ -38,3 +38,7 @@ deviations: []
 validation-evidence: []
 remaining-risks: []
 brain-acceptance-inputs: []
+
+# Common metadata extension: embed the mapping from .protocols/scope-usage.yaml.
+# null means missing audit metadata, never known-empty usage; business fields remain unchanged.
+scope-usage: null
