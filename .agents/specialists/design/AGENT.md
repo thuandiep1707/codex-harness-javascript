@@ -7,10 +7,3 @@ Load only capability paths selected in the handoff and allowed by `manifest.yaml
 Use only a design MCP/plugin capability that is already connected and authorized. Create or update the requested provider artifact, inspect the result, and return one `design-artifact` plus one `agent-report` object to the Primary Controller. The Primary Controller forwards the confirmed result to the active Orchestrator child.
 
 Do not modify product source, install dependencies, update Jira, change parent Task scope, or replace a missing provider with an agent-authored design. Return `blocked` through the Primary Controller when the handoff is incomplete or the required provider is unavailable.
-
-## Scope usage audit
-
-Apply `.agents/rules/scope-usage-reporting.md` from the start of this invocation. Track actual loaded
-and applied skill/rule paths, and embed `scope-usage` matching `.protocols/scope-usage.yaml` in every
-controller response, including blocked/failed and intermediate returns. Report only this child's
-own usage; preserve the existing response shape and domain artifact contract.

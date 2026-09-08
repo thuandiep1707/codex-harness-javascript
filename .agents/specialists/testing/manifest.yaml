@@ -22,7 +22,6 @@ context:
 internal-capabilities:
   - .agents/capabilities/frontend/testing/CAPABILITY.md
 rules:
-  - .agents/rules/scope-usage-reporting.md
   - .agents/specialists/testing/rules/context-boundary.md
   - .agents/rules/testing.md
   - .agents/rules/runtime-resource-lifecycle.md

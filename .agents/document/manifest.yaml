@@ -26,8 +26,7 @@ internal-capabilities:
   - .agents/capabilities/document/functional-spec-authoring/CAPABILITY.md
   - .agents/capabilities/document/uiux-spec-authoring/CAPABILITY.md
   - .agents/capabilities/document/review/CAPABILITY.md
-rules:
-  - .agents/rules/scope-usage-reporting.md
+rules: []
 capabilities:
   required: []
   optional: []
