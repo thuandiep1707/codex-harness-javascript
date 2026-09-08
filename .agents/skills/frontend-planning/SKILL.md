@@ -27,6 +27,7 @@ Do not dispatch Design, Test Plan, Coding, or Testing specialists in this workfl
 - Detect project implementation stack from evidence; detection is not permission to adopt a new dependency.
 - Record unresolved technology/architecture decisions instead of defaulting to a library.
 - Only the Primary Controller invokes the Jira connector and native child-agent lifecycle APIs. Orchestrator owns planning decisions only.
+- Planning succeeds only after Orchestrator's `sprint-assignment.md` gate verifies every in-scope parent Task's Sprint ID and the durable ready-marker write is confirmed. Return the blocker if assignment is unresolved; issue creation alone is not success.
 
 ## Output
 
