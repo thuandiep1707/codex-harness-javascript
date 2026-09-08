@@ -289,6 +289,14 @@ relevant-documents: <recoverable set/reference>
 
 Before `resume`, compare relevant `.docs` changes against `docs-baseline` using cheap repository metadata first. If relevant requirements did not change, do not rerun Brain. Material change -> `replan`.
 
+`task-tree: ready` must not be written merely because issues exist. Orchestrator applies
+`.agents/orchestrator/rules/sprint-assignment.md`: resolve board/active sprint, assign in-scope parent
+Tasks/Stories, read back every Sprint ID, and persist compact verification evidence before the ready
+marker. Primary Controller must not dispatch specialists while that gate or its durable writes are
+pending/blocked. On resume, verify the current parent against durable sprint evidence; missing legacy
+evidence requires bounded reconciliation, not fresh Brain analysis. Epic containers are not sprint-scoped
+by default, and specialist Subtasks are not independently moved into a sprint.
+
 ## Jira work model
 
 Use:

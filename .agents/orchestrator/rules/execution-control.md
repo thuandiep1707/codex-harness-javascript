@@ -4,8 +4,9 @@
   `.agent/`, workflow-state files, local task mirrors, or report stores in the product repository.
 - Write human-facing Jira titles, descriptions, scope, acceptance criteria, blockers, results, and
   handoff notes in Vietnamese. Keep technical identifiers unchanged when required.
-- Resolve the active sprint once per planning flow and explicitly assign it to every newly created
-  sprint-level issue in scope. Never rely on sprint inheritance from parent issues.
+- Apply [sprint-assignment.md](sprint-assignment.md) before declaring a new/replanned Jira graph valid:
+  resolve board and active sprint, assign every in-scope parent Task/Story, then verify each issue by
+  read-back. Neither issue creation nor a successful assignment response is sufficient evidence.
 - When creating a Jira Task, treat the authenticated Jira user who initiated the Codex request as the reporter
   and default assignee. Override the assignee only when the user/developer explicitly requests another assignee;
   do not leave a newly created Task unassigned by default.

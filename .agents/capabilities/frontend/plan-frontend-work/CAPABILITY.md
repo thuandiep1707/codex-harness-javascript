@@ -53,7 +53,12 @@ Rules:
 
 Do not reopen Brain decisions. Route requirement, scope, architecture, dependency-adoption, or acceptance conflicts back to Brain/user as `replan` evidence.
 
-After the Jira task graph is confirmed valid:
+Before treating the Jira task graph as valid, apply
+[the sprint assignment gate](../../../orchestrator/rules/sprint-assignment.md): resolve a unique
+board/active sprint, explicitly assign affected parent Tasks, read back every Sprint ID, and persist
+confirmed evidence before the ready marker. Pending/failed verification blocks completion and dispatch.
+
+After the Jira task graph and its ready-marker write are confirmed valid:
 
 - `plan-only` -> return the confirmed hierarchy and stop before specialist dispatch;
 - `deliver` -> continue immediately by emitting the next dependency-ready `dispatch-specialist` controller action. Do not ask for user confirmation merely because planning completed.
@@ -71,7 +76,10 @@ Load only:
 5. routed internal-capability identifiers for the Subtask;
 6. relevant current source/provider state.
 
-Read [handoff-contracts.md](references/handoff-contracts.md), compose one transient `issue-handoff`, and emit one `dispatch-specialist` controller action for the specialist required by the current Subtask.
+Read [handoff-contracts.md](references/handoff-contracts.md). Check the current parent against durable
+sprint evidence using the sprint assignment gate; reconcile missing/stale evidence before dispatch
+without rebuilding the graph. Compose one transient `issue-handoff`, then emit the required
+`dispatch-specialist` controller action only after verification.
 
 Revalidate capability routing only against cheap current source/config evidence. If relevant architecture/dependency evidence changed materially, return `replan`; do not silently swap libraries during resume.
 

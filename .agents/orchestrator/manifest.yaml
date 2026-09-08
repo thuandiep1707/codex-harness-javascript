@@ -31,6 +31,7 @@ internal-capabilities:
   - .agents/capabilities/frontend/plan-frontend-work/CAPABILITY.md
 rules:
   - .agents/orchestrator/rules/execution-control.md
+  - .agents/orchestrator/rules/sprint-assignment.md
   - .agents/orchestrator/rules/task-decomposition.md
 capabilities:
   required: []

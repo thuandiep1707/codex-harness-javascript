@@ -5,6 +5,20 @@ jira:
   requested-task-key: ""
   requested-subtask-key: ""
 status: "<awaiting-controller|completed|paused|blocked|runtime-capability-blocked|runtime-cleanup-blocked|pause-blocked|revision-required>"
+sprint-assignment:
+  status: "<pending|verified|blocked|not-applicable>"
+  site: ""
+  project-key: ""
+  board-id: null
+  sprint-id: null
+  sprint-state: ""
+  selection-evidence: []
+  required-issue-keys: []
+  verified-issues: [] # Each: {issue-key, observed-sprint-id, read-action-id}
+  unresolved-issue-keys: []
+  verified-at: ""
+  durable-evidence-action-id: ""
+  exception-evidence: "" # Required for an explicit Backlog/Kanban policy; never inferred.
 controller-actions: []
 subtask-results: []
 durable-jira-updates: []
