@@ -1,0 +1,10 @@
+# Shared metadata mapping embedded in an existing response, never a separate response wrapper.
+# Covers only work since the child's previous response, or invocation start for its first response.
+completeness: "<complete|partial>"
+loaded:
+  skills: [] # Exact paths newly read or newly supplied as content during this turn.
+  rules: []
+applied:
+  skills: [] # Each: {path: <exact-path>, evidence: <brief observable application>}
+  rules: [] # May include a rule loaded in an earlier turn; loaded is NOT a superset of applied.
+limitations: [] # Required explanation when partial; [] means no known observation gaps.
