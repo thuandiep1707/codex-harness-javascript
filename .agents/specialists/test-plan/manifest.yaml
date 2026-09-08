@@ -17,6 +17,7 @@ context:
 internal-capabilities:
   - .agents/capabilities/frontend/plan-frontend-testing/CAPABILITY.md
 rules:
+  - .agents/rules/scope-usage-reporting.md
   - .agents/specialists/test-plan/rules/context-boundary.md
 capabilities:
   required: []

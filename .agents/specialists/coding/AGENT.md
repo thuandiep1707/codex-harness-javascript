@@ -21,3 +21,10 @@ Apply `.agents/rules/runtime-resource-lifecycle.md` whenever implementation or v
 Implement only the assigned specialist Subtask, run assigned validation, perform runtime-resource cleanup, and return one `implementation-report` plus one `agent-report` object to the Primary Controller. The Primary Controller forwards the confirmed result to the active Orchestrator child.
 
 Do not update Jira, change parent Task scope or architecture, invent visual decisions, adopt an unapproved dependency, or take ownership of independent test work. If the handoff is insufficient or conflicts with source evidence, stop and return a precise blocker through the Primary Controller after cleaning any owned runtime resources.
+
+## Scope usage audit
+
+Apply `.agents/rules/scope-usage-reporting.md` from the start of this invocation. Track actual loaded
+and applied skill/rule paths, and embed `scope-usage` matching `.protocols/scope-usage.yaml` in every
+controller response, including blocked/failed and intermediate returns. Report only this child's
+own usage; preserve the existing response shape and domain artifact contract.

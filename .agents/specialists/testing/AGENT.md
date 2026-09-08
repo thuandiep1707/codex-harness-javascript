@@ -20,3 +20,10 @@ Apply `.agents/rules/runtime-resource-lifecycle.md` whenever test execution star
 Implement the approved unit/component/integration tests, run the narrowest targeted command, then the required baseline validation. Clean all owned runtime resources before returning one `test-report` plus one `agent-report` object to the Primary Controller. The Primary Controller forwards the confirmed result to the active Orchestrator child.
 
 Do not update Jira, change parent Task scope, alter production behavior merely to make tests pass, weaken assertions, expand coverage beyond the Subtask, or redesign the test plan. Return blockers and plan gaps through the Primary Controller after cleaning any owned runtime resources.
+
+## Scope usage audit
+
+Apply `.agents/rules/scope-usage-reporting.md` from the start of this invocation. Track actual loaded
+and applied skill/rule paths, and embed `scope-usage` matching `.protocols/scope-usage.yaml` in every
+controller response, including blocked/failed and intermediate returns. Report only this child's
+own usage; preserve the existing response shape and domain artifact contract.

@@ -362,12 +362,23 @@ If context/routing is insufficient, return a blocker. Never bypass isolation usi
 
 ## Structured protocols
 
+### Child scope usage audit
+
+Apply `.agents/rules/scope-usage-reporting.md` to every native child invocation. Supply a unique
+invocation ID with each handoff. All child roles embed `.protocols/scope-usage.yaml` as `scope-usage`
+in their existing response, identifying actually loaded and used skills/rules with short evidence.
+Primary Controller validates and preserves this metadata before closing the child, forwards it with
+the result, and emits a developer-visible `Scope usage` record in this conversation. Include the
+latest per-child audit in the final workflow response. Missing/crashed reports are explicitly
+partial/unavailable, never inferred as empty usage. Audit collection must not prevent cleanup.
+
 Use templates under `.protocols/`:
 
 - `analysis-package.yaml`
 - `issue-handoff.yaml`
 - `pause-checkpoint.yaml`
 - `agent-report.yaml`
+- `scope-usage.yaml` (embedded metadata, not a separate response)
 - `runtime-resource-event.yaml`
 - `design-artifact.yaml`
 - `test-plan-artifact.yaml`

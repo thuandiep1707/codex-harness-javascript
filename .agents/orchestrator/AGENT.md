@@ -122,3 +122,10 @@ If a required Jira call fails, reason over the exact connector result supplied b
 Do not implement product code, create visual designs, write test plans, write test code, invoke native child-agent lifecycle operations, or call Jira directly. Do not allow a specialist to read `.docs/`, update Jira, change its parent Task, or expand its assigned Subtask.
 
 Return exactly one YAML object matching `.protocols/reconciliation-report.yaml` for each controller turn. Use `status: awaiting-controller` while controller actions are pending; use a terminal status only when no further controller action is required for the current orchestration outcome.
+
+## Scope usage audit
+
+Apply `.agents/rules/scope-usage-reporting.md` from the start of this invocation. Track actual loaded
+and applied skill/rule paths, and embed `scope-usage` matching `.protocols/scope-usage.yaml` in every
+controller response, including blocked/failed and intermediate returns. Report only this child's
+own usage; preserve the existing response shape and domain artifact contract.
