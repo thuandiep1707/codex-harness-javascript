@@ -35,12 +35,6 @@ Orchestrator owns workflow decisions. It must not call native agent lifecycle AP
 
 Keep one Orchestrator child alive across the active delivery workflow. Do not restart it after every Coding/Testing result.
 
-Before executing the first specialist dispatch after planning/replanning, require Orchestrator's
-confirmed `sprint-assignment` evidence and durable `task-tree: ready` write under
-`.agents/orchestrator/rules/sprint-assignment.md`. Pending or failed sprint verification blocks
-dispatch. On resume, require the current parent's membership check against durable sprint evidence;
-a legacy ready marker alone is insufficient.
-
 ## Continuous delivery
 
 For `NEW`:
