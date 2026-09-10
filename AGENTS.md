@@ -277,6 +277,14 @@ If a required Jira call fails, return that exact connector result to Orchestrato
 
 ## Jira validity markers
 
+Sprint enforcement is temporarily disabled. Sprint membership/evidence is not a validity or dispatch
+gate in planning, replanning, or resume. Do not perform sprint operations unless explicitly requested
+by the user, and do not ask for a sprint policy exception. For work previously blocked only by sprint
+evidence, reuse the existing Jira graph, reconcile any stale sprint-only blocker/readiness state through
+confirmed Jira calls, and continue dependency-ready Subtasks once the normal non-sprint gates pass.
+Do not recreate issues, rerun Brain solely for this change, or fabricate verified sprint evidence.
+All other scope, dependency, validation, and cleanup requirements remain in force.
+
 Feature context must make these facts recoverable:
 
 ```text
@@ -288,14 +296,6 @@ relevant-documents: <recoverable set/reference>
 ```
 
 Before `resume`, compare relevant `.docs` changes against `docs-baseline` using cheap repository metadata first. If relevant requirements did not change, do not rerun Brain. Material change -> `replan`.
-
-`task-tree: ready` must not be written merely because issues exist. Orchestrator applies
-`.agents/orchestrator/rules/sprint-assignment.md`: resolve board/active sprint, assign in-scope parent
-Tasks/Stories, read back every Sprint ID, and persist compact verification evidence before the ready
-marker. Primary Controller must not dispatch specialists while that gate or its durable writes are
-pending/blocked. On resume, verify the current parent against durable sprint evidence; missing legacy
-evidence requires bounded reconciliation, not fresh Brain analysis. Epic containers are not sprint-scoped
-by default, and specialist Subtasks are not independently moved into a sprint.
 
 ## Jira work model
 

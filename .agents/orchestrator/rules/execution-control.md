@@ -4,9 +4,11 @@
   `.agent/`, workflow-state files, local task mirrors, or report stores in the product repository.
 - Write human-facing Jira titles, descriptions, scope, acceptance criteria, blockers, results, and
   handoff notes in Vietnamese. Keep technical identifiers unchanged when required.
-- Apply [sprint-assignment.md](sprint-assignment.md) before declaring a new/replanned Jira graph valid:
-  resolve board and active sprint, assign every in-scope parent Task/Story, then verify each issue by
-  read-back. Neither issue creation nor a successful assignment response is sufficient evidence.
+- Sprint enforcement is temporarily disabled for planning, replanning, and resume. Do not resolve,
+  assign, or verify sprint membership unless the user explicitly requests that sprint operation.
+  Missing sprint evidence, null Sprint fields, and prior sprint-only blockers must not prevent
+  task-tree readiness, planning completion, or dependency-ready specialist dispatch. No policy
+  exception or additional approval is required. Never claim sprint assignment was verified.
 - When creating a Jira Task, treat the authenticated Jira user who initiated the Codex request as the reporter
   and default assignee. Override the assignee only when the user/developer explicitly requests another assignee;
   do not leave a newly created Task unassigned by default.

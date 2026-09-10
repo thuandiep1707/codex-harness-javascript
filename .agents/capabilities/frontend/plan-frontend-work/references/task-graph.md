@@ -15,11 +15,6 @@ Feature context
 Store common objective, approved constraints, shared architecture direction, global acceptance scope,
 `analysis: ready`, `task-tree: ready`, `context-version`, and `docs-baseline` once at Feature level.
 
-`task-tree: ready` is a verified outcome, never a creation default. Apply
-[the sprint assignment gate](../../../../orchestrator/rules/sprint-assignment.md) and persist its
-compact evidence on the Feature before writing this marker. Default sprint scope is functional
-parent Tasks/Stories, not the Feature/Epic or specialist Subtasks.
-
 ### Parent Task
 
 Represent one cohesive user-observable or independently acceptable behavior. Include only the delta
