@@ -85,8 +85,8 @@ Use only for new work or approved replanning.
 3. Write human-facing Jira content in Vietnamese and use context inheritance rather than duplication.
 4. Map evidence-backed project-stack information plus each Subtask trigger to the smallest allowed internal-capability set.
 5. Request required Jira reads/mutations through `jira-call` controller actions. Continue planning after the Primary Controller returns their confirmed results.
-6. Apply `rules/sprint-assignment.md`: resolve board/active sprint, assign in-scope parent Tasks, read back every Sprint value, and persist confirmed evidence before setting `task-tree: ready`. A created hierarchy or successful write alone is not a valid graph.
-7. Only after that gate and the ready-marker write are confirmed, finish for `plan-only` or immediately request dependency-ready specialist dispatch for `deliver`. Unresolved sprint assignment blocks both outcomes.
+6. If execution intent is `plan-only`, finish when the Jira task tree is confirmed valid.
+7. If execution intent is `deliver`, immediately request dispatch of dependency-ready specialist Subtasks without asking the user to approve the existence of the Jira plan.
 
 Never create a feature-level Coding task that contains multiple independently acceptable behaviors.
 
@@ -97,7 +97,7 @@ Use when Jira already contains valid analysis and task-tree context and relevant
 1. Do not rerun decomposition and do not read all `.docs/`.
 2. Use only the current Jira Subtask, its parent Task, Feature context, direct completed dependencies, latest durable result/handoff evidence, routed capabilities, and relevant current source state supplied for this resume.
 3. Reuse the routed internal-capability set when still valid against current source evidence; return to replan when routing is stale because relevant architecture/dependency evidence changed.
-4. Check the current parent's sprint membership against durable Feature sprint evidence using `rules/sprint-assignment.md`; repair missing/stale evidence before dispatch without repeating decomposition. Then compose one transient `issue-handoff` object from that minimal context chain.
+4. Compose one transient `issue-handoff` object from that minimal context chain.
 5. Emit one `dispatch-specialist` controller action for the specialist required by the current Subtask.
 6. After the Primary Controller returns the specialist report and cleanup/close evidence, validate it and request the necessary Jira updates through `jira-call` actions.
 
