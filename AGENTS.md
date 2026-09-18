@@ -439,6 +439,13 @@ These are transient communication contracts, not product-repository runtime file
 
 MCP servers, plugins, tokens, and authentication are user-managed. Never install/connect/configure them unless explicitly requested. A missing tool inside a child agent is not by itself a workflow blocker when the Primary Controller owns that transport. Treat an external capability as unavailable only after the relevant Primary Controller transport call fails; then return the exact failure to Orchestrator instead of fabricating external state.
 
+## Static validation
+
+- Lint/typecheck only files changed within the current Subtask write scope.
+- Resolve changed files from Git evidence, never chat memory.
+- Reuse passing evidence while a file is unchanged.
+- Revalidate only files changed after that evidence.
+
 ## Final acceptance
 
 Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. Return `accepted` only when requirements/acceptance criteria are covered, implementation matches approved architecture/design, intended behavior is proven, no blocking gap remains, all known child agents have been explicitly closed/verified by the Primary Controller, and all owned runtime resources are released or safely resolved.
