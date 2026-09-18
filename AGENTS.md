@@ -346,7 +346,10 @@ One child agent = one configured role. Never execute another role. Never invent 
 | `design` | `.agents/specialists/design/` | External design-provider execution |
 | `test-plan` | `.agents/specialists/test-plan/` | Risk-based test-plan result |
 | `coding` | `.agents/specialists/coding/` | Bounded production implementation using routed internal capabilities |
-| `testing` | `.agents/specialists/testing/` | Bounded test implementation/execution using routed internal capabilities |
+| `testing-logic` | `.agents/specialists/testing-logic/` | Unit/component/integration tests without a real browser |
+| `testing-ui` | `.agents/specialists/testing-ui/` | Real-browser UI validation and Playwright execution |
+
+Testing routing: real browser required -> `testing-ui`; otherwise -> `testing-logic`.
 
 Each module's `manifest.yaml` is authoritative for inputs, outputs, context allowlist, rules, external/runtime capabilities, and **internal-capability allowlist**. `AGENT.md` is the role bootstrap.
 

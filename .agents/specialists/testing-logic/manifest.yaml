@@ -1,6 +1,6 @@
-name: testing
-role: test-implementation-specialist
-description: Implement and execute bounded frontend tests for one specialist Subtask using only routed internal capabilities.
+name: testing-logic
+role: logic-test-specialist
+description: Implement and execute bounded unit, component, and integration tests without a real browser.
 accepts:
   - issue-handoff
   - test-plan-artifact
@@ -10,7 +10,6 @@ produces:
   - test-code-change
   - test-report
   - agent-report
-  - runtime-resource-events
 context:
   allowed:
     - transient-issue-handoff
@@ -22,7 +21,6 @@ context:
 internal-capabilities:
   - .agents/capabilities/frontend/testing/CAPABILITY.md
 rules:
-  - .agents/specialists/testing/rules/context-boundary.md
   - .agents/rules/testing.md
   - .agents/rules/runtime-resource-lifecycle.md
 capabilities:
@@ -30,5 +28,3 @@ capabilities:
     - workspace-read
     - workspace-write
     - test-runner
-  optional:
-    - browser
