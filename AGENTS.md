@@ -337,7 +337,7 @@ On explicit pause, `[HANDOFF]` is mandatory whenever unfinished scope remains. J
 
 ## Agent definitions
 
-Each subagent owns exactly one specialist role. Do not combine distinct specialist responsibilities in one agent execution, and do not invent ad-hoc agent roles at runtime; route distinct roles to distinct configured agents.
+Each child agent/subagent owns exactly one configured role. Never combine responsibilities from different roles in one agent execution, and never invent ad-hoc agent roles at runtime; route distinct roles to distinct configured agents.
 
 | Agent | Module | Responsibility |
 | --- | --- | --- |
