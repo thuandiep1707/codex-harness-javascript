@@ -69,6 +69,9 @@ repository evidence.
 Run the narrowest targeted command first, then the baseline validation explicitly required by the
 handoff/current repository contract.
 
+- Lint only files changed within the Subtask write scope.
+- Resolve changed files from Git diff evidence, never from chat memory.
+
 If execution starts a long-lived process such as `npm run dev`, `npm run preview`, a framework server,
 watcher, browser server, or background service, apply `.agents/rules/runtime-resource-lifecycle.md`:
 
