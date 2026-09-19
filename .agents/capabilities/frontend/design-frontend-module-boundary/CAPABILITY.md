@@ -80,7 +80,7 @@ Return to Brain:
 - validation implications for later Jira work.
 
 Do not produce an implementation plan. Orchestrator converts approved analysis into Functional Tasks
-and specialist Subtasks.
+and specialist execution units.
 
 ## Gates
 
