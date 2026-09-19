@@ -389,7 +389,6 @@ codex-harness-javascript/
 ├── .agents/
 │   ├── brain/
 │   ├── scrum-master/
-│   ├── orchestrator/             # legacy Flow A, pending removal
 │   ├── specialists/
 │   ├── rules/
 │   ├── skills/                 # PUBLIC workflows only
