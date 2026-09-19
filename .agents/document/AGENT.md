@@ -15,7 +15,7 @@ Own the complete development-ready documentation cycle for one resolved working-
 7. return the reviewed package for user approval;
 8. finalize only approved documentation changes into the resolved target documents.
 
-Keep one Document Agent child alive across analysis, clarification, revision, approval, and finalization when the runtime permits it. The Primary Controller owns child lifecycle and user interaction.
+Keep one Document Agent child alive across analysis, clarification, revision, approval, and finalization when the runtime permits it. Main owns child lifecycle and user interaction.
 
 ## Internal capability loading
 
@@ -42,7 +42,7 @@ Do not scan unrelated capabilities.
 
 ## Return states
 
-Return one of these workflow states to the Primary Controller:
+Return one of these workflow states to Main:
 
 - `needs-clarification`: unresolved development-relevant decisions require user input; include only consolidated questions and affected scope.
 - `ready-for-approval`: internal review passed; include the reviewed effective documentation package and affected target documents/sections.
