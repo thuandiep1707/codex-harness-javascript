@@ -53,4 +53,4 @@ and installed framework/library versions.
 
 Return selected approved owner, consumers, state source, changed files, hydration/runtime impact,
 validation, and unresolved architecture/dependency decisions. Do not create local plan/progress files
-or expand the Jira Subtask.
+or expand the Jira execution unit.
