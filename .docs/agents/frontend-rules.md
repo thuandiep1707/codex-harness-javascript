@@ -13,8 +13,7 @@ Coding specialist dùng:
 .agents/rules/frontend/*.md
 ```
 
-Testing Logic và Testing UI dùng `.agents/rules/testing.md`. Brain, Orchestrator,
-Design và Test Plan chỉ load rule được manifest của mình allow.
+Testing Logic và Testing UI dùng `.agents/rules/testing.md`. Brain, Design và Test Plan chỉ load rule được manifest của mình allow.
 
 ## Frontend topic rules
 
@@ -35,7 +34,7 @@ transient handoff hoặc source evidence. Không load toàn bộ topic rules cho
 ## Specialist context boundary
 
 Frontend/testing rules không được dùng làm lý do để đọc `.docs/`. Requirement của specialist chỉ đến
-từ transient `issue-handoff` và dependency evidence được Orchestrator cung cấp.
+từ transient `issue-handoff`/`verification-handoff` và bounded evidence được Main cung cấp.
 
 Nếu rule xung đột với handoff, specialist trả blocker. Specialist không tự sửa Jira, parent functional-slice boundary hoặc
 workflow scope.
