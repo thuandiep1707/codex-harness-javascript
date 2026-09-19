@@ -1,12 +1,13 @@
 name: orchestrator
 role: execution-management
-description: Plan, resume, or safely pause Jira-backed frontend work, select evidence-backed internal capabilities, decide specialist/Jira actions, and reconcile confirmed execution results.
+description: Plan, resume, safely pause, or finalize accepted Jira-backed frontend work, select evidence-backed internal capabilities, decide specialist/Jira actions, and reconcile confirmed execution results.
 accepts:
   - workflow-mode
   - execution-intent
   - analysis-package
   - jira-context
   - specialist-reports
+  - acceptance-report
   - controller-action-results
   - runtime-resource-events
   - pause-request

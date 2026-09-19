@@ -6,6 +6,10 @@ document-context:
   relevant-documents: []
   docs-baseline: "<git-commit-or-equivalent-baseline>"
   context-version: 1
+authority:
+  status: "<ready|blocked>"
+  evidence: []
+  blockers: []
 scope:
   included: []
   excluded: []
@@ -34,7 +38,7 @@ contradictions: []
 risks: []
 required-capabilities: []
 open-questions: []
-analysis-status: ready
+analysis-status: "<ready|blocked>"
 
 # Common metadata extension: embed the mapping from .protocols/scope-usage.yaml.
 # null means missing audit metadata, never known-empty usage; business fields remain unchanged.
