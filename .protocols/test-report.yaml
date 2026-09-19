@@ -1,12 +1,22 @@
 kind: test-report
 jira-subtask-key: "<subtask-key>"
+context-version: "<version>"
+source-baseline: "<git-commit-or-equivalent-source-state>"
 status: "<passed|failed|blocked>"
 test-plan-evidence: []
+acceptance-coverage:
+  - acceptance-id: "ac-1"
+    evidence: []
 changed-files: []
 scenarios:
   passed: []
   failed: []
   skipped: []
+failure-analysis:
+  - failure: ""
+    cause: "<test-only-mismatch|production-defect|harness-environment|authority-ambiguous|unknown>"
+    attribution: "<current-change|pre-existing|unknown>"
+    evidence: []
 execution:
   commands: []
   results: []

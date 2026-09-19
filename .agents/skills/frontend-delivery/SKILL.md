@@ -31,27 +31,28 @@ The Primary Controller owns runtime transport for the whole workflow:
 - Jira connector calls requested by Orchestrator;
 - cross-agent runtime-resource cleanup supervision.
 
-Orchestrator owns workflow decisions. It must not call native agent lifecycle APIs or Jira directly. It returns `controller-actions`; the Primary Controller executes them exactly and returns confirmed results to the same Orchestrator child.
+Orchestrator owns workflow decisions. It must not call native agent lifecycle APIs or Jira directly. It returns stable-ID `controller-actions`; the Primary Controller executes them exactly and retains confirmed results.
 
-Keep one Orchestrator child alive across the active delivery workflow. Do not restart it after every Coding/Testing result.
+Orchestrator state is workflow-lived, but an Orchestrator child process is disposable. A later Orchestrator turn is rehydrated from the latest reconciliation report, minimal Jira context, and confirmed controller-action results. Do not reserve a native child slot merely to keep Orchestrator memory alive.
 
 ## Continuous delivery
 
 For `NEW`:
 
-1. Primary Controller spawns Brain for bounded requirement analysis and project-stack discovery.
-2. Capture Brain result, then explicitly close and verify the Brain child.
+1. Primary Controller spawns Brain for bounded requirement analysis, authority readiness, and project-stack discovery.
+2. Capture Brain result, then explicitly close and verify the Brain child. Continue only when both `analysis-status: ready` and `authority.status: ready`; otherwise stop before Orchestrator planning/execution with the reported blocker.
 3. Primary Controller spawns one Orchestrator child in planning mode with execution intent `deliver` and supplies the approved analysis/Jira context.
-4. Orchestrator returns `status: awaiting-controller` with exact `jira-call` and/or `dispatch-specialist` actions as needed.
-5. Primary Controller executes those actions without changing their intent/payload and sends confirmed action results back to the same Orchestrator child.
-6. For `dispatch-specialist`, Primary Controller applies the native retry policy, collects the specialist result/runtime-resource evidence, ensures owned resources are cleaned, explicitly closes/verifies the specialist child, then returns the result to Orchestrator.
-7. Repeat the controller-action loop until Orchestrator returns a terminal reconciliation result with acceptance inputs ready.
-8. Close and verify the Orchestrator child.
-9. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting the workflow complete.
+4. Orchestrator returns `status: awaiting-controller` with one deterministic action batch up to the next decision boundary. Action IDs remain stable across retry/rehydration; independent actions may be batched, while result-dependent actions wait for the next Orchestrator decision.
+5. Primary Controller executes the batch without changing intent/payload. For writable specialist dispatch, capture the Git baseline, reserve exact allowed write scope, prevent overlapping writable leases, and verify the resulting diff stays inside scope.
+6. For `dispatch-specialist`, retry only after proving a failed/timeout attempt had no spawn side effect; never blind-spawn a duplicate. Collect result/resource evidence, close/verify the specialist child, and retain confirmed action results.
+7. Capture the Orchestrator report and close/verify its child after each decision turn. Rehydrate a fresh Orchestrator when confirmed action results reach the next decision boundary.
+8. Repeat until Orchestrator returns `acceptance-ready` with complete Brain acceptance inputs. The parent Task remains in an existing non-Done Jira status at this point.
+9. Spawn Brain for final acceptance and close/verify the Brain child. If it returns `blocked` or `revision-required`, route only the affected scope back through replan/revision; do not close the parent Task.
+10. If Brain returns `accepted`, spawn one Orchestrator `finalize` decision turn with that acceptance report. Execute its exact final Jira actions, including parent Done when appropriate, and report workflow completion only after confirmation.
 
-For `RESUME`, skip Brain analysis and Orchestrator decomposition when Jira validity markers and relevant `.docs` baseline remain valid. Spawn/keep one Orchestrator child for the resumed workflow and continue through the same controller-action loop.
+For `RESUME`, skip Brain analysis and Orchestrator decomposition only when Jira validity markers, authority readiness, and the relevant `.docs` baseline remain valid. If authority or relevant contract evidence is stale, run targeted Brain revalidation before any specialist dispatch. Rehydrate Orchestrator decision turns from confirmed state instead of requiring one long-lived child.
 
-For `REPLAN`, revalidate only changed relevant requirements and replan only affected Jira scope, then continue through the same controller-action loop.
+For `REPLAN`, revalidate only changed relevant requirements and authority for the affected scope. Invalidate only affected Test-plan/validation evidence, replan only that Jira delta, then continue through the same controller-action loop.
 
 For `PAUSE`, stop new specialist dispatch, let the Primary Controller collect/clean active runtime execution, then use the active Orchestrator (or spawn one in pause mode if none is usable) to decide required Jira result/handoff calls. Report a safe pause only after those calls and cleanup are confirmed.
 
@@ -85,4 +86,6 @@ Only this workflow is user-facing. Internal agent capabilities live outside `.ag
 
 ## Completion
 
-Report `accepted` only after Brain acceptance verifies authoritative `.docs`, Jira context/results, source changes, and validation evidence **and** all known child agents spawned for the workflow have been explicitly closed/verified and all owned runtime resources have been released or safely resolved. Green tests alone are not sufficient.
+Jira stores durable workflow state, not routine execution traces. Persist only scope/decision changes, real blockers/revisions, final specialist results, and pause handoffs; keep ordinary triage/retry/intermediate test counts transient.
+
+Report `accepted` only after Brain acceptance verifies authoritative `.docs`, Jira context/results, source changes, and validation evidence, all known child agents are closed/verified, owned runtime resources are released, **and** the post-acceptance Orchestrator finalization has confirmed the parent Task Done transition. Green tests or completed Subtasks alone are not sufficient.

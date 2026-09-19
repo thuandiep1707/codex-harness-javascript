@@ -19,6 +19,37 @@ Use this order:
 Never read `.docs/`, infer missing product behavior from chat history, modify Jira, or expand parent
 Task scope. Return a blocker when expected behavior/test authority is insufficient.
 
+## Role ownership
+
+- Testing Logic owns non-browser unit/component/integration tests and their harness only. It never writes or runs Playwright/E2E/browser tests.
+- Testing UI owns Playwright/E2E/browser tests and browser harness only when write scope is explicitly assigned. It never writes or runs Vitest/RTL logic tests.
+- Neither testing role writes production behavior. A production defect is returned to Orchestrator for Coding.
+- Coding does not own real-browser acceptance. Browser proof required by Test-plan is executed by Testing UI.
+
+Do not broaden a handoff to cross these ownership boundaries merely because a failing assertion is nearby.
+
+## Specialist iteration
+
+Within one assigned testing Subtask, keep routine test iteration inside the same specialist lifecycle:
+
+1. run the narrowest relevant test;
+2. diagnose the failure against the current handoff/Test-plan contract;
+3. when the mismatch is proven test-only and inside allowed write scope, correct only that test/harness issue;
+4. rerun and repeat while role, contract, and scope remain unchanged;
+5. return to Orchestrator only when complete or when a production defect, authority ambiguity, scope expansion, dependency, or cross-role validation boundary is reached.
+
+Do not create a new specialist cycle for each ordinary triage/fix/rerun step.
+
+## Failure attribution
+
+A failing broad suite does not automatically become current feature scope.
+
+- `current-change`: baseline evidence shows the scenario was green before the relevant current change and now fails, or the approved contract change directly makes the old test stale.
+- `pre-existing`: baseline evidence shows the same failure existed before the current change.
+- `unknown`: no reliable baseline proves attribution.
+
+Pre-existing or unknown failures must not be silently adopted as feature remediation. They block only when the current Test-plan, acceptance contract, or repository-required gate explicitly requires that validation to be green. A test-only correction still requires clear current-contract evidence; attribution uncertainty is not permission to weaken tests.
+
 ## Test placement
 
 ### Unit and component
@@ -41,8 +72,7 @@ tests/integration/<flow>.test.ts
 
 ### E2E/browser
 
-Use the established top-level E2E location when the assigned Subtask explicitly requires browser
-journey coverage, for example `e2e/` or `tests/e2e/`.
+Testing UI only: use the established top-level E2E location when its assigned Subtask explicitly requires browser journey coverage, for example `e2e/` or `tests/e2e/`. Testing Logic must treat these paths as outside its write/run ownership.
 
 ### Fixtures/mocks
 
@@ -66,11 +96,11 @@ repository evidence.
 
 ## Execution
 
-Run the narrowest targeted command first, then the baseline validation explicitly required by the
-handoff/current repository contract.
+Run the narrowest behavioral test command required by the approved Test-plan/handoff. Generic lint, format, typecheck, build, commit-hook, or CI gates remain owned by the working project's repository contract.
 
-- Lint only files changed within the Subtask write scope.
-- Resolve changed files from Git diff evidence, never from chat memory.
+- Run a generic validation command only when the handoff or established repository contract explicitly requires it for this testing stage.
+- Do not duplicate project hooks/CI merely because the current environment did not execute them.
+- If required project hooks are expected but unavailable/not installed, report the environment/setup gap instead of reconstructing their command set as harness policy.
 
 If execution starts a long-lived process such as `npm run dev`, `npm run preview`, a framework server,
 watcher, browser server, or background service, apply `.agents/rules/runtime-resource-lifecycle.md`:
@@ -85,7 +115,7 @@ Record:
 
 - commands run;
 - pass/fail results;
-- relevant failure cause and correction;
+- relevant failure cause, attribution (`current-change|pre-existing|unknown`), and correction;
 - skipped required validation and reason;
 - runtime resources acquired/released/unresolved;
 - residual risk or blocker.

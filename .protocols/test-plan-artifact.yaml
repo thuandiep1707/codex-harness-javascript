@@ -1,12 +1,13 @@
 kind: test-plan-artifact
 jira-subtask-key: "<subtask-key>"
+context-version: "<version>"
 scope:
   included: []
   excluded: []
 testing-route: "<none|logic|ui|both>"
 acceptance-coverage:
   - acceptance-id: "ac-1"
-    test-layer: "<unit|component|integration|browser>"
+    test-layers: [] # unit|component|integration|browser; [] only when explicit non-test evidence is sufficient
     scenarios: []
     evidence-required: []
 test-data: []
@@ -16,4 +17,4 @@ environment-requirements: []
 execution-order: []
 known-limitations: []
 residual-risks: []
-plan-status: ready
+plan-status: "<ready|blocked>"
