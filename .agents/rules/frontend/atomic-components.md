@@ -2,7 +2,7 @@
 
 Load this rule only when the Coding decomposition gate or frontend router detects component creation, splitting, placement, or public component-contract work.
 
-This rule owns component decomposition, Atomic/DDD placement, discovery order, and public APIs. It does not authorize new product scope, architecture, dependencies, design decisions, or a UI library beyond the assigned Jira Subtask and supplied evidence.
+This rule owns component decomposition, Atomic/DDD placement, discovery order, and public APIs. It does not authorize new product scope, architecture, dependencies, design decisions, or a UI library beyond the assigned Jira execution unit and supplied evidence.
 
 ## Decompose before implementation
 
