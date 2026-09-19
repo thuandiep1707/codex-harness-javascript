@@ -32,7 +32,7 @@ as applicable:
 - loading/error/empty/permission/cancellation/offline behavior;
 - auth/tenant/user/locale identity and client-data exposure constraints.
 
-Missing material decisions return `tanstack-query-architecture-approval-required` to Orchestrator.
+Missing material decisions return `tanstack-query-architecture-approval-required` to Main.
 Do not create a local plan or infer project policy.
 
 ## Preserve boundaries
@@ -78,11 +78,11 @@ cache effects, mutation failures, remount/navigation, concurrency when relevant,
 risks when used.
 
 A provider/default change, dependency/config change, experimental package, new global abstraction, or
-project-wide convention returns to Orchestrator before dependent code continues. Do not ask a separate
+project-wide convention returns to Main before dependent code continues. Do not ask a separate
 Decision Gate or create/update a local implementation plan.
 
 If a useful pattern is missing from this skill/reference set, report it as optional follow-up evidence
-to Orchestrator; do not interrupt the current Subtask with a mandatory prompt.
+to Main; do not interrupt the current Subtask with a mandatory prompt.
 
 ## Output
 
