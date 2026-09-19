@@ -75,7 +75,7 @@ Frontend lifecycle state and execution intent are separate concepts.
 `$frontend-planning` supplies `plan-only`.
 `$frontend-delivery` supplies `deliver`.
 
-Do not interpret Orchestrator `planning` mode as automatically meaning "stop after Jira". When intent is `deliver`, Jira planning completion is not an approval gate and the workflow must continue without asking the user to confirm merely because Tasks/Subtasks were created.
+Do not interpret Orchestrator `planning` mode as automatically meaning "stop after Jira". When intent is `deliver`, Jira planning completion is not an approval gate and the workflow must continue without asking the user to confirm merely because the Jira work graph was created.
 
 ## Resolve the workflow lifecycle entry
 
@@ -85,7 +85,7 @@ For every frontend workflow request, identify the working project and resolve th
 - `resume`: valid analysis/task tree exists and relevant requirements are unchanged -> Orchestrator resume only.
 - `replan`: relevant requirements or approved architecture/dependency direction changed -> Brain targeted revalidation, then Orchestrator replans affected scope only.
 - `pause`: active workflow must stop now but remain resumable -> Orchestrator pause reconciliation + durable handoff.
-- `acceptance`: required executable Subtasks are complete -> Brain acceptance while the parent Task remains non-Done until accepted finalization is confirmed.
+- `acceptance`: required execution units are complete -> Brain acceptance while the functional-slice boundary remains in a project-defined non-terminal workflow state until accepted finalization is confirmed.
 
 A new chat or developer handoff is normally `resume`, not `new`.
 
@@ -125,7 +125,7 @@ Brain may detect the existing implementation environment through `.agents/capabi
 
 Detection is not technology selection. Do not turn missing evidence into a default such as shadcn, Lucide, MUI, HeroUI, Zustand, TanStack Query, or another dependency.
 
-Brain records evidence-backed implementation-environment facts in `analysis-package.yaml`. Orchestrator combines that profile with the current Subtask trigger and specialist manifest to select the smallest internal-capability set for execution.
+Brain records evidence-backed implementation-environment facts in `analysis-package.yaml`. Orchestrator combines that profile with the current execution-unit trigger and specialist manifest to select the smallest internal-capability set for execution.
 
 Examples:
 
@@ -135,7 +135,7 @@ Project evidence: @mui/material + @mui/icons-material
 → do not route shadcn/Lucide merely because the control repo contains them
 
 Project evidence: components.json + shadcn/Radix usage + lucide-react
-→ route shadcn/Lucide-compatible capabilities for the relevant Subtask
+→ route shadcn/Lucide-compatible capabilities for the relevant execution unit
 
 No clear UI library evidence
 → unresolved
@@ -190,7 +190,7 @@ Internal agent execution must use Codex native subagent/multi-agent delegation t
 - Never use `create_thread`, `fork_thread`, new-chat actions, or equivalent conversation APIs as a fallback for native subagent execution.
 - A transport error/timeout is not proof that a native spawn had no side effect. Before retrying, reconcile the transient action/child registry and observable native state when available.
 - Retry the same delegation up to **5 total attempts** only when the prior attempt is confirmed not to have created the intended child. Every retry reuses the same stable action ID, role, handoff, and dispatch identity; never broaden scope or switch transport.
-- Permit at most one active child for the same `subtask + context-version + role` dispatch identity. If an outcome is ambiguous and absence cannot be proven, do not blind-retry; return the ambiguity to Orchestrator as a blocker.
+- Permit at most one active child for the same `execution-unit + context-version + role` dispatch identity. If an outcome is ambiguous and absence cannot be proven, do not blind-retry; return the ambiguity to Orchestrator as a blocker.
 - A failed spawn attempt is a runtime transport failure, not authorization to execute the delegated role in the primary chat, mutate unrelated workflow state, or create a visible conversation.
 - Only after confirmed side-effect-free attempts exhaust the retry limit may the affected stage return `runtime-capability-blocked`.
 - A Codex runtime/UI regression may expose a legitimate native child thread in Recent. That does not change the harness contract: the harness must never intentionally create a separate user-visible conversation for internal agent execution.
@@ -213,7 +213,7 @@ Context isolation controls what an agent may read. Conversation isolation contro
 
 Primary Controller owns every native child agent it successfully spawns until explicit close has been requested and closure is verified.
 
-A completed `wait_agent`, returned report, disconnected subchat, hidden panel, or completed Jira Subtask does not mean the child has been disposed.
+A completed `wait_agent`, returned report, disconnected subchat, hidden panel, or completed Jira execution unit does not mean the child has been disposed.
 
 Primary lifecycle contract:
 
@@ -254,13 +254,13 @@ For `new`:
 2. Brain returns `analysis-package`, including authority readiness and `implementation-environment` evidence when relevant.
 3. Primary Controller captures the result, then closes/verifies the Brain analysis child. If `analysis-status` or `authority.status` is not `ready`, stop before Orchestrator planning/execution and report the blocker.
 4. Primary Controller spawns one Orchestrator child with lifecycle `planning` and execution intent `deliver`, supplying approved analysis and Jira context.
-5. Orchestrator decides Jira Feature/Task/Subtask operations and dependency-ready specialist work, returning exact `controller-actions` with `status: awaiting-controller` whenever runtime execution is required.
+5. Orchestrator decides Jira work-graph operations mapped from semantic work roles and dependency-ready specialist work, returning exact `controller-actions` with `status: awaiting-controller` whenever runtime execution is required.
 6. Primary Controller executes each deterministic action batch exactly as requested. Before writable specialist dispatch, capture the working-project Git baseline and reserve the handoff's exact allowed write scope; do not run overlapping writable leases concurrently. After the specialist returns, compare Git evidence against that baseline and reject/report any out-of-scope mutation before accepting the result.
 7. For each specialist, apply side-effect-safe native retry rules, collect the specialist report/runtime-resource evidence, ensure owned resources are cleaned, close/verify the specialist child, and retain confirmed action results.
 8. Capture each Orchestrator reconciliation report and close/verify that Orchestrator child. When another decision is required, spawn a fresh Orchestrator from the latest report, minimal Jira context, and confirmed action results.
 9. Repeat until Orchestrator returns acceptance-ready inputs.
-10. Spawn Brain for final acceptance and close/verify the Brain acceptance child. If Brain returns `blocked` or `revision-required`, keep the parent Task non-Done and route only the affected scope back through replan/revision.
-11. If Brain returns `accepted`, spawn an Orchestrator `finalize` decision turn with the acceptance report. Execute its exact final Jira actions, including the parent Task Done transition when appropriate, and report `accepted` only after those actions are confirmed.
+10. Spawn Brain for final acceptance and close/verify the Brain acceptance child. If Brain returns `blocked` or `revision-required`, keep the functional-slice boundary in a project-defined non-terminal workflow state and route only the affected scope back through replan/revision.
+11. If Brain returns `accepted`, spawn an Orchestrator `finalize` decision turn with the acceptance report. Execute its exact final Jira actions, including the project-valid transition of the accepted functional-slice boundary to the terminal/completed workflow state when appropriate, and report `accepted` only after those actions are confirmed.
 
 For `resume`, skip Brain analysis and Orchestrator decomposition only when Jira validity markers, authority readiness, and the relevant `.docs` baseline remain valid. Otherwise route to targeted Brain revalidation before specialist execution. Spawn an Orchestrator decision turn from the latest durable/minimal workflow context and reconciliation state, then use the same disposable-process controller loop.
 
@@ -276,14 +276,14 @@ Run Brain analysis/revalidation and authority readiness as required, then close/
 
 Reconstruct only:
 
-1. current specialist Subtask;
-2. parent functional Task;
-3. Feature context;
+1. current specialist execution unit;
+2. parent functional-slice boundary;
+3. optional work-container context when present;
 4. direct completed dependencies and latest durable results/checkpoint;
-5. routed internal-capability identifiers for the Subtask;
+5. routed internal-capability identifiers for the execution unit;
 6. relevant current source/provider state.
 
-Do not read the entire Jira project, sprint, comment history, or unrelated task tree merely to continue one Subtask.
+Do not read the entire Jira project, sprint, comment history, or unrelated task tree merely to continue one execution unit.
 
 ### Pause work
 
@@ -301,15 +301,9 @@ If a required Jira call fails, return that exact connector result to Orchestrato
 
 ## Jira validity markers
 
-Sprint enforcement is temporarily disabled. Sprint membership/evidence is not a validity or dispatch
-gate in planning, replanning, or resume. Do not perform sprint operations unless explicitly requested
-by the user, and do not ask for a sprint policy exception. For work previously blocked only by sprint
-evidence, reuse the existing Jira graph, reconcile any stale sprint-only blocker/readiness state through
-confirmed Jira calls, and continue dependency-ready Subtasks once the normal non-sprint gates pass.
-Do not recreate issues, rerun Brain solely for this change, or fabricate verified sprint evidence.
-All other scope, dependency, validation, and cleanup requirements remain in force.
+Sprint handling is temporarily disabled. Sprint membership/evidence is not a validity or dispatch gate in planning, replanning, or resume. Do not perform sprint operations unless explicitly requested by the user, and do not ask for a sprint policy exception. Do not assume a universal `Sprint` field exists; when sprint behavior is explicitly requested, resolve the project's actual board/sprint capability and supported operation first. For work previously blocked only by sprint evidence, reuse the existing Jira graph, reconcile stale sprint-only blocker/readiness state through confirmed Jira operations, and continue dependency-ready execution units once the normal non-sprint gates pass. Do not recreate issues, rerun Brain solely for this change, or fabricate verified sprint evidence.
 
-Feature context must make these facts recoverable:
+Resolved Jira scope context must make these facts recoverable:
 
 ```text
 analysis: ready
@@ -323,28 +317,30 @@ Before `resume`, compare relevant `.docs` changes against `docs-baseline` using 
 
 ## Jira work model
 
-Use:
+Use semantic work roles instead of hardcoding Jira issue-type names:
 
 ```text
-Feature context
-  -> Task: one functional slice
-      -> Subtask: one independently actionable specialist work unit
+work-container   # optional grouping/context
+  -> functional-slice   # one scope + acceptance boundary
+      -> execution-unit # one independently actionable specialist work item
 ```
 
-Parent Task is an acceptance/scope boundary, not an executable specialist assignment. Specialists execute Subtasks only. Create only independently actionable specialist Subtasks required by the functional slice. Routine triage, diagnosis, retry, or test-only iteration stays inside the owning specialist lifecycle and must not become a new Jira Subtask merely because it is a separate reasoning step.
+Scrum Master/project-aware Jira logic must discover the current project's available work types, fields, options, relationships, and workflow states before mutation. `Epic`, `Feature`, `Story`, `Task`, `Bug`, `Sub-task`, custom work types, literal status names, and custom fields are project-specific representations, not harness constants.
 
-Completing all executable Subtasks makes the parent Task acceptance-ready, not Done. Keep it in an existing non-Done workflow status; do not invent a new Jira status. Only an accepted Brain report followed by confirmed Orchestrator finalization may transition the parent Task to Done.
+The functional-slice boundary is not an executable specialist assignment. Specialists execute execution units only. Create only independently actionable execution units required by the functional slice. Routine triage, diagnosis, retry, or test-only iteration stays inside the owning specialist lifecycle and must not become a new Jira execution unit merely because it is a separate reasoning step.
+
+Completing all required execution units makes the functional-slice boundary acceptance-ready, not automatically complete in Jira. `acceptance-ready`, `non-terminal`, and `terminal/completed` are harness semantics, not literal Jira status names. Only an accepted Brain report followed by confirmed finalization may transition the accepted scope through a project-valid Jira transition to its terminal/completed workflow state.
 
 All human-facing Jira titles, descriptions, acceptance criteria, dependency explanations, blockers, results, and handoff notes must be Vietnamese. Technical identifiers/paths/APIs/component names/Jira keys/commands/machine metadata remain exact when needed.
 
 Use context inheritance:
 
-- Feature stores common product/architecture context and implementation-environment metadata needed for routing.
-- Task stores functional-slice delta.
-- Subtask stores specialist execution delta plus the minimal routed internal-capability identifiers required for deterministic execution/resume.
-- Orchestrator composes Feature + Task + Subtask + direct dependency evidence into transient `issue-handoff`.
+- optional work-container stores common product/architecture context when the project model provides that level;
+- functional-slice stores the outcome/scope/acceptance delta;
+- execution-unit stores specialist execution delta plus the minimal routed internal-capability identifiers required for deterministic execution/resume;
+- Orchestrator composes the resolved semantic context chain + direct dependency evidence into transient `issue-handoff`.
 
-Do not duplicate full parent context at lower levels.
+Do not duplicate full parent context at lower levels. Do not assume a universal reporter, assignee, Sprint, label, work type, or status field; resolve project-specific fields and values from Jira metadata before mutation.
 
 ## Durable Jira checkpoints
 
@@ -481,4 +477,4 @@ The harness owns role-specific behavioral validation required by the approved Te
 
 ## Final acceptance
 
-Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. All executable Subtasks may be complete while the parent Task is still non-Done. When Brain returns `accepted`, Orchestrator must run one finalization turn and request the exact parent Done Jira transition; only after that mutation is confirmed may the workflow report `accepted`. A blocked/revision-required Brain report never transitions the parent Task to Done.
+Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. All execution units may be complete while the functional-slice boundary is still in a project-defined non-terminal workflow state. When Brain returns `accepted`, Orchestrator must run one finalization turn and request the valid Jira transition that moves the accepted scope to the project's terminal/completed workflow state; only after that mutation is confirmed may the workflow report `accepted`. A blocked/revision-required Brain report never authorizes that terminal transition.
