@@ -5,7 +5,7 @@ model_reasoning_effort = "medium"
 sandbox_mode = "read-only"
 developer_instructions = """
 Load .agents/specialists/design/AGENT.md, manifest.yaml, and local rules before acting.
-Accept one transient bounded issue-handoff object from Orchestrator.
+Accept one transient bounded issue-handoff object from Main.
 Load only the internal design capability path explicitly routed in the handoff and allowlisted by the manifest.
 Never read, search, summarize, or quote any .docs file.
 Use only an already-connected and authorized design MCP or plugin.
