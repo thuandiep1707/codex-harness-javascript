@@ -23,10 +23,10 @@ Lifecycle state remains separate from execution intent.
 | Brain | `brain` | Analyze authoritative product context, detect implementation environment, targeted revalidation, and final acceptance |
 | Scrum Master | `scrum-master` | Create/reconcile Jira work graph and perform authorized durable Jira mutations; return compact Jira work state to Main |
 | Design | `design` | Use connected design provider and return design evidence |
-| Test plan | `test-plan` | Produce the bounded risk-based test-plan result and testing route |
-| Coding | `coding` | Implement one bounded Coding execution unit using routed internal capabilities |
-| Testing Logic | `testing-logic` | Implement/run bounded unit/component/integration tests without a real browser |
-| Testing UI | `testing-ui` | Execute bounded real-browser UI validation and Playwright tests |
+| Test plan | `test-plan` | Transiently decide the smallest developer self-verification route/scope for a Coding change from bounded relevant docs + actual source diff |
+| Coding | `coding` | Implement one bounded durable Coding execution unit using routed internal capabilities |
+| Testing Logic | `testing-logic` | Transiently run bounded non-browser developer self-tests selected by Test Plan |
+| Testing UI | `testing-ui` | Transiently run bounded real-browser developer self-tests selected by Test Plan |
 
 There is no Orchestrator child in Flow B. The main chat is the Orchestrator.
 
@@ -83,7 +83,9 @@ work-container   # optional grouping/context
 
 These are harness semantics, not Jira issue-type names. Scrum Master discovers the current project's work types, fields, options, relationships, and workflow states, then maps the semantic work model to what that project actually supports.
 
-Functional slices remain scope/acceptance boundaries. Specialists execute execution units only.
+Functional slices remain scope/acceptance boundaries. Durable product specialists such as Design/Coding execute Jira execution units.
+
+Test Plan, Testing Logic, and Testing UI are developer self-verification roles attached transiently to the owning Coding execution unit. They are not Jira execution units and do not expand the durable work graph.
 
 Scrum Master creates or reconciles the Jira graph. Main decides execution order from confirmed Jira work state and dependency readiness.
 
@@ -93,7 +95,7 @@ Brain may read authoritative documentation plus bounded source/config evidence r
 
 Scrum Master receives the approved analysis/workflow request necessary to create or reconcile Jira state and returns a compact Jira work report.
 
-Specialists remain bounded by their existing role, scope, source, validation, and forbidden-context rules. They must not use chat history as requirement truth.
+Design/Coding remain bounded by their durable issue handoff. Test Plan is the explicit exception to the normal specialist document boundary: it may read only the relevant product documents listed in its transient verification handoff plus the bounded actual source diff/current source needed to plan self-verification. Testing Logic/UI do not read product docs and consume Test Plan's bounded targets. No specialist may use chat history as requirement truth.
 
 ## Delivery sequence
 
@@ -104,15 +106,15 @@ $frontend-delivery
 → close Brain
 → Scrum Master creates/reconciles Jira work graph
 → close Scrum Master
-→ Main dispatches dependency-ready specialists
+→ Main dispatches dependency-ready durable product work
    ├─ Coding
-   ├─ Design
-   └─ Test Plan
-→ confirmed Test Plan route
-→ Scrum Master materializes required Testing Logic/UI execution units when needed
-→ Main dispatches those dependency-ready testing units
+   └─ Design
+→ after each Coding source change: transient Test Plan
+→ none | logic | ui | both
+→ transient Testing Logic/UI only when selected
+→ production defect -> same Coding execution unit revision
 → Main verifies reports, source scope, runtime cleanup, and child closure
-→ Scrum Master persists required durable Jira results/checkpoints when needed
+→ Scrum Master persists only final durable Coding result/blocker/revision/checkpoint when needed
 → close Scrum Master
 → Brain acceptance
 → close Brain
