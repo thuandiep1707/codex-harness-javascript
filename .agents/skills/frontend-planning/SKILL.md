@@ -17,8 +17,6 @@ This is a user-facing planning-only workflow. Main is the runtime Orchestrator.
 6. Main closes/verifies Scrum Master and validates that the returned work graph is usable for later execution/resume.
 7. Stop before Design, Test Plan, Coding, Testing Logic, or Testing UI execution.
 
-There is no Orchestrator child, controller-action loop, or `reconciliation-report` in this workflow.
-
 ## Planning rules
 
 - Decompose `requirement -> user outcomes -> functional slices -> specialist execution units`.
