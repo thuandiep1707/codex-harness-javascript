@@ -1,5 +1,6 @@
 kind: implementation-report
 jira-execution-key: "<execution-unit-key>"
+context-version: "<version>"
 status: "<completed|blocked|failed>"
 implemented-behavior: []
 changed-files: []
