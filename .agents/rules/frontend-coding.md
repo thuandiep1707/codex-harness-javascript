@@ -7,7 +7,7 @@ Apply this baseline to every frontend production-code Subtask. Keep it small: lo
 Use this order:
 
 1. assigned Jira Subtask + transient `issue-handoff`;
-2. approved architecture/design/dependency evidence supplied by Orchestrator;
+2. approved architecture/design/dependency evidence supplied by Main;
 3. internal capabilities explicitly routed in the handoff + this repository's mandatory rules;
 4. live product configuration and installed framework/library documentation;
 5. compatible nearby source patterns.
@@ -100,7 +100,7 @@ When one topic decision blocks only part of the assigned Subtask, return one com
 - incomplete dependent scope;
 - authority or approval required to continue.
 
-Do not persist unresolved records in local plan/progress files. Return them through the structured report so Orchestrator can update Jira with the appropriate blocker/revision evidence.
+Do not persist unresolved records in local plan/progress files. Return them through the structured report to Main; Main requests Scrum Master persistence when durable Jira blocker/revision evidence is required.
 
 ## Completion
 
