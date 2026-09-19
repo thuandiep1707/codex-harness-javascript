@@ -285,7 +285,7 @@ For `new`:
 5. Main closes/verifies Scrum Master and routes the smallest valid internal capabilities for dependency-ready execution units.
 6. Main dispatches dependency-ready specialists, respecting runtime capacity and write-scope leases.
 7. For each returned specialist result, Main verifies assigned scope, context-version, protocol/evidence validity, source diff, runtime cleanup, and child closure.
-8. When Test Plan returns `testing-route: logic|ui|both`, Main dispatches Scrum Master `progress-sync` with that confirmed route so Scrum Master can materialize exactly the required testing execution units in Jira; `none` materializes no testing unit. Main must not reclassify the route or dispatch Testing Logic/UI without a confirmed execution unit.
+8. When Test Plan returns `testing-route: logic|ui|both`, Main determines the exact existing execution-unit dependencies that each testing unit must wait for, then dispatches Scrum Master `progress-sync` with the confirmed Test Plan result, parent functional-slice key, route, and dependency keys. Scrum Master materializes exactly the required testing execution units in Jira; `none` materializes no testing unit. Main must not reclassify the route or dispatch Testing Logic/UI without a confirmed execution unit.
 9. When other confirmed execution evidence crosses a durable Jira boundary, Main dispatches Scrum Master `progress-sync` with only confirmed evidence; after the report returns, Main closes/verifies Scrum Master.
 10. Main repeats dependency routing until the affected functional-slice scope is acceptance-ready.
 11. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
