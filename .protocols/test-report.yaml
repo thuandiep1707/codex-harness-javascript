@@ -1,25 +1,33 @@
 kind: test-report
-jira-execution-key: "<execution-unit-key>"
+coding-execution-key: "<coding-execution-key>"
 context-version: "<version>"
-source-baseline: "<git-commit-or-equivalent-source-state>"
+role: "<logic|ui>"
+source-state: "<verified-current-source-state>"
+test-plan-source-state: "<source-state-covered-by-plan>"
 status: "<passed|failed|blocked>"
-test-plan-evidence: []
-acceptance-coverage:
-  - acceptance-id: "ac-1"
+
+verification-target-results:
+  - target-id: "vt-1"
+    status: "<passed|failed|blocked|not-run>"
     evidence: []
+
 changed-files: []
+
 scenarios:
   passed: []
   failed: []
   skipped: []
+
 failure-analysis:
   - failure: ""
     cause: "<test-only-mismatch|production-defect|harness-environment|authority-ambiguous|unknown>"
     attribution: "<current-change|pre-existing|unknown>"
     evidence: []
+
 execution:
   commands: []
   results: []
+
 evidence: []
 coverage-limitations: []
 residual-risks: []
