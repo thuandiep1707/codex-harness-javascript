@@ -1,15 +1,33 @@
 kind: test-plan-artifact
-jira-execution-key: "<execution-unit-key>"
+coding-execution-key: "<coding-execution-key>"
 context-version: "<version>"
-scope:
-  included: []
-  excluded: []
+plan-mode: "<initial|delta-revalidation>"
+
+documents:
+  relevant-documents: []
+  docs-baseline: "<verified-baseline>"
+
+source:
+  baseline: "<pre-change-source-state>"
+  current: "<current-source-state>"
+  changed-files: []
+
 testing-route: "<none|logic|ui|both>"
-acceptance-coverage:
-  - acceptance-id: "ac-1"
-    test-layers: [] # unit|component|integration|browser; [] only when explicit non-test evidence is sufficient
+
+verification-targets:
+  - id: "vt-1"
+    behavior-or-risk: ""
+    evidence-source: []
+    test-layers: [] # unit|component|integration|browser
     scenarios: []
     evidence-required: []
+
+test-write-scope:
+  logic: []
+  ui: []
+
+reused-evidence: []
+invalidated-evidence: []
 test-data: []
 fixtures: []
 mock-boundaries: []
