@@ -9,7 +9,7 @@
 - Public frontend workflows: `frontend-delivery` and `frontend-planning`.
 - Separate execution intent (`deliver|plan-only`) from lifecycle mode (`planning|resume|pause`).
 - Brain evidence-based `discover-project-stack` capability for framework/UI/icon/state/testing detection.
-- Orchestrator capability routing from analysis evidence + Subtask trigger + specialist manifest allowlist.
+- Orchestrator capability routing from analysis evidence + execution-unit trigger + specialist manifest allowlist.
 - Primary Controller as the sole native child-agent lifecycle and Jira connector transport owner.
 - Orchestrator as decision-only workflow coordinator using `controller-actions` (`jira-call|dispatch-specialist`).
 - One workflow-lived Orchestrator child reused across controller turns; specialists are short-lived sibling children.
@@ -21,7 +21,7 @@
 - YAML manifests and transient protocol templates.
 - Specialist `.docs/` prohibition.
 - Jira as durable work + execution-context truth.
-- Functional hierarchy: Feature → Functional Task → Specialist Subtask.
+- Semantic Jira work model: optional work-container → functional-slice → specialist execution-unit, dynamically mapped to each project's available Jira work types.
 - Resume flow reconstructing only parent chain + direct dependencies + routed capability identifiers + latest durable checkpoint.
 - Pause flow reconciling execution evidence, persisting missing Jira result/status corrections, and writing durable `[HANDOFF]` before safe pause.
 - Explicit child-agent close/verification and runtime-resource/process/port cleanup lifecycle.
