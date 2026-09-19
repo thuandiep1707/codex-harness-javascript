@@ -18,7 +18,7 @@ description: Implement, run, debug, or review bounded unit, component, and integ
 - `unit-testing.md` for unit tests.
 - `integration-testing.md` for component/integration tests.
 - `assertions-and-waiting.md` for asynchronous assertions.
-- `configuration.md` only for an approved configuration Subtask.
+- `configuration.md` only for an approved configuration execution unit.
 - `authentication.md` for approved authenticated scenarios.
 - `api-testing.md` for approved API/contract coverage.
 - `network-mocking.md` for an approved network seam.
@@ -34,4 +34,4 @@ description: Implement, run, debug, or review bounded unit, component, and integ
 6. Return objects matching `.protocols/test-report.yaml` and `.protocols/agent-report.yaml`.
 
 Do not change production behavior merely to pass tests, weaken assertions, add fixed sleeps, hide
-failures, update Jira, create runtime workflow files, or expand beyond the assigned logic-testing Subtask.
+failures, update Jira, create runtime workflow files, or expand beyond the assigned logic-testing execution unit.
