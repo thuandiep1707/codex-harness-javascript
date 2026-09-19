@@ -13,7 +13,7 @@ feature into a project-wide query convention.
 ## Authority and evidence
 
 Read the transient handoff, approved dependency/design evidence, `frontend-coding.md`,
-`react-state-runtime.md`, and only source/configuration required by the Subtask. Never read `.docs/`,
+`react-state-runtime.md`, and only source/configuration required by the execution unit. Never read `.docs/`,
 `.analysis/`, or chat history for missing requirements.
 
 Inspect the installed TanStack/Next.js versions, current provider, nearby query code, owning module
@@ -82,7 +82,7 @@ project-wide convention returns to Main before dependent code continues. Do not 
 Decision Gate or create/update a local implementation plan.
 
 If a useful pattern is missing from this skill/reference set, report it as optional follow-up evidence
-to Main; do not interrupt the current Subtask with a mandatory prompt.
+to Main; do not interrupt the current execution unit with a mandatory prompt.
 
 ## Output
 
