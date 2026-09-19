@@ -1,5 +1,5 @@
 kind: test-plan-artifact
-jira-subtask-key: "<subtask-key>"
+jira-execution-key: "<execution-unit-key>"
 context-version: "<version>"
 scope:
   included: []
