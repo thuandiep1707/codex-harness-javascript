@@ -21,7 +21,7 @@ A workflow-driven multi-agent harness for OpenAI Codex that turns product docs a
   />
 </p>
 
-This overview shows how public workflows move through Brain, Orchestrator, Specialists, internal Capabilities, and Jira-backed durable state across the full delivery lifecycle.
+This overview shows how Main orchestrates short-lived Brain, Scrum Master, and specialist children while Jira provides durable work state across the delivery lifecycle.
 
 ## Why this exists
 
@@ -46,8 +46,8 @@ This harness is built around five ideas:
 | **Pause / Resume by design** | A natural-language pause request creates a durable handoff before the workflow stops. A later session resumes from the smallest valid Jira context. |
 | **Progressive capability loading** | Agents load only routed capabilities for the current execution unit instead of loading the whole knowledge base. |
 | **Evidence-based stack discovery** | The harness inspects the existing project before routing UI, state, data, testing, or framework capabilities. |
-| **Explicit execution cleanup** | Primary Controller owns native child-agent lifecycle; specialists clean runtime resources they create, with controller-level fallback supervision. |
-| **Strict agent boundaries** | One child agent keeps one configured role: Brain reasons, Orchestrator owns workflow/Jira decisions and routing, Primary Controller owns runtime transport, and Specialists execute bounded work. |
+| **Explicit execution cleanup** | Main owns native child-agent lifecycle; specialists clean runtime resources they create, with Main-level fallback supervision. |
+| **Strict agent boundaries** | Main is the Orchestrator; Brain owns analysis/acceptance, Scrum Master owns Jira work management, and Specialists execute bounded work. |
 | **Acceptance beyond green tests** | Completion requires final acceptance against authoritative docs, Jira context, source changes, validation evidence, clean execution resources, and confirmed post-acceptance Jira finalization. |
 
 ## Quick Start
@@ -116,27 +116,26 @@ The workflow resolves the current lifecycle entry and then coordinates the syste
 ```text
 product docs + current source
         ↓
+Main
+        ↓
 Brain
 authority readiness
 + requirement analysis
 + project-stack discovery
         ↓
-Orchestrator
-Jira planning + specialist routing
+Scrum Master
+schema discovery + Jira work graph
         ↓
-Test Plan
-acceptance coverage
-+ none | logic | ui | both
+Main
+capability + dependency routing
         ↓
-Coding
+Test Plan / Design / Coding / Testing
         ↓
-Testing Logic / Testing UI
-        ↓
-acceptance-ready
+Main reconciliation
         ↓
 Brain Acceptance
         ↓
-Orchestrator Finalize
+Scrum Master Finalize
         ↓
 Accepted functional slice finalized in the project-defined terminal Jira state
 ```
@@ -226,7 +225,7 @@ Examples:
 
 ```text
 .agents/capabilities/common/discover-project-stack/
-.agents/capabilities/frontend/plan-frontend-work/
+.agents/capabilities/frontend/manage-jira-work/
 .agents/capabilities/frontend/shadcn/
 .agents/capabilities/frontend/nextjs-tanstack-query/
 .agents/capabilities/frontend/nextjs-state-management/
@@ -236,7 +235,7 @@ Examples:
 An agent may load an internal capability only when:
 
 1. the capability is allowed by that agent's manifest;
-2. the Orchestrator routes it for the current specialist execution unit.
+2. Main routes it for the current specialist execution unit.
 
 The system does not load every capability "just in case".
 
@@ -295,7 +294,7 @@ work-container   # optional grouping/context
         └── execution-unit # one independently actionable specialist work item
 ```
 
-The Orchestrator decomposes work by user outcome and functional boundary:
+Main coordinates decomposition intent; Scrum Master maps the semantic work model into the current Jira project schema:
 
 ```text
 requirement
@@ -326,13 +325,12 @@ Pause is a durable workflow checkpoint, not a simple `stop responding` command.
 When the user expresses clear pause intent, the workflow coordinates runtime cleanup and durable Jira reconciliation:
 
 ```text
-Primary Controller freezes new dispatch
+Main freezes new dispatch
 → collects available execution evidence
 → cleans specialist-owned runtime resources
 → closes and verifies active specialist children
-→ Orchestrator reconciles confirmed state
-→ requests missing RESULT/status/HANDOFF Jira actions
-→ Primary Controller executes and confirms them
+→ Scrum Master persists confirmed RESULT/workflow-state/HANDOFF updates
+→ Main verifies durable persistence
 → paused
 ```
 
@@ -356,11 +354,11 @@ spawn child
 
 Ownership is explicit:
 
-- Primary Controller owns the native lifecycle of every spawned child agent;
-- Orchestrator decides which specialist should run, but does not spawn, wait for, interrupt, or close child agents;
+- Main owns the native lifecycle of every spawned child agent;
+- Main decides which dependency-ready specialist should run and owns its native lifecycle;
 - specialists own first-pass cleanup for long-lived runtime resources they create;
-- Primary Controller supervises cross-agent runtime cleanup and performs fallback cleanup when a specialist crashes or becomes unavailable, but only when ownership evidence is sufficient;
-- Orchestrator consumes cleanup evidence for workflow decisions.
+- Main supervises cross-agent runtime cleanup and performs fallback cleanup when a specialist crashes or becomes unavailable, but only when ownership evidence is sufficient;
+- Main consumes cleanup evidence when choosing the next workflow action.
 
 Runtime resource ownership can include command, working directory, PID/process group, known descendants, and actual bound ports. Port occupancy alone is never enough evidence to terminate a process. This prevents the harness from stopping a developer-managed server simply because it uses the same port.
 
@@ -370,15 +368,16 @@ Runtime-resource events and child/resource ledgers are transient control-plane e
 
 | Agent | Responsibility |
 | --- | --- |
+| `main` | Runtime orchestration, dependency/capability routing, specialist dispatch, reconciliation, child lifecycle, write-scope leases, and cleanup supervision |
 | `brain` | Requirement reasoning, authority readiness, architecture analysis, project-stack discovery, revalidation, final acceptance |
-| `orchestrator` | Jira planning/resume/pause/finalize decisions, dependency routing, capability selection, specialist coordination, and reconciliation |
+| `scrum-master` | Jira schema discovery, work-graph creation/reconciliation, compact Jira state sync, and authorized durable Jira mutations |
 | `design` | Bounded external design-provider execution |
 | `test-plan` | Acceptance coverage and authoritative testing route: `none | logic | ui | both` |
 | `coding` | Bounded production implementation using only routed capabilities |
 | `testing-logic` | Unit/component/integration test work without a real browser |
 | `testing-ui` | Playwright / real-browser UI validation and browser-test work |
 
-Specialists do not own Jira mutation, do not read the full product truth independently, and do not expand their scope without returning a blocker to the Orchestrator. Test Plan owns testing classification; Orchestrator routes `none | logic | ui | both` mechanically rather than reclassifying from source or Git diff.
+Specialists do not own Jira mutation, do not read the full product truth independently, and do not expand their scope without returning a blocker to Main. Test Plan owns testing classification; Main routes `none | logic | ui | both` mechanically rather than reclassifying from source or Git diff.
 
 ## Repository Structure
 
@@ -389,7 +388,8 @@ codex-harness-javascript/
 ├── LICENSE
 ├── .agents/
 │   ├── brain/
-│   ├── orchestrator/
+│   ├── scrum-master/
+│   ├── orchestrator/             # legacy Flow A, pending removal
 │   ├── specialists/
 │   ├── rules/
 │   ├── skills/                 # PUBLIC workflows only
@@ -407,7 +407,7 @@ For implementation-level rules and protocol details, start with [`AGENTS.md`](AG
 
 ## Inspect scope usage
 
-Primary Controller supplies a common usage-report instruction with every child dispatch/continuation,
+Main supplies a common usage-report instruction with every child dispatch/continuation,
 including new agent roles. No per-agent manifest or bootstrap registration is needed. Existing response
 payloads retain their shape and add `scope-usage` using the shared
 [metadata format](.protocols/scope-usage.yaml).
@@ -416,13 +416,13 @@ Each report covers one turn: `loaded` lists skill/rule content newly read or sup
 lists material used with brief evidence, including material loaded earlier. A path merely present in
 an allowlist is not loaded content. Known-empty lists are `[]`; uncertainty is `partial` with limitations.
 
-At completion, pause, or blocker, the controller displays a `Scope usage` summary in the main
+At completion, pause, or blocker, Main displays a `Scope usage` summary in the main
 conversation for each child: applied paths, observed loaded-but-not-applied candidates across retained
 turns, and missing observations. Missing metadata does not rerun work or delay child cleanup.
 
 This is a declarative reporting contract, not a runtime hook or token measurement. Self-reporting and
 context loss limit completeness. Use the audit to investigate excess context, not to automatically
-remove mandatory rules. See the controller contract in [AGENTS.md](AGENTS.md#controller-supplied-scope-usage-metadata).
+remove mandatory rules. See the Main contract in [AGENTS.md](AGENTS.md#main-supplied-scope-usage-metadata).
 
 ## Roadmap
 
