@@ -1,5 +1,5 @@
 kind: test-report
-jira-subtask-key: "<subtask-key>"
+jira-execution-key: "<execution-unit-key>"
 context-version: "<version>"
 source-baseline: "<git-commit-or-equivalent-source-state>"
 status: "<passed|failed|blocked>"
