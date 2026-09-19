@@ -1,0 +1,36 @@
+kind: jira-work-report
+operation: "<planning|replan|resume-sync|progress-sync|pause|finalize>"
+execution-intent: "<plan-only|deliver>"
+context-version: "<version>"
+status: "<completed|partial|blocked>"
+
+jira:
+  feature-key: ""
+  requested-task-key: ""
+  requested-subtask-key: ""
+
+work-graph:
+  tasks:
+    - key: ""
+      status: ""
+      dependencies: []
+      subtasks:
+        - key: ""
+          target-agent: "<design|test-plan|coding|testing-logic|testing-ui>"
+          status: ""
+          dependencies: []
+  runnable-subtasks: []
+  blocked-subtasks: []
+  completed-subtasks: []
+
+mutations:
+  confirmed: []
+  failed: []
+
+pause-checkpoint: null
+blockers: []
+revisions: []
+
+# Common metadata extension: embed the mapping from .protocols/scope-usage.yaml.
+# null means missing audit metadata, never known-empty usage; business fields remain unchanged.
+scope-usage: null
