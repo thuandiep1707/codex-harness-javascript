@@ -30,7 +30,7 @@ Do not broaden a handoff to cross these ownership boundaries merely because a fa
 
 ## Specialist iteration
 
-Within one assigned testing Subtask, keep routine test iteration inside the same specialist lifecycle:
+Within one assigned testing execution unit, keep routine test iteration inside the same specialist lifecycle:
 
 1. run the narrowest relevant test;
 2. diagnose the failure against the current handoff/Test-plan contract;
