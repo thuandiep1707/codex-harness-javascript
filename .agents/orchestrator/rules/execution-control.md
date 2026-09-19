@@ -26,19 +26,18 @@
   `jira-call` controller action with the exact operation and input.
 - Do not interpret a runtime tool missing inside the Orchestrator child as proof that the Primary
   Controller lacks that capability. Wait for the controller action result.
-- Return `status: awaiting-controller` whenever controller actions must be executed before orchestration
-  can continue. Accept their confirmed results on the next turn of the same Orchestrator child.
-- Keep the same Orchestrator child alive across specialist/Jira controller turns for one active workflow;
-  do not require a fresh Orchestrator bootstrap after every specialist result.
+- Return `status: awaiting-controller` whenever controller actions must be executed before orchestration can continue. Emit a deterministic action batch up to the next decision boundary and declare action dependencies.
+- Orchestrator process lifetime is not workflow state. Each invocation must be rehydratable from the latest reconciliation report, minimal Jira context, and confirmed controller-action results; a fresh Orchestrator child is valid for the next decision turn.
 - The Primary Controller must execute controller actions without changing Orchestrator intent or payload.
   Orchestrator must reason only from the confirmed result supplied back by the controller.
-- Compose one transient `issue-handoff` per specialist execution. Do not persist it into the product
-  repository.
+- Compose one transient `issue-handoff` per specialist execution. Writable handoffs must contain exact allowed paths with no open-ended scope escape. Do not persist handoffs into the product repository.
+- Primary Controller captures a Git baseline before writable dispatch, reserves the exact allowed write scope in a transient lease, and compares the post-execution diff before accepting the result. Overlapping writable leases must not run concurrently; read-only work may run concurrently.
+- A specialist that needs an unlisted write path must stop for scope expansion. Any observed out-of-scope mutation is rejected/reconciled; it is never normalized into the handoff after the fact.
 - Never use a user-visible conversation, new-chat action, thread creation, or thread fork as fallback
   transport for internal delegation. Native specialist dispatch is performed only by the Primary Controller.
-- The Primary Controller applies the bounded native dispatch retry policy (up to 5 total attempts). If all
-  attempts fail, consume that exact failure and return `runtime-capability-blocked`; do not invent another
-  transport or perform specialist work in Orchestrator.
+- Controller-action IDs are stable idempotency keys. The Primary Controller must reconcile ambiguous timeout/error outcomes before retrying Jira mutations or specialist dispatch.
+- For native dispatch, retry up to 5 total attempts only when each prior attempt is confirmed side-effect-free. Allow at most one active child for the same Subtask + context-version + role. If absence cannot be proven, block rather than blind-spawn a duplicate.
+- Do not invent another transport or perform specialist work in Orchestrator.
 - Specialist child lifecycle is owned by the Primary Controller. A returned report, disconnection, or hidden
   child panel is not proof that the child was disposed.
 - Do not unblock dependent work until the Primary Controller supplies specialist result evidence plus required

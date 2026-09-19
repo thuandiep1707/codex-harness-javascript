@@ -6,7 +6,10 @@ jira:
   requested-task-key: ""
   requested-subtask-key: ""
 status: "<awaiting-controller|completed|paused|blocked|runtime-capability-blocked|runtime-cleanup-blocked|pause-blocked|revision-required>"
-controller-actions: []
+controller-actions:
+  - id: "<stable-action-id>"
+    depends-on: []
+    type: "<jira-call|dispatch-specialist>"
 subtask-results: []
 durable-jira-updates: []
 pause-checkpoint: null

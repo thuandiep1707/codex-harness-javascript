@@ -155,6 +155,8 @@ The primary chat is a thin workflow controller and the only runtime transport ow
 - execute Jira connector calls explicitly requested by Orchestrator;
 - pass structured protocol objects and confirmed controller-action results;
 - maintain transient child-agent/runtime-resource supervision;
+- maintain transient controller-action/dispatch state and write-scope leases;
+- capture mechanical Git baseline/diff evidence needed to enforce a specialist handoff's exact write scope;
 - report workflow status.
 
 It must not perform Brain/Orchestrator/specialist reasoning itself, load internal capability packages directly for implementation, invent or modify an Orchestrator Jira payload, choose a specialist without an Orchestrator dispatch decision, or persist workflow state into the product repository.
@@ -170,9 +172,11 @@ Supported actions are intentionally small:
 - `jira-call`: execute the exact connector operation/input supplied by Orchestrator;
 - `dispatch-specialist`: spawn the exact specialist with the supplied bounded `issue-handoff`.
 
-Primary Controller executes each requested action without changing its intent/payload and sends the confirmed result back to the **same Orchestrator child**. Orchestrator reconciles that result and returns the next controller action(s) or a terminal status.
+Primary Controller executes requested actions without changing intent/payload. Orchestrator may return a batch of deterministic actions up to the next decision boundary; the controller respects declared dependencies and may execute independent actions concurrently only when runtime capacity and write scopes are compatible.
 
-Keep one Orchestrator child alive across an active workflow while it still has coordination decisions to make. Do not restart Orchestrator after every Coding/Testing result.
+Orchestration state is workflow-lived; an Orchestrator process is disposable. After each reconciliation report is captured, the controller may close that Orchestrator child and later spawn a fresh Orchestrator with the latest reconciliation report, minimal Jira context, and confirmed controller-action results. Correctness must never depend on hidden memory inside a long-lived Orchestrator process.
+
+Controller action IDs are stable idempotency keys for their intended side effect. Rehydrated Orchestrator turns must reuse the same ID for the same pending action instead of inventing a duplicate action.
 
 A tool missing inside the Orchestrator child is not proof that the capability is unavailable to the Primary Controller. Only a failed Primary Controller transport attempt can establish that runtime/connector failure.
 
@@ -184,9 +188,11 @@ Internal agent execution must use Codex native subagent/multi-agent delegation t
 - Orchestrator never invokes native child-agent lifecycle APIs; it requests specialist dispatch through `controller-actions`.
 - Never create, fork, or open a user-visible chat/thread as a substitute for internal agent delegation.
 - Never use `create_thread`, `fork_thread`, new-chat actions, or equivalent conversation APIs as a fallback for native subagent execution.
-- If a native subagent spawn attempt fails or is temporarily unavailable, Primary Controller retries the same native delegation up to **5 total attempts** before blocking. Each retry must target the same intended agent role and bounded handoff; do not broaden scope or switch transport.
+- A transport error/timeout is not proof that a native spawn had no side effect. Before retrying, reconcile the transient action/child registry and observable native state when available.
+- Retry the same delegation up to **5 total attempts** only when the prior attempt is confirmed not to have created the intended child. Every retry reuses the same stable action ID, role, handoff, and dispatch identity; never broaden scope or switch transport.
+- Permit at most one active child for the same `subtask + context-version + role` dispatch identity. If an outcome is ambiguous and absence cannot be proven, do not blind-retry; return the ambiguity to Orchestrator as a blocker.
 - A failed spawn attempt is a runtime transport failure, not authorization to execute the delegated role in the primary chat, mutate unrelated workflow state, or create a visible conversation.
-- Only after all 5 native delegation attempts fail may the affected stage return `runtime-capability-blocked`.
+- Only after confirmed side-effect-free attempts exhaust the retry limit may the affected stage return `runtime-capability-blocked`.
 - A Codex runtime/UI regression may expose a legitimate native child thread in Recent. That does not change the harness contract: the harness must never intentionally create a separate user-visible conversation for internal agent execution.
 
 ### Conversation isolation
@@ -218,7 +224,7 @@ Primary lifecycle contract:
 5. verify that the child is no longer active before releasing its slot or completing the relevant stage;
 6. apply the same cleanup on completed, blocked, failed, timeout, interrupted, pause, cancel, and revision paths.
 
-Brain and specialist children are normally short-lived. Orchestrator is workflow-lived and remains open across controller turns until coordination reaches a terminal state, then Primary Controller closes/verifies it.
+Brain and specialist children are normally short-lived. Orchestrator state is workflow-lived but its child process is disposable: capture each reconciliation report, close/verify the Orchestrator child when its turn is complete, and rehydrate a fresh Orchestrator from confirmed workflow state when another coordination decision is needed.
 
 If an owned child cannot be closed or closure cannot be verified, return `runtime-cleanup-blocked`. Never silently detach and rely on the desktop application to eventually dispose it.
 
@@ -249,13 +255,13 @@ For `new`:
 3. Primary Controller captures the result, then closes/verifies the Brain analysis child. If `analysis-status` or `authority.status` is not `ready`, stop before Orchestrator planning/execution and report the blocker.
 4. Primary Controller spawns one Orchestrator child with lifecycle `planning` and execution intent `deliver`, supplying approved analysis and Jira context.
 5. Orchestrator decides Jira Feature/Task/Subtask operations and dependency-ready specialist work, returning exact `controller-actions` with `status: awaiting-controller` whenever runtime execution is required.
-6. Primary Controller executes Jira calls and specialist dispatches exactly as requested, returning confirmed results to the same Orchestrator child.
-7. For each specialist, Primary Controller applies native dispatch retries, collects the specialist report/runtime-resource evidence, ensures owned resources are cleaned, closes/verifies the specialist child, then sends that confirmed result to Orchestrator.
-8. Repeat the controller-action loop until Orchestrator returns a terminal reconciliation result with Brain acceptance inputs ready.
-9. Capture the Orchestrator result and close/verify the Orchestrator child.
+6. Primary Controller executes each deterministic action batch exactly as requested. Before writable specialist dispatch, capture the working-project Git baseline and reserve the handoff's exact allowed write scope; do not run overlapping writable leases concurrently. After the specialist returns, compare Git evidence against that baseline and reject/report any out-of-scope mutation before accepting the result.
+7. For each specialist, apply side-effect-safe native retry rules, collect the specialist report/runtime-resource evidence, ensure owned resources are cleaned, close/verify the specialist child, and retain confirmed action results.
+8. Capture each Orchestrator reconciliation report and close/verify that Orchestrator child. When another decision is required, spawn a fresh Orchestrator from the latest report, minimal Jira context, and confirmed action results.
+9. Repeat until Orchestrator returns acceptance-ready inputs.
 10. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting `accepted`.
 
-For `resume`, skip Brain analysis and Orchestrator decomposition only when Jira validity markers, authority readiness, and the relevant `.docs` baseline remain valid. Otherwise route to targeted Brain revalidation before specialist execution. Spawn or continue one Orchestrator child for the resumed workflow and use the same controller-action loop.
+For `resume`, skip Brain analysis and Orchestrator decomposition only when Jira validity markers, authority readiness, and the relevant `.docs` baseline remain valid. Otherwise route to targeted Brain revalidation before specialist execution. Spawn an Orchestrator decision turn from the latest durable/minimal workflow context and reconciliation state, then use the same disposable-process controller loop.
 
 For `replan`, revalidate only changed relevant requirements/evidence, including authority readiness for the affected scope, invalidate only affected Test-plan/validation evidence, and replan only that delta before continuing through the same controller-action loop.
 
@@ -284,7 +290,7 @@ For explicit pause while Jira-backed work is active:
 
 1. Primary Controller stops executing new `dispatch-specialist` actions immediately.
 2. Primary Controller collects available specialist evidence, active child-agent identifiers, runtime-resource ledger, and relevant current source identity; clean/close specialist execution where safely possible.
-3. Continue the active Orchestrator child in `pause` mode, or spawn one if no usable Orchestrator child exists. Do not spawn Brain.
+3. Spawn or use one Orchestrator pause decision turn from the latest confirmed workflow state. Do not depend on an earlier Orchestrator process still being alive, and do not spawn Brain.
 4. Orchestrator reconciles proven state and returns required Jira `[RESULT]`/status/HANDOFF operations as exact `jira-call` controller actions.
 5. Primary Controller executes those Jira calls and sends confirmations back to the same Orchestrator child.
 6. Orchestrator returns `paused` only after the durable handoff is confirmed and no unresolved runtime cleanup remains.

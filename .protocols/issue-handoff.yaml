@@ -2,6 +2,7 @@ kind: issue-handoff
 workflow-mode: "<planning|resume>"
 execution-intent: "<plan-only|deliver>"
 working-project: "<project-name>"
+context-version: "<version>"
 target-agent: "<design|test-plan|coding|testing-logic|testing-ui>"
 jira:
   feature-key: "<feature-key>"

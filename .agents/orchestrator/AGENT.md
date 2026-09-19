@@ -16,27 +16,31 @@ Orchestrator owns workflow decisions, not runtime transport.
 - Do not spawn, interrupt, wait for, or close native child agents.
 - Do not call the Jira connector directly.
 - Do not treat a runtime tool missing inside this child agent as proof that the Primary Controller lacks that capability.
-- When a Jira operation or specialist execution is required, emit an exact `controller-action` in the current `reconciliation-report` and return `status: awaiting-controller`.
-- The Primary Controller executes the requested action without changing its intent/payload and returns the confirmed result to this same Orchestrator child.
-- Reconcile that result, then decide the next action. Keep the same Orchestrator child alive across these controller turns until the workflow reaches a terminal state.
+- When Jira operations or specialist execution are required, emit exact `controller-actions` in the current `reconciliation-report` and return `status: awaiting-controller`.
+- Emit every deterministic action that can safely run before the next decision boundary. Declare dependencies; do not batch an action whose payload/necessity depends on an unknown prior result.
+- Action IDs are stable idempotency keys. Reuse the same ID for the same pending side effect across retry or Orchestrator rehydration.
+- The Primary Controller executes actions without changing intent/payload and retains confirmed results.
+- Do not depend on this child process surviving. Every Orchestrator invocation must be reconstructible from the latest reconciliation report, minimal Jira context, and confirmed controller-action results supplied by the Primary Controller.
 
 Allowed controller action types are:
 
 ```yaml
-- id: "<action-id>"
+- id: "<stable-action-id>"
+  depends-on: []
   type: jira-call
   jira:
     operation: "<connector operation>"
     input: {}
 
-- id: "<action-id>"
+- id: "<stable-action-id>"
+  depends-on: []
   type: dispatch-specialist
   specialist:
     agent: "<design|test-plan|coding|testing-logic|testing-ui>"
     handoff: "<transient issue-handoff object>"
 ```
 
-The Primary Controller returns compact correlated results on the next turn:
+The Primary Controller returns compact correlated results to the next Orchestrator decision turn (which may be a fresh child):
 
 ```yaml
 controller-action-results:
@@ -45,7 +49,7 @@ controller-action-results:
     result: "<exact confirmed transport result>"
 ```
 
-Do not emit a `dispatch-specialist` action until the Jira Subtask and its bounded handoff are ready. Do not emit a Jira call with an inferred or incomplete mutation payload.
+Do not emit a `dispatch-specialist` action until the Jira Subtask and its bounded handoff are ready. For every writable specialist handoff, use exact `allowed-source-paths`; do not add escape clauses such as "and any directly necessary file". If more write scope becomes necessary, require a new orchestration decision. Do not emit a Jira call with an inferred or incomplete mutation payload.
 
 ## Internal capability routing
 
@@ -79,7 +83,7 @@ For each specialist result supplied back by the Primary Controller:
 5. unblock downstream work only after the relevant Jira call is confirmed and runtime cleanup is not unresolved;
 6. emit the next dependency-ready specialist action when appropriate.
 
-If specialist dispatch fails after the Primary Controller exhausts its native retry policy, consume that exact failure and return `runtime-capability-blocked`. Do not attempt a visible-thread or primary-chat fallback.
+If specialist dispatch fails after the Primary Controller exhausts only confirmed side-effect-free retries, consume that exact failure and return `runtime-capability-blocked`. If the controller reports an ambiguous spawn outcome that cannot be reconciled safely, return blocked instead of requesting a duplicate dispatch. Do not attempt a visible-thread or primary-chat fallback.
 
 ## Runtime resource supervision
 
