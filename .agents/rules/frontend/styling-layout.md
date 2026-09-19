@@ -11,9 +11,9 @@ Resolve visual requirements in this order:
 1. existing component public variant/composition contract;
 2. existing shared/module component owning the pattern;
 3. existing semantic design-system token/rule;
-4. standard utility/API of the project styling system detected from source/config and routed by Orchestrator.
+4. standard utility/API of the project styling system detected from source/config and routed by Main.
 
-Do not assume Tailwind, CSS Modules, MUI `sx`, styled-components, or another mechanism merely because this control repo knows about it. Map by semantic responsibility, not by copying provider CSS values. If no approved mapping exists, return the exact missing styling decision to Orchestrator instead of approximating a value or silently expanding the design system.
+Do not assume Tailwind, CSS Modules, MUI `sx`, styled-components, or another mechanism merely because this control repo knows about it. Map by semantic responsibility, not by copying provider CSS values. If no approved mapping exists, return the exact missing styling decision to Main instead of approximating a value or silently expanding the design system.
 
 ## Project styling-system policy
 
@@ -52,7 +52,7 @@ Fixed intrinsic/design-system dimensions are allowed for things such as icons, s
 
 ## Approval-required changes
 
-Return to Orchestrator/developer before:
+Return to Main/developer before:
 
 - adding/changing design tokens or global styling/theme rules;
 - adding a shared visual variant not already authorized;
