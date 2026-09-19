@@ -1,6 +1,6 @@
 ---
 name: plan-frontend-testing
-description: Convert one bounded transient frontend issue handoff into a risk-based test-plan artifact without reading project documents or implementation source. Use only for the Test-plan specialist when Orchestrator supplies complete behavior, acceptance criteria, scope, constraints, and expected evidence; do not use to write, execute, debug, or review test code.
+description: Convert one bounded transient frontend issue handoff into a risk-based test-plan artifact without reading project documents or implementation source. Use only for the Test-plan specialist when Main supplies complete behavior, acceptance criteria, scope, constraints, and expected evidence; do not use to write, execute, debug, or review test code.
 ---
 
 # Plan Frontend Testing
