@@ -8,11 +8,10 @@ accepts:
   - jira-context
   - specialist-reports
   - acceptance-report
-  - pause-request
+  - pause-checkpoint
 produces:
   - jira-issues
   - jira-work-report
-  - pause-checkpoint
 context:
   allowed:
     - approved-analysis-package
