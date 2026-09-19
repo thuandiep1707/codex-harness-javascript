@@ -10,7 +10,6 @@ accepts:
   - acceptance-report
   - pause-checkpoint
 produces:
-  - jira-issues
   - jira-work-report
 context:
   allowed:
@@ -18,6 +17,7 @@ context:
     - jira-context
     - confirmed-specialist-results
     - acceptance-report
+    - supplied-pause-checkpoint
   forbidden:
     - product-source-mutation
     - test-source-mutation
