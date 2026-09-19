@@ -89,12 +89,11 @@ Allowed durable categories:
 - final `[RESULT]`;
 - real `[BLOCKER]`;
 - material `[REVISION]`;
-- confirmed scope/workflow-state changes;
-- mechanical execution-graph materialization explicitly authorized by Main from a confirmed Test Plan `testing-route`.
+- confirmed scope/workflow-state changes.
 
-For Test Plan routing, create/reconcile only the required testing execution units for `logic`, `ui`, or `both`; create none for `none`. Main must supply the confirmed Test Plan result, parent functional-slice key, and exact dependency execution-unit keys. Preserve those inputs exactly. Do not reclassify testing, infer different dependencies, invent extra testing work, or materialize speculative testing units before the Test Plan result exists.
+Developer self-verification (Test Plan, Testing Logic, Testing UI) is transient execution owned by Main and must not create or materialize Jira execution units.
 
-Resolve any project-specific target field, work type, relationship, or workflow transition from current Jira metadata before mutation.
+Resolve any project-specific target field or workflow transition from current Jira metadata before mutation.
 
 Do not reinterpret specialist evidence, acceptance coverage, validation results, runtime cleanup, or source changes. Main owns those orchestration decisions.
 
