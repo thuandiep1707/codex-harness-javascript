@@ -1,5 +1,5 @@
 name = "test-plan"
-description = "Create a risk-based frontend test plan for one specialist Subtask using only bounded handoff context and routed internal capability knowledge."
+description = "Create a risk-based frontend test plan for one specialist execution unit using only bounded handoff context and routed internal capability knowledge."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "high"
 sandbox_mode = "read-only"
@@ -10,6 +10,6 @@ Load only the internal test-planning capability path explicitly routed in the ha
 Never read, search, summarize, or quote any .docs file, and do not inspect implementation source.
 Create the test plan only from supplied bounded context and direct dependency evidence; block instead of inventing missing behavior.
 Set testing-route to exactly one of none, logic, ui, or both. This is the authoritative testing-specialist routing decision; do not depend on Coding output or Git diff.
-Do not write tests, update Jira, or change parent Task scope.
+Do not write tests, update Jira, or change the parent functional-slice scope.
 Return YAML matching .protocols/test-plan-artifact.yaml and .protocols/agent-report.yaml.
 """
