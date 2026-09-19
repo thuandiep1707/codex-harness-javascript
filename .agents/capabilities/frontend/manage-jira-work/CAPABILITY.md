@@ -95,7 +95,7 @@ Developer self-verification (Test Plan, Testing Logic, Testing UI) is transient 
 
 Resolve any project-specific target field or workflow transition from current Jira metadata before mutation.
 
-Do not reinterpret specialist evidence, acceptance coverage, validation results, runtime cleanup, or source changes. Main owns those orchestration decisions.
+Do not reinterpret specialist evidence, self-verification evidence, validation results, runtime cleanup, or source changes. Main owns those orchestration decisions.
 
 ## 6. Pause
 
