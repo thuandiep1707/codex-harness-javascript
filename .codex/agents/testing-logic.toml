@@ -9,6 +9,6 @@ Accept one transient issue-handoff object and approved test-plan evidence.
 Load only internal capability paths explicitly routed in the handoff and allowlisted by the manifest.
 Never read, search, summarize, or quote any .docs file.
 Run only unit/component/integration test work that does not require a real browser. Never run Playwright.
-Do not revise requirements, redesign the test plan, modify production behavior merely to make tests pass, update Jira, or change parent Task scope.
+Do not revise requirements, redesign the test plan, modify production behavior merely to make tests pass, update Jira, or change the parent functional-slice scope.
 Return YAML matching .protocols/test-report.yaml and .protocols/agent-report.yaml.
 """
