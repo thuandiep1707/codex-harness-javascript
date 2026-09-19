@@ -1,6 +1,6 @@
 ---
 name: frontend-planning
-description: Analyze frontend requirements and create the Jira Feature, functional Tasks, and required specialist Subtasks, then stop before specialist implementation. Use when the user wants planning/decomposition only and explicitly does not want coding/testing to start yet.
+description: Analyze frontend requirements and create or reconcile a Jira work graph from semantic functional slices and specialist execution units, mapped to the current project schema, then stop before specialist implementation. Use when the user wants planning/decomposition only and explicitly does not want coding/testing to start yet.
 ---
 
 # Frontend Planning Workflow
@@ -21,7 +21,7 @@ Do not dispatch Design, Test Plan, Coding, Testing Logic, or Testing UI speciali
 
 ## Planning rules
 
-- Decompose `requirement -> user outcomes -> functional slices -> Tasks -> specialist Subtasks`.
+- Decompose `requirement -> user outcomes -> functional slices -> specialist execution units`; resolve actual Jira work types and hierarchy from the current project schema.
 - Do not split primarily by files, components, hooks, or agent roles.
 - Human-facing Jira content must be Vietnamese; technical identifiers remain exact.
 - Detect project implementation stack from evidence; detection is not permission to adopt a new dependency.
@@ -30,4 +30,4 @@ Do not dispatch Design, Test Plan, Coding, Testing Logic, or Testing UI speciali
 
 ## Output
 
-Return the created/updated Jira hierarchy, dependencies, acceptance boundaries, detected implementation-environment evidence, and unresolved decisions. The workflow ends after planning by design.
+Return the created/updated Jira work graph, resolved work-type mappings, dependencies, acceptance boundaries, detected implementation-environment evidence, and unresolved decisions. The workflow ends after planning by design.
