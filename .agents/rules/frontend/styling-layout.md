@@ -36,7 +36,7 @@ Provider CSS/classes/values are design evidence only. For each material value, m
 
 ## Responsive and fluid layout
 
-Implement only responsive scope explicitly included by the assigned Task/design evidence. Do not invent mobile/tablet layouts or breakpoints.
+Implement only responsive scope explicitly included by the assigned execution-unit/design evidence. Do not invent mobile/tablet layouts or breakpoints.
 
 Within the approved viewport scope, major page/workspace regions must remain fluid unless a fixed contract is explicitly required. Do not lock the whole layout to a design-frame width/height.
 
