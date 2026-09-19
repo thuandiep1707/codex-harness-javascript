@@ -32,7 +32,7 @@ the assigned slice. Read `references/characterization-and-cutover.md` only as ne
 observable behavior and distinguish known preserved bugs from explicitly approved changes.
 
 Testing is not self-routed from this skill; execute only validation assigned to the current Coding
-Subtask. Separate Testing Subtasks remain owned by Orchestrator.
+Subtask. Separate testing Subtasks remain owned by Orchestrator.
 
 ### 2. Expose seams
 

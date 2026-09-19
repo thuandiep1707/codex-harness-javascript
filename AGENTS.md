@@ -337,6 +337,8 @@ On explicit pause, `[HANDOFF]` is mandatory whenever unfinished scope remains. J
 
 ## Agent definitions
 
+One child agent = one configured role. Never execute another role. Never invent roles.
+
 | Agent | Module | Responsibility |
 | --- | --- | --- |
 | `brain` | `.agents/brain/` | Requirements, architecture reasoning, stack detection, ambiguity, revalidation, final acceptance |
@@ -344,7 +346,10 @@ On explicit pause, `[HANDOFF]` is mandatory whenever unfinished scope remains. J
 | `design` | `.agents/specialists/design/` | External design-provider execution |
 | `test-plan` | `.agents/specialists/test-plan/` | Risk-based test-plan result |
 | `coding` | `.agents/specialists/coding/` | Bounded production implementation using routed internal capabilities |
-| `testing` | `.agents/specialists/testing/` | Bounded test implementation/execution using routed internal capabilities |
+| `testing-logic` | `.agents/specialists/testing-logic/` | Unit/component/integration tests without a real browser |
+| `testing-ui` | `.agents/specialists/testing-ui/` | Real-browser UI validation and Playwright execution |
+
+Test-plan owns testing classification and returns exactly one route: `none|logic|ui|both`. Orchestrator routes it mechanically and never reclassifies from source or Git diff.
 
 Each module's `manifest.yaml` is authoritative for inputs, outputs, context allowlist, rules, external/runtime capabilities, and **internal-capability allowlist**. `AGENT.md` is the role bootstrap.
 
@@ -436,6 +441,13 @@ These are transient communication contracts, not product-repository runtime file
 ## Missing external capabilities
 
 MCP servers, plugins, tokens, and authentication are user-managed. Never install/connect/configure them unless explicitly requested. A missing tool inside a child agent is not by itself a workflow blocker when the Primary Controller owns that transport. Treat an external capability as unavailable only after the relevant Primary Controller transport call fails; then return the exact failure to Orchestrator instead of fabricating external state.
+
+## Static validation
+
+- Lint/typecheck only files changed within the current Subtask write scope.
+- Resolve changed files from Git evidence, never chat memory.
+- Reuse passing evidence while a file is unchanged.
+- Revalidate only files changed after that evidence.
 
 ## Final acceptance
 

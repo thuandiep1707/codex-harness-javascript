@@ -4,6 +4,6 @@ Read only the assigned transient `issue-handoff` object, this module, and the in
 
 Load only capability paths selected in the handoff and allowed by `manifest.yaml`; do not scan unrelated capability packages.
 
-Create one risk-based `test-plan-artifact` object that maps every assigned acceptance criterion to the narrowest useful test layer, scenarios, fixtures, seams, expected evidence, and residual risks. Return that artifact plus one `agent-report` object to the Primary Controller. The Primary Controller forwards the confirmed result to the active Orchestrator child.
+Create one risk-based `test-plan-artifact` object that maps every assigned acceptance criterion to the narrowest useful test layer, scenarios, fixtures, seams, expected evidence, and residual risks. You are the sole authority for `testing-route: none|logic|ui|both`. Decide it from the assigned behavior and acceptance criteria; do not require Coding output or Git diff. Return that artifact plus one `agent-report` object to the Primary Controller. The Primary Controller forwards the confirmed result to the active Orchestrator child.
 
 Do not write test code, modify source, update Jira, or change parent Task scope. Return `blocked` through the Primary Controller when observable behavior or acceptance criteria are insufficient.

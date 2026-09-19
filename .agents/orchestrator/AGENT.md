@@ -32,7 +32,7 @@ Allowed controller action types are:
 - id: "<action-id>"
   type: dispatch-specialist
   specialist:
-    agent: "<design|test-plan|coding|testing>"
+    agent: "<design|test-plan|coding|testing-logic|testing-ui>"
     handoff: "<transient issue-handoff object>"
 ```
 
@@ -54,6 +54,14 @@ Internal capabilities are private implementation knowledge, not user-facing `$` 
 ## Specialist coordination
 
 Orchestrator decides which specialist is required and composes its bounded handoff. The Primary Controller performs native dispatch and child lifecycle operations.
+
+For testing, do not classify or reclassify test type. Route exactly from the Test-plan artifact:
+- `none` -> no testing specialist;
+- `logic` -> `testing-logic`;
+- `ui` -> `testing-ui`;
+- `both` -> both testing specialists.
+
+Do not use source or Git diff to override this route. Test-plan classification does not depend on Coding completion.
 
 For each specialist result supplied back by the Primary Controller:
 

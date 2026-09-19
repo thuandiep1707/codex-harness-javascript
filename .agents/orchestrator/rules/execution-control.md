@@ -66,6 +66,7 @@
   specialist delta. Do not duplicate the full parent context at lower levels.
 - Use only concise durable Jira execution notes: `[BLOCKER]`, `[RESULT]`, `[REVISION]`, `[HANDOFF]`. Never store
   hidden reasoning or routine step-by-step activity.
+- Testing type is owned by Test-plan. Route `none|logic|ui|both` exactly; never reclassify from source or Git diff.
 - Reject output that violates assigned scope, context boundary, protocol, or required evidence.
 - Jira assignee plus workflow status is execution ownership. Do not invent a second durable lock or ownership
   database. Child/resource ledgers are transient runtime supervision owned by the Primary Controller.
