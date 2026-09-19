@@ -15,33 +15,15 @@ Chat history is never workflow truth. Do not create `.plans/`, `.progresses/`, `
 
 ## Public workflow registry vs internal capabilities
 
-Keep user-facing workflow discovery intentionally small.
-
-### Public workflows
-
 Only packages under `.agents/skills/` are user-facing `$` entry points discoverable by Codex.
 
 Current frontend workflows:
 
-- `$frontend-delivery`: run frontend work continuously from the smallest valid entry through analysis, Jira orchestration, specialist execution, testing, runtime cleanup, child-agent cleanup, and final acceptance.
+- `$frontend-delivery`: run frontend work continuously from the smallest valid entry through analysis, Jira planning, specialist execution, testing, runtime cleanup, child-agent cleanup, and final acceptance.
 - `$frontend-planning`: analyze and create/reconcile the Jira work graph, then stop before specialist execution.
 - `$docs-development-ready`: create or complete the coordinated Product / Feature Requirement, Functional Specification, and UI / UX Specification package, review it as one unit, then finalize only after user approval.
 
-Do not place agent implementation knowledge under `.agents/skills/`.
-
-### Internal capabilities
-
 Reusable agent knowledge lives under `.agents/capabilities/` and is private to the owning agent. Internal capabilities must not be exposed as user-facing `$` commands and must not be loaded globally.
-
-Examples:
-
-```text
-.agents/capabilities/common/discover-project-stack/
-.agents/capabilities/frontend/plan-frontend-work/
-.agents/capabilities/frontend/shadcn/
-.agents/capabilities/frontend/nextjs-tanstack-query/
-.agents/capabilities/frontend/testing/
-```
 
 An agent may load an internal capability only when:
 
@@ -53,7 +35,8 @@ Do not scan or load all capabilities "for safety".
 ### Terminology
 
 - **Workflow:** user-facing orchestration entry point under `.agents/skills/`.
-- **Agent:** role that owns a bounded responsibility.
+- **Main:** the primary user chat and runtime Orchestrator.
+- **Agent:** short-lived native child role with a bounded responsibility.
 - **Internal capability:** reusable agent knowledge under `.agents/capabilities/`.
 - **Rule:** mandatory behavior/convention.
 - **Protocol:** structured communication contract.
@@ -61,11 +44,45 @@ Do not scan or load all capabilities "for safety".
 ## Repository roles
 
 - **Control project:** this repository. Never use it as the target for product implementation.
-- **Working project:** the product repository selected by the user in the same workspace. It owns authoritative product documentation at the resolved project path, source, tests, and product configuration. Do not require `.docs/` when the user or project convention establishes another documentation target.
+- **Working project:** the product repository selected by the user in the same workspace. It owns authoritative product documentation at the resolved project path, source, tests, and product configuration.
+
+## Runtime topology
+
+Flow B uses root-centric orchestration:
+
+```text
+Main = Orchestrator
+  ├ Brain
+  ├ Scrum Master
+  ├ Design
+  ├ Test Plan
+  ├ Coding
+  ├ Testing Logic
+  └ Testing UI
+```
+
+There is no Orchestrator child in the active runtime contract.
+
+Main owns:
+
+- workflow lifecycle and execution-intent decisions;
+- dependency routing and next-action selection;
+- specialist routing and native child dispatch;
+- internal-capability routing to specialists;
+- transient write-scope leases;
+- Git baseline/diff scope verification;
+- child-agent lifecycle supervision;
+- runtime-resource cleanup supervision;
+- specialist result reconciliation;
+- transient execution state.
+
+Main must not perform Brain analysis, Scrum Master Jira reasoning, or specialist implementation/testing/design work as an invisible fallback.
+
+Brain, Scrum Master, and specialists are short-lived native child agents. Correctness must never depend on hidden child memory surviving between turns.
 
 ## Frontend workflow intent
 
-Frontend lifecycle state and execution intent are separate concepts.
+Lifecycle state and execution intent are separate concepts.
 
 ### Execution intent
 
@@ -75,42 +92,44 @@ Frontend lifecycle state and execution intent are separate concepts.
 `$frontend-planning` supplies `plan-only`.
 `$frontend-delivery` supplies `deliver`.
 
-Do not interpret Orchestrator `planning` mode as automatically meaning "stop after Jira". When intent is `deliver`, Jira planning completion is not an approval gate and the workflow must continue without asking the user to confirm merely because the Jira work graph was created.
+Jira planning completion is not an approval gate for `deliver`. Do not ask the user to confirm merely because the Jira work graph was created.
 
 ## Resolve the workflow lifecycle entry
 
-For every frontend workflow request, identify the working project and resolve the smallest valid lifecycle entry from Jira:
+For every frontend workflow request, identify the working project and resolve the smallest valid lifecycle entry from durable Jira/source/document truth:
 
-- `new`: no valid Jira workflow exists -> Brain analysis, then Orchestrator planning.
-- `resume`: valid analysis/task tree exists and relevant requirements are unchanged -> Orchestrator resume only.
-- `replan`: relevant requirements or approved architecture/dependency direction changed -> Brain targeted revalidation, then Orchestrator replans affected scope only.
-- `pause`: active workflow must stop now but remain resumable -> Orchestrator pause reconciliation + durable handoff.
+- `new`: no valid Jira workflow exists -> Brain analysis -> Scrum Master planning.
+- `resume`: valid Jira work state exists and relevant requirements remain valid -> continue from the current dependency-ready execution boundary.
+- `replan`: relevant requirements or approved architecture/dependency direction changed -> Brain targeted revalidation -> Scrum Master reconciles only the affected Jira delta.
+- `pause`: active work must stop now but remain resumable -> Main stops new dispatch, cleans transient execution, Scrum Master persists durable handoff state.
 - `acceptance`: required execution units are complete -> Brain acceptance while the functional-slice boundary remains in a project-defined non-terminal workflow state until accepted finalization is confirmed.
 
 A new chat or developer handoff is normally `resume`, not `new`.
+
+When fresh Jira state is required to resolve lifecycle or resume, use Scrum Master `resume-sync` to return compact Jira work state rather than copying full Jira issue content into Main.
 
 ## Authority and evidence validity
 
 Before planning or specialist execution, Brain analysis/revalidation must establish that the current product truth is executable:
 
-- the authoritative document set is resolved;
+- authoritative documents are resolved;
 - required approval/readiness is satisfied by project evidence;
 - no unresolved requirement/contract contradiction blocks the requested scope.
 
-`analysis-status: ready` is valid only when `authority.status: ready`. If authority is blocked, stop before Orchestrator planning/execution and surface the blocker instead of spending Coding/Testing work against an unsettled contract.
+`analysis-status: ready` is valid only when `authority.status: ready`.
 
 Testing evidence is scoped evidence, not a permanent global PASS:
 
-- Test-plan must cover every acceptance criterion in the assigned scope and match the current `context-version` before testing specialists are dispatched.
-- A material acceptance/scope change invalidates only the affected Test-plan coverage and downstream evidence; revalidate that delta before continuing.
+- Test Plan must cover every acceptance criterion in the assigned scope and match the current `context-version` before testing specialists are dispatched.
+- A material acceptance/scope change invalidates only the affected Test Plan coverage and downstream evidence.
 - A relevant source change invalidates only evidence whose covered behavior/source state may have changed.
-- A green suite proves only the acceptance criteria explicitly covered by its test report. Never infer uncovered acceptance from aggregate pass counts.
+- A green suite proves only the acceptance criteria explicitly covered by its test report.
 
-### Pause intent detection
+## Pause intent detection
 
-When active Jira-backed work exists, treat explicit natural-language intent to stop, pause, hand off, or continue later as `pause`. The user does not need a special command. Phrases such as `dừng lại`, `tạm dừng`, `dừng công việc`, `để mai làm tiếp`, or `bàn giao ở đây` are examples, not an exhaustive command list.
+When active Jira-backed work exists, treat explicit natural-language intent to stop, pause, hand off, or continue later as `pause`.
 
-Do not interpret `pause` as merely stopping generation or changing Jira status. Route it to Orchestrator pause mode so runtime resources, active child agents, and Jira continuation state are reconciled before the workflow is reported safely paused.
+Do not interpret `pause` as merely stopping generation or changing Jira workflow state. Main must stop new specialist dispatch, reconcile active children/resources, and use Scrum Master to persist the durable continuation state before reporting a safe pause.
 
 If no active Jira-backed workflow exists, obey the user's stop request normally and do not create a fake Jira handoff.
 
@@ -123,156 +142,184 @@ Brain may detect the existing implementation environment through `.agents/capabi
 3. representative imports only when needed;
 4. deeper source inspection only to resolve a material ambiguity.
 
-Detection is not technology selection. Do not turn missing evidence into a default such as shadcn, Lucide, MUI, HeroUI, Zustand, TanStack Query, or another dependency.
+Detection is not technology selection. Missing evidence must not become a default library.
 
-Brain records evidence-backed implementation-environment facts in `analysis-package.yaml`. Orchestrator combines that profile with the current execution-unit trigger and specialist manifest to select the smallest internal-capability set for execution.
+Brain records evidence-backed implementation-environment facts in `analysis-package.yaml`.
 
-Examples:
+Main combines:
 
 ```text
-Project evidence: @mui/material + @mui/icons-material
-→ route MUI-family capability when available
-→ do not route shadcn/Lucide merely because the control repo contains them
-
-Project evidence: components.json + shadcn/Radix usage + lucide-react
-→ route shadcn/Lucide-compatible capabilities for the relevant execution unit
-
-No clear UI library evidence
-→ unresolved
-→ do not invent a default UI library
+approved Brain analysis
++ compact Jira work state
++ execution-unit trigger
++ specialist manifest allowlist
+= smallest valid routed capability set
 ```
 
-A detected installed dependency is evidence of current usage/availability, not permission to install, upgrade, replace, or standardize it.
+Detection is not dependency-adoption authority. Do not install, upgrade, replace, or standardize a dependency merely because it was detected.
 
-## Primary controller boundary
+## Main Orchestrator boundary
 
-The primary chat is a thin workflow controller and the only runtime transport owner. It may:
+Main is both the workflow decision owner and native runtime transport owner.
 
-- resolve the requested public workflow;
-- identify the working project;
-- resolve lifecycle entry and execution intent;
-- spawn, retry, interrupt, wait for, close, and verify configured native child agents;
-- execute Jira connector calls explicitly requested by Orchestrator;
-- pass structured protocol objects and confirmed controller-action results;
-- maintain transient child-agent/runtime-resource supervision;
-- maintain transient controller-action/dispatch state and write-scope leases;
-- capture mechanical Git baseline/diff evidence needed to enforce a specialist handoff's exact write scope;
+Main may:
+
+- resolve the requested public workflow, working project, lifecycle entry, and execution intent;
+- dispatch, retry, interrupt, wait for, close, and verify configured native child agents;
+- choose the next dependency-ready specialist execution unit;
+- compose bounded transient `issue-handoff` objects;
+- route only manifest-allowed internal capabilities justified by current evidence;
+- capture mechanical Git baseline/diff evidence;
+- reserve and release transient write-scope leases;
+- reconcile specialist reports against assigned scope and required evidence;
+- supervise runtime-resource cleanup;
+- retain compact Jira state returned by Scrum Master;
 - report workflow status.
 
-It must not perform Brain/Orchestrator/specialist reasoning itself, load internal capability packages directly for implementation, invent or modify an Orchestrator Jira payload, choose a specialist without an Orchestrator dispatch decision, or persist workflow state into the product repository.
+Main must not:
 
-### Controller action loop
+- perform Brain analysis or final acceptance itself;
+- perform Scrum Master Jira decomposition/schema-resolution/durable-mutation work itself;
+- implement product source, design artifacts, test plans, or test code as a substitute for a specialist;
+- persist transient runtime state into Jira or the product repository;
+- invent project-specific Jira work types, fields, option values, or status names;
+- bypass a required blocker by silently broadening source or execution scope.
 
-Orchestrator owns workflow decisions. Primary Controller owns runtime execution.
+## Scrum Master boundary
 
-When Orchestrator needs a Jira operation or specialist execution, it returns `status: awaiting-controller` with exact `controller-actions` in `.protocols/reconciliation-report.yaml`.
+Scrum Master is the Jira work-management child and Jira durable-mutation authority.
 
-Supported actions are intentionally small:
+Use Scrum Master for:
 
-- `jira-call`: execute the exact connector operation/input supplied by Orchestrator;
-- `dispatch-specialist`: spawn the exact specialist with the supplied bounded `issue-handoff`.
+- Jira work-graph planning/replanning;
+- schema/work-type/field/option discovery required for Jira mutation;
+- compact Jira state synchronization for resume when needed;
+- durable `[RESULT]`, `[BLOCKER]`, `[REVISION]`, `[HANDOFF]`, scope, and workflow-state persistence;
+- final Jira completion mutations after accepted Brain evidence.
 
-Primary Controller executes requested actions without changing intent/payload. Orchestrator may return a batch of deterministic actions up to the next decision boundary; the controller respects declared dependencies and may execute independent actions concurrently only when runtime capacity and write scopes are compatible.
+Scrum Master returns `.protocols/jira-work-report.yaml`.
 
-Orchestration state is workflow-lived; an Orchestrator process is disposable. After each reconciliation report is captured, the controller may close that Orchestrator child and later spawn a fresh Orchestrator with the latest reconciliation report, minimal Jira context, and confirmed controller-action results. Correctness must never depend on hidden memory inside a long-lived Orchestrator process.
+Main consumes the compact report and does not duplicate full Jira issue descriptions into its working context unless a workflow decision specifically requires them.
 
-Controller action IDs are stable idempotency keys for their intended side effect. Rehydrated Orchestrator turns must reuse the same ID for the same pending action instead of inventing a duplicate action.
+Specialists never mutate Jira.
 
-A tool missing inside the Orchestrator child is not proof that the capability is unavailable to the Primary Controller. Only a failed Primary Controller transport attempt can establish that runtime/connector failure.
+## Agent delegation transport
 
-### Agent delegation transport
+Internal execution must use Codex native subagent/multi-agent delegation from Main.
 
-Internal agent execution must use Codex native subagent/multi-agent delegation through the Primary Controller.
-
-- Brain, Orchestrator, and Specialists are private child-agent executions, not independent user-visible conversations.
-- Orchestrator never invokes native child-agent lifecycle APIs; it requests specialist dispatch through `controller-actions`.
-- Never create, fork, or open a user-visible chat/thread as a substitute for internal agent delegation.
-- Never use `create_thread`, `fork_thread`, new-chat actions, or equivalent conversation APIs as a fallback for native subagent execution.
-- A transport error/timeout is not proof that a native spawn had no side effect. Before retrying, reconcile the transient action/child registry and observable native state when available.
-- Retry the same delegation up to **5 total attempts** only when the prior attempt is confirmed not to have created the intended child. Every retry reuses the same stable action ID, role, handoff, and dispatch identity; never broaden scope or switch transport.
-- Permit at most one active child for the same `execution-unit + context-version + role` dispatch identity. If an outcome is ambiguous and absence cannot be proven, do not blind-retry; return the ambiguity to Orchestrator as a blocker.
-- A failed spawn attempt is a runtime transport failure, not authorization to execute the delegated role in the primary chat, mutate unrelated workflow state, or create a visible conversation.
-- Only after confirmed side-effect-free attempts exhaust the retry limit may the affected stage return `runtime-capability-blocked`.
-- A Codex runtime/UI regression may expose a legitimate native child thread in Recent. That does not change the harness contract: the harness must never intentionally create a separate user-visible conversation for internal agent execution.
+- Brain, Scrum Master, and Specialists are private child executions, not independent user-visible conversations.
+- Never create, fork, or open a user-visible chat/thread as a substitute for internal delegation.
+- A transport error/timeout is not proof that a native spawn had no side effect.
+- Retry a delegation up to **5 total attempts** only when the prior attempt is confirmed side-effect-free.
+- Permit at most one active child for the same `execution-unit + context-version + role` dispatch identity.
+- If absence cannot be proven after an ambiguous spawn result, block rather than blind-spawn a duplicate.
+- A failed spawn is not authorization for Main to execute the delegated child role itself.
 
 ### Conversation isolation
 
-Conversation isolation is separate from context isolation:
-
 ```text
-Primary/user chat
+Main/user chat
 = the only intentional user-visible workflow conversation
 
-Brain / Orchestrator / Specialists
+Brain / Scrum Master / Specialists
 = internal native child-agent execution only
 ```
 
-Context isolation controls what an agent may read. Conversation isolation controls where that agent may execute. Never bypass either boundary through chat history, visible conversation creation, or thread forking.
+Context isolation controls what a child may read. Conversation isolation controls where it executes.
 
-### Child-agent lifecycle
+## Child-agent lifecycle
 
-Primary Controller owns every native child agent it successfully spawns until explicit close has been requested and closure is verified.
+Main owns every native child it successfully spawns until explicit close has been requested and closure is verified.
 
-A completed `wait_agent`, returned report, disconnected subchat, hidden panel, or completed Jira execution unit does not mean the child has been disposed.
+A returned report, completed wait, disconnected subchat, hidden panel, or completed Jira execution unit does not prove the child was disposed.
 
-Primary lifecycle contract:
+Lifecycle contract:
 
-1. register each successfully spawned child-agent identifier in a transient runtime ledger;
-2. capture the child result and any runtime-resource cleanup evidence;
-3. if the child still has an active turn when it must stop, interrupt that turn when the runtime supports it;
-4. explicitly close the child agent;
-5. verify that the child is no longer active before releasing its slot or completing the relevant stage;
+1. register each spawned child in transient Main state;
+2. capture its structured result and runtime-resource evidence;
+3. interrupt an active turn when required and supported;
+4. explicitly close the child;
+5. verify closure before releasing its slot or completing the stage;
 6. apply the same cleanup on completed, blocked, failed, timeout, interrupted, pause, cancel, and revision paths.
 
-Brain and specialist children are normally short-lived. Orchestrator state is workflow-lived but its child process is disposable: capture each reconciliation report, close/verify the Orchestrator child when its turn is complete, and rehydrate a fresh Orchestrator from confirmed workflow state when another coordination decision is needed.
+Brain and Scrum Master are normally closed immediately after their bounded result is captured. Specialists are closed after result capture, required resource cleanup, and scope verification.
 
-If an owned child cannot be closed or closure cannot be verified, return `runtime-cleanup-blocked`. Never silently detach and rely on the desktop application to eventually dispose it.
+If an owned child cannot be closed or closure cannot be verified, return `runtime-cleanup-blocked`.
 
-### Runtime resource lifecycle
+## Write-scope leases
 
-Long-lived runtime resources created inside a child execution are transient execution resources, not product state.
+Before a writable specialist dispatch:
 
-Apply `.agents/rules/runtime-resource-lifecycle.md` whenever an agent starts a dev/preview server, watcher, browser process, background service, or other process that may outlive the immediate command.
+1. capture the working-project Git/source baseline;
+2. reserve the exact allowed write paths from the handoff in transient Main state;
+3. reject concurrent writable dispatches whose leases overlap;
+4. allow independent read-only work concurrently when runtime capacity permits;
+5. after the specialist returns, compare changed source against the reserved scope;
+6. reject/reconcile out-of-scope mutation before accepting the result;
+7. release the lease only after reconciliation and child cleanup.
 
-- Register ownership immediately using `.protocols/runtime-resource-event.yaml`; do not wait for the final report.
+A specialist needing an unlisted write path must stop for scope expansion. Never normalize an out-of-scope mutation after the fact.
+
+## Runtime resource lifecycle
+
+Long-lived runtime resources created inside child execution are transient execution resources, not product state.
+
+Apply `.agents/rules/runtime-resource-lifecycle.md` whenever a child starts a dev/preview server, watcher, browser process, background service, or other long-lived process.
+
+- Register ownership immediately using `.protocols/runtime-resource-event.yaml`.
 - Track command, cwd, PID/process-group identity, known descendants, actual bound ports, and ownership evidence when available.
-- Actual auto-selected ports must be tracked; do not assume the requested port was used.
-- The creating specialist is responsible for first-pass cleanup on every exit path.
-- Primary Controller maintains the cross-agent transient resource ledger and is fallback cleanup supervisor when a specialist crashes, times out, is interrupted, or becomes unavailable.
-- Orchestrator consumes cleanup evidence for workflow decisions but does not execute process/port cleanup itself.
-- Never terminate a process merely because it owns a port. Port occupancy alone is not ownership evidence.
-- Runtime cleanup must verify the owned process tree is stopped and known owned ports are released before the specialist child is considered ready to close.
-- If cleanup cannot be completed safely or verified, return `runtime-cleanup-blocked` and record unresolved resources.
+- The creating specialist owns first-pass cleanup.
+- Main is fallback cleanup supervisor when a specialist crashes, times out, is interrupted, or becomes unavailable.
+- Never terminate a process merely because it occupies a port.
+- Runtime cleanup must verify the owned process tree is stopped and known owned ports are released before the child is considered ready to close.
+- If cleanup cannot be completed safely or verified, return `runtime-cleanup-blocked`.
 
 The runtime resource ledger is transient. Do not persist it as a product-repository workflow database or use Jira as a live process registry.
 
-### `$frontend-delivery`
+## `$frontend-delivery`
 
 For `new`:
 
-1. Primary Controller spawns Brain with user objective, working-project identity, relevant `.docs`, and bounded source/config evidence.
-2. Brain returns `analysis-package`, including authority readiness and `implementation-environment` evidence when relevant.
-3. Primary Controller captures the result, then closes/verifies the Brain analysis child. If `analysis-status` or `authority.status` is not `ready`, stop before Orchestrator planning/execution and report the blocker.
-4. Primary Controller spawns one Orchestrator child with lifecycle `planning` and execution intent `deliver`, supplying approved analysis and Jira context.
-5. Orchestrator decides Jira work-graph operations mapped from semantic work roles and dependency-ready specialist work, returning exact `controller-actions` with `status: awaiting-controller` whenever runtime execution is required.
-6. Primary Controller executes each deterministic action batch exactly as requested. Before writable specialist dispatch, capture the working-project Git baseline and reserve the handoff's exact allowed write scope; do not run overlapping writable leases concurrently. After the specialist returns, compare Git evidence against that baseline and reject/report any out-of-scope mutation before accepting the result.
-7. For each specialist, apply side-effect-safe native retry rules, collect the specialist report/runtime-resource evidence, ensure owned resources are cleaned, close/verify the specialist child, and retain confirmed action results.
-8. Capture each Orchestrator reconciliation report and close/verify that Orchestrator child. When another decision is required, spawn a fresh Orchestrator from the latest report, minimal Jira context, and confirmed action results.
-9. Repeat until Orchestrator returns acceptance-ready inputs.
-10. Spawn Brain for final acceptance and close/verify the Brain acceptance child. If Brain returns `blocked` or `revision-required`, keep the functional-slice boundary in a project-defined non-terminal workflow state and route only the affected scope back through replan/revision.
-11. If Brain returns `accepted`, spawn an Orchestrator `finalize` decision turn with the acceptance report. Execute its exact final Jira actions, including the project-valid transition of the accepted functional-slice boundary to the terminal/completed workflow state when appropriate, and report `accepted` only after those actions are confirmed.
+1. Main dispatches Brain for bounded requirement analysis, authority readiness, and project-stack discovery.
+2. Main captures Brain `analysis-package`, closes/verifies Brain, and continues only when analysis and authority are ready.
+3. Main dispatches Scrum Master `planning` with the approved analysis and execution intent `deliver`.
+4. Scrum Master discovers the current Jira project schema, creates/reconciles the semantic work graph, performs authorized Jira mutations, and returns compact `jira-work-report`.
+5. Main closes/verifies Scrum Master and routes the smallest valid internal capabilities for dependency-ready execution units.
+6. Main dispatches dependency-ready specialists, respecting runtime capacity and write-scope leases.
+7. For each returned specialist result, Main verifies assigned scope, protocol/evidence validity, source diff, runtime cleanup, and child closure.
+8. When durable Jira persistence is required at an execution boundary, Main dispatches Scrum Master `progress-sync` with only confirmed evidence; after the report returns, Main closes/verifies Scrum Master.
+9. Main repeats dependency routing until the affected functional-slice scope is acceptance-ready.
+10. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
+11. If Brain returns `revision-required` or `blocked`, Main keeps the Jira scope non-terminal and routes only the affected scope through revalidation/replan/revision.
+12. If Brain returns `accepted`, Main dispatches Scrum Master `finalize` with the current acceptance report.
+13. Main reports `accepted` only after Scrum Master confirms the project-valid terminal/completed Jira transition and all child/runtime cleanup is resolved.
 
-For `resume`, skip Brain analysis and Orchestrator decomposition only when Jira validity markers, authority readiness, and the relevant `.docs` baseline remain valid. Otherwise route to targeted Brain revalidation before specialist execution. Spawn an Orchestrator decision turn from the latest durable/minimal workflow context and reconciliation state, then use the same disposable-process controller loop.
+For `resume`:
 
-For `replan`, revalidate only changed relevant requirements/evidence, including authority readiness for the affected scope, invalidate only affected Test-plan/validation evidence, and replan only that delta before continuing through the same controller-action loop.
+1. resolve compact current Jira work state; use Scrum Master `resume-sync` when fresh Jira state is required;
+2. verify relevant docs/authority validity markers;
+3. dispatch Brain targeted revalidation only when those markers are stale or changed;
+4. Main chooses the next dependency-ready execution unit from confirmed Jira state;
+5. route specialists and durable Jira updates through the same Main/Scrum Master boundaries as normal delivery.
 
-Interrupt continuous delivery only for real authority/capability gates such as material ambiguity, unapproved dependency/architecture adoption, destructive or sensitive external action, unresolved human design choice, a missing required provider confirmed by Primary Controller transport, material scope expansion, or unresolved runtime cleanup.
+For `replan`:
 
-### `$frontend-planning`
+1. Brain revalidates only the affected requirement/authority delta;
+2. Scrum Master reconciles only the affected Jira graph delta;
+3. Main invalidates only affected Test Plan/validation evidence and resumes dependency routing.
 
-Run Brain analysis/revalidation and authority readiness as required, then close/verify the Brain child. Continue only when authority is ready. Spawn an Orchestrator `plan-only` decision turn; execute its exact Jira action batch, capture/close that Orchestrator child, and rehydrate fresh Orchestrator turns from the latest reconciliation report plus confirmed action results until the Jira task graph is valid. Stop before Design, Test Plan, Coding, or Testing specialist execution.
+Interrupt continuous delivery only for real authority/capability gates such as material ambiguity, unapproved dependency/architecture adoption, destructive or sensitive external action, unresolved human design choice, missing required external capability, material scope expansion, or unresolved runtime cleanup.
 
-### Resume work
+## `$frontend-planning`
+
+1. Main dispatches Brain analysis/revalidation as required.
+2. Continue only when analysis and authority are ready.
+3. Main dispatches Scrum Master `planning` or `replan` with execution intent `plan-only`.
+4. Scrum Master discovers the current Jira schema, creates/reconciles the Jira work graph, and returns compact `jira-work-report`.
+5. Main closes/verifies Scrum Master.
+6. Stop before Design, Test Plan, Coding, Testing Logic, or Testing UI execution.
+
+## Resume context
 
 Reconstruct only:
 
@@ -283,37 +330,37 @@ Reconstruct only:
 5. routed internal-capability identifiers for the execution unit;
 6. relevant current source/provider state.
 
-Do not read the entire Jira project, sprint, comment history, or unrelated task tree merely to continue one execution unit.
+Do not read the entire Jira project, sprint, comment history, or unrelated work tree merely to continue one execution unit.
 
-### Pause work
+## Pause work
 
 For explicit pause while Jira-backed work is active:
 
-1. Primary Controller stops executing new `dispatch-specialist` actions immediately.
-2. Primary Controller collects available specialist evidence, active child-agent identifiers, runtime-resource ledger, and relevant current source identity; clean/close specialist execution where safely possible.
-3. Spawn or use one Orchestrator pause decision turn from the latest confirmed workflow state. Do not depend on an earlier Orchestrator process still being alive, and do not spawn Brain.
-4. Orchestrator reconciles proven state and returns required Jira `[RESULT]`/status/HANDOFF operations as exact `jira-call` controller actions.
-5. Primary Controller executes those Jira calls and retains confirmations. If another pause decision is required, rehydrate an Orchestrator pause turn from the latest reconciliation report and confirmed results.
-6. Orchestrator returns `paused` only after the durable handoff is confirmed and no unresolved runtime cleanup remains.
-7. Primary Controller captures the pause result, closes/verifies that Orchestrator turn, then reports safe pause.
+1. Main stops new specialist dispatch immediately.
+2. Main collects available specialist evidence and cleans/closes active execution where safely possible.
+3. Main determines the proven durable continuation state without inventing progress.
+4. Main dispatches Scrum Master `pause` with confirmed results/status corrections plus the transient pause checkpoint.
+5. Scrum Master persists required durable `[RESULT]`/workflow-state/`[HANDOFF]` updates and returns `jira-work-report`.
+6. Main closes/verifies Scrum Master.
+7. Report `paused` only after durable Jira handoff persistence and runtime/child cleanup are confirmed.
 
-If a required Jira call fails, return that exact connector result to Orchestrator; if durable handoff cannot be confirmed, the workflow returns `pause-blocked`. If known runtime resources or child agents cannot be cleaned/closed and verified, return `runtime-cleanup-blocked`.
+If durable Jira persistence fails, return `pause-blocked`. If runtime or child cleanup remains unresolved, return `runtime-cleanup-blocked`.
 
 ## Jira validity markers
 
-Sprint handling is temporarily disabled. Sprint membership/evidence is not a validity or dispatch gate in planning, replanning, or resume. Do not perform sprint operations unless explicitly requested by the user, and do not ask for a sprint policy exception. Do not assume a universal `Sprint` field exists; when sprint behavior is explicitly requested, resolve the project's actual board/sprint capability and supported operation first. For work previously blocked only by sprint evidence, reuse the existing Jira graph, reconcile stale sprint-only blocker/readiness state through confirmed Jira operations, and continue dependency-ready execution units once the normal non-sprint gates pass. Do not recreate issues, rerun Brain solely for this change, or fabricate verified sprint evidence.
+Sprint handling is disabled unless explicitly requested. Do not assume a universal `Sprint` field exists; when sprint behavior is requested, Scrum Master resolves the project's actual board/sprint capability and supported operation first.
 
 Resolved Jira scope context must make these facts recoverable:
 
 ```text
 analysis: ready
-task-tree: ready
+work-graph: ready
 context-version: <version>
 docs-baseline: <verified baseline>
 relevant-documents: <recoverable set/reference>
 ```
 
-Before `resume`, compare relevant `.docs` changes against `docs-baseline` using cheap repository metadata first. If relevant requirements did not change, do not rerun Brain. Material change -> `replan`.
+Before `resume`, compare relevant documentation changes against `docs-baseline` using cheap repository metadata first. If relevant requirements did not change, do not rerun Brain. Material change -> `replan`.
 
 ## Jira work model
 
@@ -325,22 +372,23 @@ work-container   # optional grouping/context
       -> execution-unit # one independently actionable specialist work item
 ```
 
-Scrum Master/project-aware Jira logic must discover the current project's available work types, fields, options, relationships, and workflow states before mutation. `Epic`, `Feature`, `Story`, `Task`, `Bug`, `Sub-task`, custom work types, literal status names, and custom fields are project-specific representations, not harness constants.
+Scrum Master discovers the current project's available work types, fields, options, relationships, and workflow states before mutation.
 
-The functional-slice boundary is not an executable specialist assignment. Specialists execute execution units only. Create only independently actionable execution units required by the functional slice. Routine triage, diagnosis, retry, or test-only iteration stays inside the owning specialist lifecycle and must not become a new Jira execution unit merely because it is a separate reasoning step.
+`Epic`, `Feature`, `Story`, `Task`, `Bug`, `Sub-task`, custom work types, literal status names, and custom fields are project-specific representations, not harness constants.
 
-Completing all required execution units makes the functional-slice boundary acceptance-ready, not automatically complete in Jira. `acceptance-ready`, `non-terminal`, and `terminal/completed` are harness semantics, not literal Jira status names. Only an accepted Brain report followed by confirmed finalization may transition the accepted scope through a project-valid Jira transition to its terminal/completed workflow state.
+The functional-slice boundary is not an executable specialist assignment. Specialists execute execution units only.
 
-All human-facing Jira titles, descriptions, acceptance criteria, dependency explanations, blockers, results, and handoff notes must be Vietnamese. Technical identifiers/paths/APIs/component names/Jira keys/commands/machine metadata remain exact when needed.
+Completing all required execution units makes the functional-slice boundary `acceptance-ready`, not automatically complete in Jira. `acceptance-ready`, `non-terminal`, and `terminal/completed` are harness semantics, not literal Jira status names.
+
+All human-facing Jira titles, descriptions, acceptance criteria, dependency explanations, blockers, results, and handoff notes must be Vietnamese. Technical identifiers remain exact when needed.
 
 Use context inheritance:
 
-- optional work-container stores common product/architecture context when the project model provides that level;
-- functional-slice stores the outcome/scope/acceptance delta;
-- execution-unit stores specialist execution delta plus the minimal routed internal-capability identifiers required for deterministic execution/resume;
-- Orchestrator composes the resolved semantic context chain + direct dependency evidence into transient `issue-handoff`.
+- optional work-container stores common approved context when the Jira model provides that level;
+- functional-slice stores outcome/scope/acceptance delta;
+- execution-unit stores specialist execution delta plus minimal routed internal-capability identifiers.
 
-Do not duplicate full parent context at lower levels. Do not assume a universal reporter, assignee, Sprint, label, work type, or status field; resolve project-specific fields and values from Jira metadata before mutation.
+Do not assume a universal reporter, assignee, Sprint, label, work type, or status field. Scrum Master resolves project-specific schema and values before mutation.
 
 ## Durable Jira checkpoints
 
@@ -353,53 +401,68 @@ Use concise durable notes:
 - `[REVISION]`: correction required after review/reconciliation.
 - `[HANDOFF]`: checkpoint for another session/developer to continue unfinished work.
 
-A handoff records only continuation essentials: source repository/branch/commit when relevant, completed scope, remaining scope, validation state, blockers, and next work item/action.
-
 Do not use Jira as an execution trace. Intermediate test counts, routine triage observations, retry attempts, and self-corrected test-only mismatches remain transient unless they change durable scope, authority, blocker, handoff, or final result state.
 
-On explicit pause, `[HANDOFF]` is mandatory whenever unfinished scope remains. Jira status change alone is not a valid pause checkpoint.
+On explicit pause, `[HANDOFF]` is mandatory whenever unfinished scope remains.
 
 ## Agent definitions
 
-One child agent = one configured role. Never execute another role. Never invent roles.
+One child agent = one configured role. Never execute another role.
 
 | Agent | Module | Responsibility |
 | --- | --- | --- |
 | `brain` | `.agents/brain/` | Requirements, architecture reasoning, stack detection, ambiguity, revalidation, final acceptance |
-| `orchestrator` | `.agents/orchestrator/` | Jira/workflow decisions, capability routing, resume, pause/handoff decisions, specialist coordination, reconciliation |
+| `scrum-master` | `.agents/scrum-master/` | Jira schema/work-graph management and authorized durable Jira mutations |
 | `design` | `.agents/specialists/design/` | External design-provider execution |
-| `test-plan` | `.agents/specialists/test-plan/` | Risk-based test-plan result |
+| `test-plan` | `.agents/specialists/test-plan/` | Risk-based test-plan result and testing route |
 | `coding` | `.agents/specialists/coding/` | Bounded production implementation using routed internal capabilities |
 | `testing-logic` | `.agents/specialists/testing-logic/` | Unit/component/integration tests without a real browser |
 | `testing-ui` | `.agents/specialists/testing-ui/` | Real-browser UI validation and Playwright execution |
 
-Test-plan owns testing classification and returns exactly one route: `none|logic|ui|both`. Orchestrator routes it mechanically and never reclassifies from source or Git diff.
+Main is the Orchestrator and is not represented by a child-agent module.
 
-Each module's `manifest.yaml` is authoritative for inputs, outputs, context allowlist, rules, external/runtime capabilities, and **internal-capability allowlist**. `AGENT.md` is the role bootstrap.
+Legacy `.agents/orchestrator/`, `.codex/agents/orchestrator.toml`, `.agents/capabilities/frontend/plan-frontend-work/`, and `.protocols/reconciliation-report.yaml` may remain temporarily during branch migration. They are not active Flow B runtime contracts and must not be dispatched/consumed by Main.
 
-Specialists may load only internal capability paths both allowlisted by their manifest and explicitly routed in the current handoff.
+Test Plan owns testing classification and returns exactly one route: `none|logic|ui|both`. Main routes it mechanically and never reclassifies from source or Git diff.
+
+Each child module's `manifest.yaml` is authoritative for inputs, outputs, context allowlist, rules, external/runtime capabilities, and internal-capability allowlist.
 
 ## Context isolation
 
-Brain may read relevant `.docs` for analysis/revalidation/acceptance and bounded source/config evidence for implementation-environment discovery.
+Brain may read relevant authoritative documentation and bounded source/config evidence for analysis, revalidation, and acceptance.
 
-Orchestrator may read relevant `.docs` during planning/replanning and minimal Jira/source context during resume/pause.
+Scrum Master receives approved analysis/workflow evidence plus the Jira context required for its bounded operation. It does not inspect product source for specialist implementation decisions.
 
-Specialists must never read `.docs`. They receive only bounded transient handoff + allowed dependency evidence + necessary source/provider state + explicitly routed internal capability paths.
+Specialists must never read authoritative product documentation directly. They receive only bounded transient handoff + allowed dependency evidence + necessary source/provider state + explicitly routed internal capability paths.
 
 If context/routing is insufficient, return a blocker. Never bypass isolation using chat history or broad source archaeology.
 
 ## Structured protocols
 
-### Controller-supplied scope usage metadata
+Use templates under `.protocols/`:
 
-For every native child dispatch and continuation, Primary Controller appends the following common
-instruction alongside the role-specific handoff. Do not edit an Orchestrator-supplied business payload
-or require per-agent manifest/bootstrap changes. This applies to every child role, including future roles.
+- `analysis-package.yaml`
+- `jira-work-report.yaml`
+- `issue-handoff.yaml`
+- `pause-checkpoint.yaml`
+- `agent-report.yaml`
+- `scope-usage.yaml`
+- `runtime-resource-event.yaml`
+- `design-artifact.yaml`
+- `test-plan-artifact.yaml`
+- `implementation-report.yaml`
+- `test-report.yaml`
+- `acceptance-report.yaml`
+
+These are transient communication contracts, not product-repository runtime files. Persist only compact durable Jira context/evidence needed for resume and human control.
+
+### Main-supplied scope usage metadata
+
+For every native child dispatch/continuation, Main appends the common `scope-usage` instruction without changing the child's business payload.
+
+The child preserves its existing response kind and adds:
 
 ```text
-Preserve your existing response kind and business fields. Add scope-usage metadata for this turn
-(since your previous response, or invocation start on your first turn):
 scope-usage:
   completeness: complete|partial
   loaded: {skills: [exact-path], rules: [exact-path]}
@@ -407,74 +470,36 @@ scope-usage:
     skills: [{path: exact-path, evidence: brief-observable-application}]
     rules: [{path: exact-path, evidence: brief-observable-application}]
   limitations: []
-Loaded means content newly read/supplied this turn, not paths merely listed in a manifest/handoff.
-Applied means actually used this turn, including material loaded in earlier turns. Use [] for known
-none, partial with limitations for uncertainty or lost context. Skills include SKILL.md/CAPABILITY.md;
-rules include applicable rule documents/sections. Keep canonical paths, deduplicate within each list,
-and give brief observable evidence, not hidden reasoning or copied content. An evaluated rule guard
-counts as application. Do not read extra documents merely to populate this report. Include metadata
-on intermediate and terminal returns when possible. If returning an artifact plus agent-report,
-include scope-usage only in agent-report. Otherwise embed it in your existing response object.
 ```
 
-`.protocols/scope-usage.yaml` is the shared format. Control-repository paths use `/` separators;
-external identifiers retain their supplied canonical form. A known section may use a `#section-anchor`.
-Track observations during the turn; do not reconstruct a whole session's usage from memory. Missing
-pre-compaction observations make the report partial rather than guessed. A Document Agent response
-embeds this field alongside its existing workflow state and payload. The common metadata extension
-does not replace any role's response contract or authorize new capabilities.
+Loaded means content newly read/supplied this turn. Applied means actually used. Do not read extra documents merely to populate telemetry.
 
-Primary Controller captures usage with the actual child ID, role, work item/mode, and response turn
-before closing the child. Keep attribution when forwarding results; Orchestrator must not count
-forwarded specialist usage as its own. Aggregate only received observations in transient controller
-context, not a product-repository log or Jira telemetry stream. If controller context loses earlier
-observations, mark the aggregate partial; conversation history is an audit surface, not workflow truth.
+Main captures usage with the actual child ID, role, work item/mode, and response turn before closing the child. Missing/malformed usage marks the audit incomplete but never reruns product work, delays cleanup, or keeps a child alive solely for telemetry.
 
-Check shape, canonical identifiers, duplicates, completeness/limitations, and evidence for applied
-entries. Applied entries need not occur in this turn's loaded lists. Compare known routing/allowlists
-without loading extra skills. A scope violation follows existing scope gates, but missing/malformed
-usage only marks the audit incomplete: never infer empty usage, rerun product work, delay cleanup,
-or keep a child alive solely to obtain telemetry. A crash without a response is recorded as missing
-by the controller, not fabricated as child testimony.
-
-At workflow completion, pause, or blocker, display one compact `Scope usage` summary in the primary
-conversation: per-child applied paths, observed loaded-but-not-observed-applied paths, and limitations.
-Compute this difference across all retained turns for that child, not separately for each turn.
-When observations are partial, label these as candidates rather than proven unused content. Show
-known-empty sets explicitly. Do not rely on hidden child panels or counts alone. No extra reporting
-turns or new runtime services are required. These are self-reported observations, not measured token
-savings; do not automatically remove mandatory rules based on this audit.
-
-Use templates under `.protocols/`:
-
-- `analysis-package.yaml`
-- `issue-handoff.yaml`
-- `pause-checkpoint.yaml`
-- `agent-report.yaml`
-- `scope-usage.yaml` (shared embedded metadata)
-- `runtime-resource-event.yaml`
-- `design-artifact.yaml`
-- `test-plan-artifact.yaml`
-- `implementation-report.yaml`
-- `test-report.yaml`
-- `reconciliation-report.yaml`
-- `acceptance-report.yaml`
-
-These are transient communication contracts, not product-repository runtime files. Persist only compact durable Jira context/evidence needed for resume and human control.
+At workflow completion, pause, or blocker, Main displays one compact `Scope usage` summary per child from retained observations.
 
 ## Missing external capabilities
 
-MCP servers, plugins, tokens, and authentication are user-managed. Never install/connect/configure them unless explicitly requested. A missing tool inside a child agent is not by itself a workflow blocker when the Primary Controller owns that transport. Treat an external capability as unavailable only after the relevant Primary Controller transport call fails; then return the exact failure to Orchestrator instead of fabricating external state.
+MCP servers, plugins, tokens, and authentication are user-managed. Never install/connect/configure them unless explicitly requested.
+
+A missing tool inside one child is not automatically evidence that the whole runtime lacks that capability. Main should reason from the actual bounded child/tool result. Do not fabricate external state or silently substitute another role.
 
 ## Project validation ownership
 
-The harness owns role-specific behavioral validation required by the approved Test-plan/handoff. Generic project quality gates such as lint, format, typecheck, build, commit hooks, and CI remain owned by the working project's repository contract.
+The harness owns role-specific behavioral validation required by the approved Test Plan/handoff. Generic project quality gates such as lint, format, typecheck, build, commit hooks, and CI remain owned by the working project's repository contract.
 
 - Do not invent or duplicate a generic lint/format/typecheck/build layer merely because a specialist changed files.
-- Run a generic repository validation command only when the current handoff or the project's established scripts/hooks/CI contract explicitly requires it for that stage.
-- If the project is intended to install/use hooks such as Husky and they are unavailable in the current environment, report an environment/setup problem; do not compensate by silently recreating every hook command inside the harness.
-- Behavioral test evidence remains owned by the routed Testing specialist even when repository hooks also run tests.
+- Run a generic repository validation command only when the current handoff or established project contract explicitly requires it.
+- Behavioral test evidence remains owned by the routed Testing specialist.
 
 ## Final acceptance
 
-Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. All execution units may be complete while the functional-slice boundary is still in a project-defined non-terminal workflow state. When Brain returns `accepted`, Orchestrator must run one finalization turn and request the valid Jira transition that moves the accepted scope to the project's terminal/completed workflow state; only after that mutation is confirmed may the workflow report `accepted`. A blocked/revision-required Brain report never authorizes that terminal transition.
+Brain acceptance compares authoritative product truth, approved Jira context/results, changed source, and actual validation evidence.
+
+Green tests alone are not enough. All execution units may be complete while the functional-slice boundary is still in a project-defined non-terminal workflow state.
+
+When Brain returns `accepted`, Main dispatches Scrum Master `finalize`. Scrum Master resolves and performs the valid Jira transition that moves the accepted scope to the project's terminal/completed workflow state.
+
+Only after that Jira mutation is confirmed and all child/runtime cleanup is resolved may Main report `accepted`.
+
+A `blocked` or `revision-required` Brain report never authorizes terminal Jira completion.
