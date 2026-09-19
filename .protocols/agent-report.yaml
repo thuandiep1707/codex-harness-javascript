@@ -1,5 +1,5 @@
 kind: agent-report
-jira-subtask-key: "<subtask-key>"
+jira-execution-key: "<execution-unit-key>"
 agent: "<agent-name>"
 status: "<completed|blocked|failed>"
 summary: ""
