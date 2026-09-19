@@ -57,6 +57,8 @@ Create a work-container only when the current Jira/project model needs or suppor
 
 Store common approved context at the resolved work-container level when present, functional outcome/scope delta at the functional-slice level, and specialist execution delta at the execution-unit level.
 
+Persist the current validity markers required for future resume/replan decisions from the approved analysis: analysis readiness, authority readiness, context-version, docs-baseline, and recoverable relevant-document references. Return the same resolved markers in `jira-work-report.validity`.
+
 Create only independently actionable execution units actually required by evidence. Record the intended specialist role when known, but do not dispatch that role and do not select internal capability packages.
 
 Represent project-specific metadata as semantic intent first, then resolve it through current Jira schema. Do not encode a project-specific work type, label, custom field, option, owner field, or status as a universal planning rule.
@@ -90,7 +92,7 @@ Allowed durable categories:
 - confirmed scope/workflow-state changes;
 - mechanical execution-graph materialization explicitly authorized by Main from a confirmed Test Plan `testing-route`.
 
-For Test Plan routing, create/reconcile only the required testing execution units for `logic`, `ui`, or `both`; create none for `none`. Preserve the parent functional slice and confirmed route exactly. Do not reclassify testing, invent extra testing work, or materialize speculative testing units before the Test Plan result exists.
+For Test Plan routing, create/reconcile only the required testing execution units for `logic`, `ui`, or `both`; create none for `none`. Main must supply the confirmed Test Plan result, parent functional-slice key, and exact dependency execution-unit keys. Preserve those inputs exactly. Do not reclassify testing, infer different dependencies, invent extra testing work, or materialize speculative testing units before the Test Plan result exists.
 
 Resolve any project-specific target field, work type, relationship, or workflow transition from current Jira metadata before mutation.
 
