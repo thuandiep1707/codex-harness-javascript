@@ -1,6 +1,6 @@
 name: coding
 role: frontend-implementation-specialist
-description: Implement one bounded frontend specialist Subtask from a transient Jira-derived handoff using only the internal capabilities selected for this Subtask.
+description: Implement one bounded frontend specialist execution unit from a transient Jira-derived handoff using only the internal capabilities selected for this execution unit.
 accepts:
   - issue-handoff
   - design-artifact
