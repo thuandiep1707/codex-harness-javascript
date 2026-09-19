@@ -85,7 +85,7 @@ For every frontend workflow request, identify the working project and resolve th
 - `resume`: valid analysis/task tree exists and relevant requirements are unchanged -> Orchestrator resume only.
 - `replan`: relevant requirements or approved architecture/dependency direction changed -> Brain targeted revalidation, then Orchestrator replans affected scope only.
 - `pause`: active workflow must stop now but remain resumable -> Orchestrator pause reconciliation + durable handoff.
-- `acceptance`: required executable Subtasks are complete -> Brain acceptance.
+- `acceptance`: required executable Subtasks are complete -> Brain acceptance while the parent Task remains non-Done until accepted finalization is confirmed.
 
 A new chat or developer handoff is normally `resume`, not `new`.
 
@@ -259,7 +259,8 @@ For `new`:
 7. For each specialist, apply side-effect-safe native retry rules, collect the specialist report/runtime-resource evidence, ensure owned resources are cleaned, close/verify the specialist child, and retain confirmed action results.
 8. Capture each Orchestrator reconciliation report and close/verify that Orchestrator child. When another decision is required, spawn a fresh Orchestrator from the latest report, minimal Jira context, and confirmed action results.
 9. Repeat until Orchestrator returns acceptance-ready inputs.
-10. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting `accepted`.
+10. Spawn Brain for final acceptance and close/verify the Brain acceptance child. If Brain returns `blocked` or `revision-required`, keep the parent Task non-Done and route only the affected scope back through replan/revision.
+11. If Brain returns `accepted`, spawn an Orchestrator `finalize` decision turn with the acceptance report. Execute its exact final Jira actions, including the parent Task Done transition when appropriate, and report `accepted` only after those actions are confirmed.
 
 For `resume`, skip Brain analysis and Orchestrator decomposition only when Jira validity markers, authority readiness, and the relevant `.docs` baseline remain valid. Otherwise route to targeted Brain revalidation before specialist execution. Spawn an Orchestrator decision turn from the latest durable/minimal workflow context and reconciliation state, then use the same disposable-process controller loop.
 
@@ -327,10 +328,12 @@ Use:
 ```text
 Feature context
   -> Task: one functional slice
-      -> Subtask: one specialist execution unit
+      -> Subtask: one independently actionable specialist work unit
 ```
 
-Parent Task is an acceptance/scope boundary, not an executable specialist assignment. Specialists execute Subtasks only. Create only specialist Subtasks actually required by the functional slice.
+Parent Task is an acceptance/scope boundary, not an executable specialist assignment. Specialists execute Subtasks only. Create only independently actionable specialist Subtasks required by the functional slice. Routine triage, diagnosis, retry, or test-only iteration stays inside the owning specialist lifecycle and must not become a new Jira Subtask merely because it is a separate reasoning step.
+
+Completing all executable Subtasks makes the parent Task acceptance-ready, not Done. Keep it in an existing non-Done workflow status; do not invent a new Jira status. Only an accepted Brain report followed by confirmed Orchestrator finalization may transition the parent Task to Done.
 
 All human-facing Jira titles, descriptions, acceptance criteria, dependency explanations, blockers, results, and handoff notes must be Vietnamese. Technical identifiers/paths/APIs/component names/Jira keys/commands/machine metadata remain exact when needed.
 
@@ -355,6 +358,8 @@ Use concise durable notes:
 - `[HANDOFF]`: checkpoint for another session/developer to continue unfinished work.
 
 A handoff records only continuation essentials: source repository/branch/commit when relevant, completed scope, remaining scope, validation state, blockers, and next work item/action.
+
+Do not use Jira as an execution trace. Intermediate test counts, routine triage observations, retry attempts, and self-corrected test-only mismatches remain transient unless they change durable scope, authority, blocker, handoff, or final result state.
 
 On explicit pause, `[HANDOFF]` is mandatory whenever unfinished scope remains. Jira status change alone is not a valid pause checkpoint.
 
@@ -476,4 +481,4 @@ The harness owns role-specific behavioral validation required by the approved Te
 
 ## Final acceptance
 
-Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. Return `accepted` only when requirements/acceptance criteria are covered, implementation matches approved architecture/design, intended behavior is proven, no blocking gap remains, all known child agents have been explicitly closed/verified by the Primary Controller, and all owned runtime resources are released or safely resolved.
+Brain acceptance compares authoritative `.docs`, approved Jira context/results, changed source, and actual validation evidence. Green tests alone are not enough. All executable Subtasks may be complete while the parent Task is still non-Done. When Brain returns `accepted`, Orchestrator must run one finalization turn and request the exact parent Done Jira transition; only after that mutation is confirmed may the workflow report `accepted`. A blocked/revision-required Brain report never transitions the parent Task to Done.

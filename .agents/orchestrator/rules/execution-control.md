@@ -50,10 +50,9 @@
   bound port from evidence rather than assuming the requested one.
 - If an owned resource or child cannot be cleaned/closed and verified safely, return
   `runtime-cleanup-blocked`; do not hide the leak behind a successful specialist result.
-- Persist a specialist result to Jira only through a confirmed `jira-call` requested after its execution
-  evidence is captured and cleanup state is known.
-- After every Subtask completion, reconcile its parent Task. If all required Subtasks are complete and no blocker
-  or revision remains, explicitly transition the parent Task to Done. Never rely on Jira automation to close parent issues.
+- Persist Jira only at durable boundaries after execution evidence and cleanup state are known: final specialist `[RESULT]`, real `[BLOCKER]`, material `[REVISION]`, `[HANDOFF]`, or status/scope change. Routine triage, retries, intermediate test counts, and self-corrected test-only mismatches remain transient.
+- After every Subtask completion, reconcile the parent Task. When all required executable Subtasks are complete and no execution blocker/revision remains, mark the orchestration outcome `acceptance-ready` but keep the parent Task in an existing non-Done status. Never transition the parent to Done before Brain acceptance.
+- In `finalize` mode, only an `acceptance-report` with `status: accepted` for the current context authorizes requesting the parent Task Done transition. Return completed only after the Primary Controller confirms that Jira mutation. Never rely on Jira automation to close parent issues.
 - A user pause/stop intent is a durable workflow checkpoint when active Jira-backed work exists. Do not treat it
   as only a status change or a request to stop responding.
 - Before finalizing pause, reconcile proven execution evidence, request missing `[RESULT]`/status corrections,
@@ -63,8 +62,8 @@
   `runtime-cleanup-blocked`.
 - Use Jira context inheritance: Feature owns common context, Task owns functional-slice delta, Subtask owns
   specialist delta. Do not duplicate the full parent context at lower levels.
-- Use only concise durable Jira execution notes: `[BLOCKER]`, `[RESULT]`, `[REVISION]`, `[HANDOFF]`. Never store
-  hidden reasoning or routine step-by-step activity.
+- Use only concise durable Jira execution notes: `[BLOCKER]`, `[RESULT]`, `[REVISION]`, `[HANDOFF]`. Never store hidden reasoning, routine step-by-step activity, intermediate validation counts, or retry/triage chatter.
+- Routine investigation remains inside the current specialist lifecycle when it does not change role/scope. Create another Jira Subtask only for newly discovered independently actionable work that requires distinct specialist ownership or scope.
 - Testing type is owned by Test-plan. Route `none|logic|ui|both` exactly; never reclassify from source or Git diff.
 - Enforce test-role ownership in every handoff: Testing Logic gets only non-browser test/harness write/run scope; Testing UI gets browser/Playwright test/harness scope; Coding never receives real-browser acceptance or Playwright/E2E ownership.
 - Keep routine run/diagnose/proven-test-only-fix/rerun iteration inside the same testing specialist lifecycle. Return to Orchestrator only on completion or a production/authority/scope/dependency/cross-role boundary.

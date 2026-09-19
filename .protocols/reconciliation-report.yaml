@@ -1,11 +1,11 @@
 kind: reconciliation-report
-workflow-mode: "<planning|resume|pause>"
+workflow-mode: "<planning|resume|pause|finalize>"
 context-version: "<version>"
 jira:
   feature-key: "<feature-key>"
   requested-task-key: ""
   requested-subtask-key: ""
-status: "<awaiting-controller|completed|paused|blocked|runtime-capability-blocked|runtime-cleanup-blocked|pause-blocked|revision-required>"
+status: "<awaiting-controller|acceptance-ready|completed|paused|blocked|runtime-capability-blocked|runtime-cleanup-blocked|pause-blocked|revision-required>"
 controller-actions:
   - id: "<stable-action-id>"
     depends-on: []

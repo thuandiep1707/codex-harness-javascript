@@ -46,8 +46,9 @@ For `NEW`:
 5. Primary Controller executes the batch without changing intent/payload. For writable specialist dispatch, capture the Git baseline, reserve exact allowed write scope, prevent overlapping writable leases, and verify the resulting diff stays inside scope.
 6. For `dispatch-specialist`, retry only after proving a failed/timeout attempt had no spawn side effect; never blind-spawn a duplicate. Collect result/resource evidence, close/verify the specialist child, and retain confirmed action results.
 7. Capture the Orchestrator report and close/verify its child after each decision turn. Rehydrate a fresh Orchestrator when confirmed action results reach the next decision boundary.
-8. Repeat until acceptance inputs are ready.
-9. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting the workflow complete.
+8. Repeat until Orchestrator returns `acceptance-ready` with complete Brain acceptance inputs. The parent Task remains in an existing non-Done Jira status at this point.
+9. Spawn Brain for final acceptance and close/verify the Brain child. If it returns `blocked` or `revision-required`, route only the affected scope back through replan/revision; do not close the parent Task.
+10. If Brain returns `accepted`, spawn one Orchestrator `finalize` decision turn with that acceptance report. Execute its exact final Jira actions, including parent Done when appropriate, and report workflow completion only after confirmation.
 
 For `RESUME`, skip Brain analysis and Orchestrator decomposition only when Jira validity markers, authority readiness, and the relevant `.docs` baseline remain valid. If authority or relevant contract evidence is stale, run targeted Brain revalidation before any specialist dispatch. Rehydrate Orchestrator decision turns from confirmed state instead of requiring one long-lived child.
 
@@ -85,4 +86,6 @@ Only this workflow is user-facing. Internal agent capabilities live outside `.ag
 
 ## Completion
 
-Report `accepted` only after Brain acceptance verifies authoritative `.docs`, Jira context/results, source changes, and validation evidence **and** all known child agents spawned for the workflow have been explicitly closed/verified and all owned runtime resources have been released or safely resolved. Green tests alone are not sufficient.
+Jira stores durable workflow state, not routine execution traces. Persist only scope/decision changes, real blockers/revisions, final specialist results, and pause handoffs; keep ordinary triage/retry/intermediate test counts transient.
+
+Report `accepted` only after Brain acceptance verifies authoritative `.docs`, Jira context/results, source changes, and validation evidence, all known child agents are closed/verified, owned runtime resources are released, **and** the post-acceptance Orchestrator finalization has confirmed the parent Task Done transition. Green tests or completed Subtasks alone are not sufficient.
