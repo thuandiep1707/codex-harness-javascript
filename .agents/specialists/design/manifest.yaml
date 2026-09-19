@@ -1,6 +1,6 @@
 name: design
 role: design-provider-specialist
-description: Produce traceable external design evidence from one bounded specialist Subtask using only routed internal capabilities.
+description: Produce traceable external design evidence from one bounded specialist execution unit using only routed internal capabilities.
 accepts:
   - issue-handoff
 produces:
