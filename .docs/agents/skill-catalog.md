@@ -42,7 +42,7 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 
 | Capability | Responsibility |
 | --- | --- |
-| `plan-frontend-testing` | Convert one bounded handoff into a risk-based test-plan artifact |
+| `plan-frontend-testing` | Decide the smallest developer self-verification route/scope from bounded relevant docs + actual Coding source change |
 
 ### Coding
 
@@ -58,7 +58,7 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 
 | Capability | Responsibility |
 | --- | --- |
-| `testing` | Implement, run, debug, and report one bounded logic-testing execution unit |
+| `testing` | Implement, run, debug, and report bounded non-browser self-tests for the parent Coding execution unit |
 
 ### Testing UI
 
@@ -78,4 +78,4 @@ project evidence
 
 Main chỉ route capability nằm trong specialist manifest allowlist và được current evidence + execution-unit trigger yêu cầu. Capability không được route thì specialist không load. Nếu stack evidence thiếu/conflict thì giữ unresolved thay vì default sang shadcn/Lucide/TanStack/Zustand hoặc library khác.
 
-Routine lint/typecheck/build/browser validation không tự tạo Testing execution unit. Test planning và test implementation vẫn là specialist responsibilities riêng.
+Test Plan, Testing Logic và Testing UI là transient developer self-verification; chúng không tạo Jira execution unit. Test Plan quyết định `none|logic|ui|both`; Main chỉ dispatch mechanically.
