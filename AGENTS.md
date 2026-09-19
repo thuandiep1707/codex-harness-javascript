@@ -270,7 +270,7 @@ Interrupt continuous delivery only for real authority/capability gates such as m
 
 ### `$frontend-planning`
 
-Run Brain analysis/revalidation as required, close/verify the Brain child after its result is captured, then spawn one Orchestrator child with execution intent `plan-only`. Orchestrator returns exact `jira-call` controller actions; Primary Controller executes them and returns confirmed results to the same Orchestrator child until the Jira task graph is valid. Capture the final result, close/verify Orchestrator, and stop before Design, Test Plan, Coding, or Testing specialist execution.
+Run Brain analysis/revalidation and authority readiness as required, then close/verify the Brain child. Continue only when authority is ready. Spawn an Orchestrator `plan-only` decision turn; execute its exact Jira action batch, capture/close that Orchestrator child, and rehydrate fresh Orchestrator turns from the latest reconciliation report plus confirmed action results until the Jira task graph is valid. Stop before Design, Test Plan, Coding, or Testing specialist execution.
 
 ### Resume work
 
@@ -293,9 +293,9 @@ For explicit pause while Jira-backed work is active:
 2. Primary Controller collects available specialist evidence, active child-agent identifiers, runtime-resource ledger, and relevant current source identity; clean/close specialist execution where safely possible.
 3. Spawn or use one Orchestrator pause decision turn from the latest confirmed workflow state. Do not depend on an earlier Orchestrator process still being alive, and do not spawn Brain.
 4. Orchestrator reconciles proven state and returns required Jira `[RESULT]`/status/HANDOFF operations as exact `jira-call` controller actions.
-5. Primary Controller executes those Jira calls and sends confirmations back to the same Orchestrator child.
+5. Primary Controller executes those Jira calls and retains confirmations. If another pause decision is required, rehydrate an Orchestrator pause turn from the latest reconciliation report and confirmed results.
 6. Orchestrator returns `paused` only after the durable handoff is confirmed and no unresolved runtime cleanup remains.
-7. Primary Controller captures the pause result, closes/verifies Orchestrator, then reports safe pause.
+7. Primary Controller captures the pause result, closes/verifies that Orchestrator turn, then reports safe pause.
 
 If a required Jira call fails, return that exact connector result to Orchestrator; if durable handoff cannot be confirmed, the workflow returns `pause-blocked`. If known runtime resources or child agents cannot be cleaned/closed and verified, return `runtime-cleanup-blocked`.
 
