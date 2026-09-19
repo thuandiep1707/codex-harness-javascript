@@ -96,11 +96,11 @@ repository evidence.
 
 ## Execution
 
-Run the narrowest targeted command first, then the baseline validation explicitly required by the
-handoff/current repository contract.
+Run the narrowest behavioral test command required by the approved Test-plan/handoff. Generic lint, format, typecheck, build, commit-hook, or CI gates remain owned by the working project's repository contract.
 
-- Lint only files changed within the Subtask write scope.
-- Resolve changed files from Git diff evidence, never from chat memory.
+- Run a generic validation command only when the handoff or established repository contract explicitly requires it for this testing stage.
+- Do not duplicate project hooks/CI merely because the current environment did not execute them.
+- If required project hooks are expected but unavailable/not installed, report the environment/setup gap instead of reconstructing their command set as harness policy.
 
 If execution starts a long-lived process such as `npm run dev`, `npm run preview`, a framework server,
 watcher, browser server, or background service, apply `.agents/rules/runtime-resource-lifecycle.md`:

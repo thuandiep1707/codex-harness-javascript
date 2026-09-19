@@ -81,17 +81,13 @@ Business semantics remain in the owning module. Load the Atomic rule for actual 
 
 ## Validation
 
-Use the smallest validation that proves the assigned change, then required repository baselines:
+Coding validates only what the current handoff and working project's established repository contract assign to Coding. Do not prescribe a second generic lint/format/typecheck/build matrix in the harness.
 
-| Change | Minimum evidence |
-| --- | --- |
-| TypeScript/TSX implementation | targeted check + lint + typecheck |
-| Framework route/boundary/compilation config | lint + typecheck + build |
-| Shared component/template contract | lint + typecheck + direct consumers + approved tests/build |
-| Reconstructed/generated UI | triggered topic validation + generated-UI rule |
-| Documentation/format-only | changed-file format/check + diff inspection |
-
-Report commands run, results, failures, and reasons for skipped required checks. Never make validation pass by weakening configuration, assertions, or unrelated production behavior.
+- Use targeted implementation checks when they are explicitly required to prove the assigned production change.
+- Leave Test-plan behavioral validation to Testing Logic/Testing UI according to their route.
+- Use existing project scripts/hooks/CI for generic quality gates when that repository contract requires them; do not recreate those gates manually just because files changed.
+- If expected project hooks (for example Husky) are unavailable/not installed in the current environment, report an environment/setup gap instead of silently substituting a harness-owned validation sequence.
+- Report commands actually run, results, failures, and any required checks that could not run. Never make validation pass by weakening configuration, assertions, or unrelated production behavior.
 
 ## Unresolved dependent scope
 

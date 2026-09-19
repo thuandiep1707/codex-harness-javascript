@@ -459,12 +459,14 @@ These are transient communication contracts, not product-repository runtime file
 
 MCP servers, plugins, tokens, and authentication are user-managed. Never install/connect/configure them unless explicitly requested. A missing tool inside a child agent is not by itself a workflow blocker when the Primary Controller owns that transport. Treat an external capability as unavailable only after the relevant Primary Controller transport call fails; then return the exact failure to Orchestrator instead of fabricating external state.
 
-## Static validation
+## Project validation ownership
 
-- Lint/typecheck only files changed within the current Subtask write scope.
-- Resolve changed files from Git evidence, never chat memory.
-- Reuse passing evidence while a file is unchanged.
-- Revalidate only files changed after that evidence.
+The harness owns role-specific behavioral validation required by the approved Test-plan/handoff. Generic project quality gates such as lint, format, typecheck, build, commit hooks, and CI remain owned by the working project's repository contract.
+
+- Do not invent or duplicate a generic lint/format/typecheck/build layer merely because a specialist changed files.
+- Run a generic repository validation command only when the current handoff or the project's established scripts/hooks/CI contract explicitly requires it for that stage.
+- If the project is intended to install/use hooks such as Husky and they are unavailable in the current environment, report an environment/setup problem; do not compensate by silently recreating every hook command inside the harness.
+- Behavioral test evidence remains owned by the routed Testing specialist even when repository hooks also run tests.
 
 ## Final acceptance
 
