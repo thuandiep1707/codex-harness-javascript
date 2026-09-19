@@ -51,10 +51,10 @@ repository. Record results and reasons for skipped required checks. Do not weake
 hide warnings, or edit unrelated source to make validation pass.
 
 A material deviation from the assigned Jira execution unit/design/architecture evidence must return to
-Orchestrator as revision/blocker; do not create a local approval plan.
+Main as revision/blocker; do not create a local approval plan.
 
 ## Automation boundary
 
 Use existing Prettier, ESLint, TypeScript, build, and approved test tooling. Do not add a custom lint
 plugin, validation script, CI workflow, or dependency merely to enforce this prose rule. Route any
-future automation proposal through an explicit Jira Task/developer decision.
+future automation proposal through an explicit Jira work item/developer decision.
