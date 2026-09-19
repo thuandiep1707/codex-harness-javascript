@@ -23,6 +23,13 @@ work-graph:
   blocked-subtasks: []
   completed-subtasks: []
 
+field-resolution:
+  - semantic: ""
+    field-id: ""
+    field-name: ""
+    value: ""
+    confidence: "<exact|compatible>"
+
 mutations:
   confirmed: []
   failed: []
