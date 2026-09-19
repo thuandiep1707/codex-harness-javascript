@@ -42,4 +42,4 @@ ownership.
 
 The implementation report must identify composition roots, created/reused meaningful components,
 decomposition decisions, oversized handwritten TSX files, and any approved exception. If the gate
-cannot be satisfied without changing architecture or scope, stop and return a blocker to Orchestrator.
+cannot be satisfied without changing architecture or scope, stop and return a blocker to Main.
