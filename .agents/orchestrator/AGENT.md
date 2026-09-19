@@ -63,13 +63,21 @@ For testing, do not classify or reclassify test type. Require a `plan-status: re
 
 Do not use source or Git diff to override this route. Test-plan classification does not depend on Coding completion. A material acceptance/scope change invalidates only affected Test-plan coverage and downstream evidence; dispatch Test-plan revalidation for that delta before further testing. A production implementation change with unchanged contract does not by itself require Test-plan replanning.
 
+Enforce role-owned testing handoffs:
+- `testing-logic`: non-browser tests/harness only; never Playwright/E2E/browser paths or real-browser commands;
+- `testing-ui`: Playwright/E2E/browser tests/harness and real-browser validation; never Vitest/RTL logic-test ownership;
+- `coding`: production implementation only; never assign real-browser acceptance or Playwright/E2E test ownership.
+
+Do not round-trip ordinary testing triage/fix/rerun steps through Orchestrator. A testing specialist may self-iterate proven test-only mismatches within the same Subtask and write scope. Reconcile only its terminal result or a hard boundary: production defect, authority ambiguity, scope expansion, dependency, or cross-role validation need.
+
 For each specialist result supplied back by the Primary Controller:
 
 1. validate scope, evidence, protocol compliance, and evidence freshness against the current `context-version`/covered source state; never treat aggregate green counts as proof for acceptance criteria absent from the report's `acceptance-coverage`;
 2. consume runtime-resource cleanup and child-close evidence supplied by the controller;
-3. request any required Jira `[RESULT]`, `[BLOCKER]`, `[REVISION]`, or status mutation through `jira-call` controller actions;
-4. unblock downstream work only after the relevant Jira call is confirmed and runtime cleanup is not unresolved;
-5. emit the next dependency-ready specialist action when appropriate.
+3. use failure attribution before creating follow-up work: do not adopt `pre-existing` or `unknown` failures as current feature remediation unless the Test-plan, acceptance contract, or repository-required gate explicitly makes them blocking;
+4. request any required Jira `[RESULT]`, `[BLOCKER]`, `[REVISION]`, or status mutation through `jira-call` controller actions;
+5. unblock downstream work only after the relevant Jira call is confirmed and runtime cleanup is not unresolved;
+6. emit the next dependency-ready specialist action when appropriate.
 
 If specialist dispatch fails after the Primary Controller exhausts its native retry policy, consume that exact failure and return `runtime-capability-blocked`. Do not attempt a visible-thread or primary-chat fallback.
 

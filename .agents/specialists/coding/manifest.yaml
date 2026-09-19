@@ -33,5 +33,3 @@ capabilities:
   required:
     - workspace-read
     - workspace-write
-  optional:
-    - browser

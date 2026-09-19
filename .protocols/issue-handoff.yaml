@@ -28,6 +28,7 @@ dependencies:
   evidence: []
 internal-capabilities: []
 acceptance-criteria: []
+validation-baseline: []
 required-validation: []
 required-capabilities: []
 expected-outputs: []

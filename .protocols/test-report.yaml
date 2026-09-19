@@ -12,6 +12,11 @@ scenarios:
   passed: []
   failed: []
   skipped: []
+failure-analysis:
+  - failure: ""
+    cause: "<test-only-mismatch|production-defect|harness-environment|authority-ambiguous|unknown>"
+    attribution: "<current-change|pre-existing|unknown>"
+    evidence: []
 execution:
   commands: []
   results: []

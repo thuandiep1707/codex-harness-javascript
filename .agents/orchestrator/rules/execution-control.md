@@ -67,6 +67,9 @@
 - Use only concise durable Jira execution notes: `[BLOCKER]`, `[RESULT]`, `[REVISION]`, `[HANDOFF]`. Never store
   hidden reasoning or routine step-by-step activity.
 - Testing type is owned by Test-plan. Route `none|logic|ui|both` exactly; never reclassify from source or Git diff.
+- Enforce test-role ownership in every handoff: Testing Logic gets only non-browser test/harness write/run scope; Testing UI gets browser/Playwright test/harness scope; Coding never receives real-browser acceptance or Playwright/E2E ownership.
+- Keep routine run/diagnose/proven-test-only-fix/rerun iteration inside the same testing specialist lifecycle. Return to Orchestrator only on completion or a production/authority/scope/dependency/cross-role boundary.
+- Classify failed validation against supplied baseline evidence as current-change, pre-existing, or unknown. Do not create current feature remediation from pre-existing/unknown failures unless an explicit Test-plan/acceptance/repository gate makes them blocking.
 - Before testing dispatch, require Test-plan `plan-status: ready`, matching current `context-version`, and explicit coverage for every assigned acceptance criterion. Material contract/scope changes invalidate only affected plan/evidence; revalidate that delta before continuing.
 - Treat validation evidence as valid only for the context and covered source state it records. A green suite proves only criteria listed in `acceptance-coverage`; never infer uncovered acceptance from pass counts.
 - Reject output that violates assigned scope, context boundary, protocol, or required evidence.
