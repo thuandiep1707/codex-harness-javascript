@@ -1,0 +1,34 @@
+kind: verification-handoff
+working-project: "<project-name>"
+context-version: "<version>"
+phase: "<plan|logic|ui>"
+
+parent:
+  functional-slice-key: "<functional-slice-key>"
+  coding-execution-key: "<coding-execution-key>"
+
+documents:
+  relevant-documents: []
+  docs-baseline: "<verified-baseline>"
+
+source:
+  baseline: "<pre-change-source-state>"
+  current: "<current-source-state>"
+  changed-files: []
+  diff-evidence: []
+  allowed-read-paths: []
+
+implementation-evidence:
+  implementation-report: null
+  previous-test-plan: null
+  previous-test-reports: []
+
+verification:
+  objective: "<developer self-verification objective>"
+  included: []
+  excluded: []
+  allowed-test-write-paths: []
+
+internal-capabilities: []
+required-capabilities: []
+status: ready
