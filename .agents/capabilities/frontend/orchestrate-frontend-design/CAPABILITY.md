@@ -40,4 +40,4 @@ Read `references/design-handoff.md` as needed. Return objects matching
 node/revision identity, previews, covered states, decisions, implementation constraints, objective
 checks, unresolved questions, and approval state.
 
-Do not persist a separate local design workflow record; Orchestrator owns durable Jira context.
+Do not persist a separate local design workflow record. Main owns orchestration decisions; Scrum Master owns any authorized durable Jira projection.
