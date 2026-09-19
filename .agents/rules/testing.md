@@ -1,7 +1,7 @@
 # Frontend Testing Rules
 
-Apply this rule only to a Testing Logic or Testing UI Subtask that creates, changes, runs, or reviews frontend
-tests. The Jira Subtask and transient handoff already decide that testing work is in scope; do not
+Apply this rule only to a Testing Logic or Testing UI execution unit that creates, changes, runs, or reviews frontend
+tests. The Jira execution unit and transient handoff already decide that testing work is in scope; do not
 create a local test plan, ask a separate yes/no testing decision gate, or update `.analysis/`/`.docs/`.
 
 Load only the routed internal testing capability allowed by the current testing specialist manifest for concrete runner
@@ -11,13 +11,13 @@ and test-workflow guidance.
 
 Use this order:
 
-1. assigned testing Subtask + transient handoff;
+1. assigned testing execution unit + transient handoff;
 2. approved test-plan evidence supplied by Main when required;
 3. relevant production contract/source and current test-runner configuration;
 4. this rule + routed testing capability.
 
 Never read `.docs/`, infer missing product behavior from chat history, modify Jira, or expand parent
-Task scope. Return a blocker when expected behavior/test authority is insufficient.
+functional-slice scope. Return a blocker when expected behavior/test authority is insufficient.
 
 ## Role ownership
 
@@ -72,7 +72,7 @@ tests/integration/<flow>.test.ts
 
 ### E2E/browser
 
-Testing UI only: use the established top-level E2E location when its assigned Subtask explicitly requires browser journey coverage, for example `e2e/` or `tests/e2e/`. Testing Logic must treat these paths as outside its write/run ownership.
+Testing UI only: use the established top-level E2E location when its assigned execution unit explicitly requires browser journey coverage, for example `e2e/` or `tests/e2e/`. Testing Logic must treat these paths as outside its write/run ownership.
 
 ### Fixtures/mocks
 
