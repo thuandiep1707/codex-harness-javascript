@@ -17,7 +17,7 @@ component contracts cannot express required information without it.
 - Do not hand-author custom dialog, menu, select, tabs, combobox, tree, grid, or other complex ARIA
   widgets inside a feature Subtask.
 - If required interaction cannot be expressed by approved primitives, return the dependent behavior to
-  Orchestrator for explicit developer/architecture approval.
+  Main for explicit developer/architecture approval.
 
 ## Buttons and links
 
@@ -65,7 +65,7 @@ Do not add custom key maps, roving tabindex, focus traps/restoration, positive t
 focus logic to recreate an interaction already owned by a primitive.
 
 If approved primitives cannot provide required keyboard/focus behavior, keep that dependent interaction
-blocked and return it to Orchestrator.
+blocked and return it to Main.
 
 ## Tables
 
