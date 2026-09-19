@@ -19,15 +19,15 @@ The workflow is brownfield-first: establish current project truth before documen
 
 ## Execution
 
-The Primary Controller owns runtime transport and user interaction. Documentation reasoning and authoring belong to one dedicated `document` child agent configured to use GPT-5.6 Sol.
+Main owns runtime transport and user interaction. Documentation reasoning and authoring belong to one dedicated `document` child agent configured to use GPT-5.6 Sol.
 
-1. Primary Controller resolves the working project and spawns one Document Agent child with the free-form user objective and available project context.
+1. Main resolves the working project and spawns one Document Agent child with the free-form user objective and available project context.
 2. Keep the same Document Agent child alive across analysis, authoring, review, clarification, revision, approval, and finalization when the runtime permits it.
-3. The Document Agent loads and executes only its allowlisted document capabilities. The Primary Controller must not perform document capability reasoning itself.
-4. If the child returns `needs-clarification`, Primary Controller asks the consolidated questions, then sends the user's answers back to the same child.
-5. If the child returns `ready-for-approval` after review passes with no blocking clarification remaining, Primary Controller presents the reviewed package to the user without mutating target documents.
-6. After explicit user approval, Primary Controller relays that approval to the same child so it can finalize only the approved documentation changes.
-7. When the child returns `finalized` or `blocked`, Primary Controller captures the result and applies the normal child-agent close/verification lifecycle.
+3. The Document Agent loads and executes only its allowlisted document capabilities. Main must not perform document capability reasoning itself.
+4. If the child returns `needs-clarification`, Main asks the consolidated questions, then sends the user's answers back to the same child.
+5. If the child returns `ready-for-approval` after review passes with no blocking clarification remaining, Main presents the reviewed package to the user without mutating target documents.
+6. After explicit user approval, Main relays that approval to the same child so it can finalize only the approved documentation changes.
+7. When the child returns `finalized` or `blocked`, Main captures the result and applies the normal child-agent close/verification lifecycle.
 
 ## Internal capabilities
 
