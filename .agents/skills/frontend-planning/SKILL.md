@@ -5,29 +5,33 @@ description: Analyze frontend requirements and create or reconcile a Jira work g
 
 # Frontend Planning Workflow
 
-This is a user-facing planning-only workflow.
+This is a user-facing planning-only workflow. Main is the runtime Orchestrator.
 
 ## Scope
 
-1. Resolve the working product repository and Jira context in the Primary Controller.
-2. Spawn Brain for requirement analysis, authority readiness, and lightweight project-stack discovery when new/replan work requires it; capture the result, then close/verify the Brain child. Continue only when `analysis-status: ready` and `authority.status: ready`.
-3. Spawn an Orchestrator planning/replanning decision turn with the approved analysis plus Jira context.
-4. Orchestrator returns stable-ID Jira action batches up to the next decision boundary; it does not call Jira directly.
-5. Primary Controller executes those Jira calls exactly and retains confirmed results. Capture/close the Orchestrator child after each decision turn, then rehydrate a fresh Orchestrator from the latest reconciliation report, minimal Jira context, and confirmed action results when another decision is required.
-6. Repeat until the Jira work graph is valid, then capture/close the final Orchestrator turn.
-7. Stop before specialist implementation.
+1. Main resolves the working product repository, execution intent `plan-only`, and current Jira-backed lifecycle entry.
+2. Main dispatches Brain for requirement analysis, authority readiness, and lightweight project-stack discovery when `NEW` or `REPLAN` requires it.
+3. Capture Brain result, close/verify Brain, and continue only when `analysis-status: ready` and `authority.status: ready`.
+4. Main dispatches Scrum Master with operation `planning` or `replan`, execution intent `plan-only`, and the approved analysis.
+5. Scrum Master discovers the current Jira project schema, resolves semantic work roles to actual Jira work types/fields/relationships, creates or reconciles the Jira work graph, and returns compact `jira-work-report`.
+6. Main closes/verifies Scrum Master and validates that the returned work graph is usable for later execution/resume.
+7. Stop before Design, Test Plan, Coding, Testing Logic, or Testing UI execution.
 
-Do not dispatch Design, Test Plan, Coding, Testing Logic, or Testing UI specialists in this workflow.
+There is no Orchestrator child, controller-action loop, or `reconciliation-report` in this workflow.
 
 ## Planning rules
 
-- Decompose `requirement -> user outcomes -> functional slices -> specialist execution units`; resolve actual Jira work types and hierarchy from the current project schema.
-- Do not split primarily by files, components, hooks, or agent roles.
+- Decompose `requirement -> user outcomes -> functional slices -> specialist execution units`.
+- Treat `work-container` as optional grouping/context, not a required Jira issue type.
+- Resolve actual Jira work types, fields, options, relationships, and workflow states from the current project schema.
+- Do not split primarily by files, components, hooks, technical layers, or agent roles.
 - Human-facing Jira content must be Vietnamese; technical identifiers remain exact.
 - Detect project implementation stack from evidence; detection is not permission to adopt a new dependency.
 - Record unresolved technology/architecture decisions instead of defaulting to a library.
-- Only the Primary Controller invokes the Jira connector and native child-agent lifecycle APIs. Orchestrator owns planning decisions only.
+- Main owns workflow/lifecycle decisions and child dispatch. Scrum Master alone owns Jira decomposition/schema-resolution/mutation for this workflow.
 
 ## Output
 
-Return the created/updated Jira work graph, resolved work-type mappings, dependencies, acceptance boundaries, detected implementation-environment evidence, and unresolved decisions. The workflow ends after planning by design.
+Return the created or updated Jira work graph, resolved semantic-role/work-type mappings, dependencies, acceptance boundaries, detected implementation-environment evidence, and unresolved decisions.
+
+The workflow ends after planning by design.
