@@ -38,7 +38,7 @@ Use effects only for external synchronization such as browser APIs, subscription
 
 ## New abstractions
 
-Creating a new project-authored custom hook, Context/Provider, or store that establishes a reusable state contract requires explicit authority in the handoff or developer approval returned through Orchestrator.
+Creating a new project-authored custom hook, Context/Provider, or store that establishes a reusable state contract requires explicit authority in the handoff or developer approval returned through Main.
 
 When proposing one, identify owner, consumers, encapsulated state/effects/APIs, why colocation is insufficient, contract, lifecycle/reset risks, and alternatives. Missing approval blocks only the dependent scope.
 
@@ -54,7 +54,7 @@ Examples:
 - route state-management capability only when the assigned architecture requires URL/client/server-state reasoning;
 - do not default to Zustand, TanStack Query, Redux, Context, or another library when evidence/authority is absent.
 
-If server-state or client-state architecture is unresolved, return that decision to Orchestrator rather than selecting a familiar package.
+If server-state or client-state architecture is unresolved, return that decision to Main rather than selecting a familiar package.
 
 ## Browser/runtime isolation
 
