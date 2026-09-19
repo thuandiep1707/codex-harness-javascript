@@ -146,7 +146,7 @@ Detection is not technology selection. Missing evidence must not become a defaul
 
 Brain records evidence-backed implementation-environment facts in `analysis-package.yaml`.
 
-Main combines:
+For durable product work, Main combines:
 
 ```text
 approved Brain analysis
@@ -155,6 +155,8 @@ approved Brain analysis
 + specialist manifest allowlist
 = smallest valid routed capability set
 ```
+
+For developer self-verification, Main routes only from the transient `verification-handoff`, current Test Plan artifact when applicable, and the verification role's manifest. Scrum Master/Jira state does not decide test type or self-test scope.
 
 Detection is not dependency-adoption authority. Do not install, upgrade, replace, or standardize a dependency merely because it was detected.
 
@@ -211,7 +213,8 @@ Internal execution must use Codex native subagent/multi-agent delegation from Ma
 - Never create, fork, or open a user-visible chat/thread as a substitute for internal delegation.
 - A transport error/timeout is not proof that a native spawn had no side effect.
 - Retry a delegation up to **5 total attempts** only when the prior attempt is confirmed side-effect-free.
-- Permit at most one active child for the same `execution-unit + context-version + role` dispatch identity.
+- Permit at most one active durable-work child for the same `execution-unit + context-version + role` dispatch identity.
+- For Test Plan/Testing self-verification, use `coding-execution-key + context-version + source-state + role` as the dispatch identity so unchanged source cannot create duplicate verification children.
 - If absence cannot be proven after an ambiguous spawn result, block rather than blind-spawn a duplicate.
 - A failed spawn is not authorization for Main to execute the delegated child role itself.
 
