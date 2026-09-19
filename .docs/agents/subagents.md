@@ -24,7 +24,7 @@ Lifecycle state remains separate from execution intent.
 | Scrum Master | `scrum-master` | Create/reconcile Jira work graph and perform authorized durable Jira mutations; return compact Jira work state to Main |
 | Design | `design` | Use connected design provider and return design evidence |
 | Test plan | `test-plan` | Produce the bounded risk-based test-plan result and testing route |
-| Coding | `coding` | Implement one bounded Coding Subtask using routed internal capabilities |
+| Coding | `coding` | Implement one bounded Coding execution unit using routed internal capabilities |
 | Testing Logic | `testing-logic` | Implement/run bounded unit/component/integration tests without a real browser |
 | Testing UI | `testing-ui` | Execute bounded real-browser UI validation and Playwright tests |
 
@@ -61,7 +61,7 @@ Main should retain only compact Jira execution state needed for routing, such as
 
 Internal capabilities live under `.agents/capabilities/**`, outside Codex public workflow discovery.
 
-Brain may detect current framework/UI/icon/state/testing evidence. Main combines approved analysis, current Jira work state, Subtask trigger, and specialist manifest to select the smallest valid capability set.
+Brain may detect current framework/UI/icon/state/testing evidence. Main combines approved analysis, current Jira work state, execution-unit trigger, and specialist manifest to select the smallest valid capability set.
 
 Specialist rule:
 
@@ -73,15 +73,17 @@ manifest allowlist
 
 Missing/conflicting project evidence remains unresolved; do not invent a default dependency or library.
 
-## Jira hierarchy
+## Jira work model
 
 ```text
-Feature context
-  -> Task: functional slice
-      -> Subtask: specialist execution unit
+work-container   # optional grouping/context
+  -> functional-slice   # scope + acceptance boundary
+      -> execution-unit # specialist-owned executable work
 ```
 
-Parent Tasks remain scope/acceptance boundaries. Specialists execute Subtasks only.
+These are harness semantics, not Jira issue-type names. Scrum Master discovers the current project's work types, fields, options, relationships, and workflow states, then maps the semantic work model to what that project actually supports.
+
+Functional slices remain scope/acceptance boundaries. Specialists execute execution units only.
 
 Scrum Master creates or reconciles the Jira graph. Main decides execution order from confirmed Jira work state and dependency readiness.
 
