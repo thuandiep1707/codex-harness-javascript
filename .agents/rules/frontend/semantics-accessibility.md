@@ -3,7 +3,7 @@
 Load this rule only when the frontend router matches interactive markup, navigation, headings, forms,
 accessible names, ARIA state, icon-only controls, or tables.
 
-The assigned Jira Subtask, transient handoff, approved design evidence, and installed primitive
+The assigned Jira execution unit, transient handoff, approved design evidence, and installed primitive
 contracts own allowed behavior. This rule does not authorize new product interaction or a local plan.
 
 ## Semantic baseline
@@ -15,7 +15,7 @@ component contracts cannot express required information without it.
 - Prefer approved native/shadcn primitives for composite interactions.
 - Do not duplicate/override semantics or ARIA already supplied by the primitive.
 - Do not hand-author custom dialog, menu, select, tabs, combobox, tree, grid, or other complex ARIA
-  widgets inside a feature Subtask.
+  widgets inside a feature execution unit.
 - If required interaction cannot be expressed by approved primitives, return the dependent behavior to
   Main for explicit developer/architecture approval.
 
