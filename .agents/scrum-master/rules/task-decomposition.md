@@ -41,7 +41,7 @@ Only execution units are executable by specialists. For each functional slice cr
 
 Do not create empty or fake execution units merely to make every functional slice have the same shape. When a specialist category is unnecessary, omit it and record the reason on the functional slice when that reason would otherwise be ambiguous.
 
-Do not pre-create Testing Logic or Testing UI execution units when their need is not yet established. When a confirmed Test Plan later returns `testing-route: logic|ui|both`, Scrum Master may materialize exactly those required testing execution units through `progress-sync`; `none` creates no testing unit. Test Plan owns the classification and Scrum Master must not reinterpret it.
+Test Plan, Testing Logic, and Testing UI are transient developer self-verification roles in the frontend delivery workflow. Do not create Jira execution units for those roles. Their verification evidence remains attached to the owning Coding execution unit through Main's orchestration.
 
 Scrum Master may record the intended specialist role for an execution unit but does not dispatch that specialist and does not select its internal capability packages.
 
