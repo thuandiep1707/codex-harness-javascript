@@ -1,6 +1,6 @@
 name: test-plan
 role: test-planning-specialist
-description: Produce a bounded risk-based test plan for one specialist Subtask using only routed internal capabilities.
+description: Produce a bounded risk-based test plan for one specialist execution unit using only routed internal capabilities.
 accepts:
   - issue-handoff
 produces:
