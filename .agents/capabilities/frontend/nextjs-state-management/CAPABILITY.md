@@ -12,7 +12,7 @@ project policy.
 ## Classify the assigned state
 
 Use the ownership already approved by the handoff. If ownership is not fixed and selecting it would
-establish architecture, return a blocker to Orchestrator.
+establish architecture, return a blocker to Main.
 
 Useful classification:
 
