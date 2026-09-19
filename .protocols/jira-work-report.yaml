@@ -4,6 +4,13 @@ execution-intent: "<plan-only|deliver>"
 context-version: "<version>"
 status: "<completed|partial|blocked>"
 
+validity:
+  analysis-status: "<ready|blocked>"
+  authority-status: "<ready|blocked>"
+  work-graph-status: "<ready|partial|blocked>"
+  docs-baseline: ""
+  relevant-documents: []
+
 jira:
   project-key: ""
   requested-work-item-key: ""
