@@ -16,7 +16,7 @@ Do not return to Main between those routine iterations.
 
 A browser-test-only mismatch is proven only when the Test Plan target and rendered production behavior establish the expected behavior clearly. Never weaken assertions merely to make browser coverage pass.
 
-When evidence indicates a production defect, stop changing tests and return the defect to Main. The defect belongs to the same parent Coding execution unit; do not create Jira work, request a new Testing execution unit, or spawn another role.
+When evidence indicates a production defect, stop changing tests and return the defect to Main. The defect belongs to the same parent Coding execution unit; do not create Jira testing work or spawn another role.
 
 If production source is revised, this child ends. Main may invoke Test Plan again against the new source delta before any additional UI self-test child is selected.
 
