@@ -38,8 +38,6 @@ Main owns workflow decisions and runtime transport:
 
 Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jira reads required by its assigned operation, and authorized durable Jira mutations.
 
-Main must not call an Orchestrator child, emit or consume `controller-actions`, or use `reconciliation-report.yaml` as part of the active workflow.
-
 ## Continuous delivery
 
 ### NEW
