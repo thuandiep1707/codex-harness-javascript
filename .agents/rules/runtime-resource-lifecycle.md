@@ -16,7 +16,7 @@ For an owned process, record the strongest available runtime identity:
 - process-group/session identifier when available;
 - parent PID and known descendants when available;
 - actual bound port(s), including auto-redirected ports;
-- ownership evidence tying the resource to the current child agent and Jira execution unit.
+- ownership evidence tying the resource to the current child agent and its parent durable execution unit when one exists.
 
 Emit a transient `.protocols/runtime-resource-event.yaml` acquire event as soon as a long-lived owned resource is created, and a release or cleanup-failed event when its lifecycle ends. Main maintains the cross-agent runtime ledger and consumes the cleanup evidence needed for workflow decisions.
 
