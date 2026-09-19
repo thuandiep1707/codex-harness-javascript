@@ -4,7 +4,7 @@ Turn the assigned bounded `issue-handoff` into provider instructions without bec
 
 ## Build the provider packet
 
-Include only fields needed by the current Design Subtask:
+Include only fields needed by the current Design execution unit:
 
 | Field | Include | Exclude |
 | --- | --- | --- |
