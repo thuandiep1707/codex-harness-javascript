@@ -12,8 +12,8 @@
 - Main owns dependency routing, capability routing, specialist dispatch, reconciliation, write-scope leases, child lifecycle, and runtime cleanup supervision.
 - Brain owns requirement analysis, authority readiness, project-stack discovery, targeted revalidation, and final acceptance.
 - Scrum Master owns Jira schema discovery, semantic work-graph creation/reconciliation, compact Jira state synchronization, and authorized durable Jira mutations.
-- Five isolated specialists: Design, Test Plan, Coding, Testing Logic, Testing UI.
-- Specialist handoff carries only bounded scope plus routed internal-capability identifiers.
+- Five isolated specialist roles: Design and Coding own durable product execution; Test Plan, Testing Logic, and Testing UI are transient developer self-verification roles.
+- Durable product work uses bounded `issue-handoff`; developer self-verification uses bounded `verification-handoff` with relevant docs/source evidence.
 - Specialists return structured results directly to Main and do not mutate Jira.
 - Removed baseline hard-locks that assumed shadcn/Lucide/Tailwind/TanStack merely because control-repo knowledge exists.
 - Jira is durable work + execution-context truth.
@@ -53,9 +53,12 @@ NEW/REPLAN
 -> close Brain
 -> Scrum Master planning/replan
 -> close Scrum Master
--> Main routes dependency-ready execution units
--> specialist execution + Main reconciliation
--> Scrum Master progress-sync when durable Jira persistence is required
+-> Main routes dependency-ready durable execution units
+-> Design/Coding execution + Main reconciliation
+-> after Coding change: transient Test Plan from relevant docs + actual source diff
+-> transient Testing Logic/UI only when selected
+-> production defect returns to the same Coding execution unit
+-> Scrum Master progress-sync only when durable Coding result/blocker/revision persistence is required
 -> Brain acceptance
 -> Scrum Master finalize when accepted
 -> terminal report
@@ -117,7 +120,7 @@ PAUSE
 
 - bounded role-specific execution;
 - no Jira mutation;
-- no direct authoritative product-document access;
+- no direct authoritative product-document access except Test Plan's explicitly handoff-listed relevant documents for self-verification planning;
 - no scope expansion without returning a blocker to Main.
 
 ## Extension direction
