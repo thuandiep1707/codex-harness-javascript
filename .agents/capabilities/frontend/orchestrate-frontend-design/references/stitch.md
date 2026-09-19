@@ -1,6 +1,6 @@
 # Google Stitch provider adapter
 
-Use Google Stitch only when the assigned Design Subtask routes this provider and a live Stitch MCP/plugin is already available. This adapter maps the bounded Jira-derived handoff to provider actions; it does not create a second workflow, progress store, or implementation plan.
+Use Google Stitch only when the assigned Design execution unit routes this provider and a live Stitch MCP/plugin is already available. This adapter maps the bounded Jira-derived handoff to provider actions; it does not create a second workflow, progress store, or implementation plan.
 
 Verified against Google Labs Code Stitch SDK/skills on 2026-07-17. Live schemas, authentication, provider support, and account capabilities can change, so discover them before mutation.
 
@@ -16,7 +16,7 @@ Verified against Google Labs Code Stitch SDK/skills on 2026-07-17. Live schemas,
 Before selecting a Stitch action:
 
 1. inspect live Stitch tools exposed to the active Design specialist;
-2. confirm project discovery/creation, screen generation/retrieval/edit/variant capabilities actually required by the Subtask;
+2. confirm project discovery/creation, screen generation/retrieval/edit/variant capabilities actually required by the execution unit;
 3. confirm artifact types, image/HTML support, device-type enums, and design-system capabilities before using them;
 4. preserve discovered tool names/schema facts only as transient/provider evidence returned in the Design report;
 5. never encode live provider tool names as permanent application policy.
@@ -44,7 +44,7 @@ Map failures conservatively:
 ## Start or resume provider project
 
 - Reuse an explicit Stitch project when the handoff references continuing work.
-- Create a project only when the assigned Design Subtask authorizes a new provider workspace.
+- Create a project only when the assigned Design execution unit authorizes a new provider workspace.
 - Preserve canonical project/screen IDs returned by the provider.
 - Retrieve current target screens before editing so mutations address the correct artifact.
 
