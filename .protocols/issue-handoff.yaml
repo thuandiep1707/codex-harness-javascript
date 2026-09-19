@@ -3,7 +3,7 @@ lifecycle-entry: "<new|resume|replan>"
 execution-intent: "deliver"
 working-project: "<project-name>"
 context-version: "<version>"
-target-agent: "<design|test-plan|coding|testing-logic|testing-ui>"
+target-agent: "<design|coding>"
 jira:
   work-container-key: ""
   functional-slice-key: "<functional-slice-key>"
