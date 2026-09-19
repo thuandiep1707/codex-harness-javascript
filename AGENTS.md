@@ -284,13 +284,14 @@ For `new`:
 4. Scrum Master discovers the current Jira project schema, creates/reconciles the semantic work graph, performs authorized Jira mutations, and returns compact `jira-work-report`.
 5. Main closes/verifies Scrum Master and routes the smallest valid internal capabilities for dependency-ready execution units.
 6. Main dispatches dependency-ready specialists, respecting runtime capacity and write-scope leases.
-7. For each returned specialist result, Main verifies assigned scope, protocol/evidence validity, source diff, runtime cleanup, and child closure.
-8. When durable Jira persistence is required at an execution boundary, Main dispatches Scrum Master `progress-sync` with only confirmed evidence; after the report returns, Main closes/verifies Scrum Master.
-9. Main repeats dependency routing until the affected functional-slice scope is acceptance-ready.
-10. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
-11. If Brain returns `revision-required` or `blocked`, Main keeps the Jira scope non-terminal and routes only the affected scope through revalidation/replan/revision.
-12. If Brain returns `accepted`, Main dispatches Scrum Master `finalize` with the current acceptance report.
-13. Main reports `accepted` only after Scrum Master confirms the project-valid terminal/completed Jira transition and all child/runtime cleanup is resolved.
+7. For each returned specialist result, Main verifies assigned scope, context-version, protocol/evidence validity, source diff, runtime cleanup, and child closure.
+8. When Test Plan returns `testing-route: logic|ui|both`, Main dispatches Scrum Master `progress-sync` with that confirmed route so Scrum Master can materialize exactly the required testing execution units in Jira; `none` materializes no testing unit. Main must not reclassify the route or dispatch Testing Logic/UI without a confirmed execution unit.
+9. When other confirmed execution evidence crosses a durable Jira boundary, Main dispatches Scrum Master `progress-sync` with only confirmed evidence; after the report returns, Main closes/verifies Scrum Master.
+10. Main repeats dependency routing until the affected functional-slice scope is acceptance-ready.
+11. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
+12. If Brain returns `revision-required` or `blocked`, Main keeps the Jira scope non-terminal and routes only the affected scope through revalidation/replan/revision.
+13. If Brain returns `accepted`, Main dispatches Scrum Master `finalize` with the current acceptance report.
+14. Main reports `accepted` only after Scrum Master confirms the project-valid terminal/completed Jira transition and all child/runtime cleanup is resolved.
 
 For `resume`:
 
