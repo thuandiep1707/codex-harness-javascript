@@ -349,7 +349,7 @@ One child agent = one configured role. Never execute another role. Never invent 
 | `testing-logic` | `.agents/specialists/testing-logic/` | Unit/component/integration tests without a real browser |
 | `testing-ui` | `.agents/specialists/testing-ui/` | Real-browser UI validation and Playwright execution |
 
-Testing routing: real browser required -> `testing-ui`; otherwise -> `testing-logic`.
+Test-plan owns testing classification and returns exactly one route: `none|logic|ui|both`. Orchestrator routes it mechanically and never reclassifies from source or Git diff.
 
 Each module's `manifest.yaml` is authoritative for inputs, outputs, context allowlist, rules, external/runtime capabilities, and **internal-capability allowlist**. `AGENT.md` is the role bootstrap.
 
