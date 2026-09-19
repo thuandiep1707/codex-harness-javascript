@@ -57,13 +57,13 @@ resource disposal, accessibility, and performance.
 
 Return security/threat gaps to Main so Main can route Brain review when required; do not load Brain skills yourself.
 
-### 5. Order implementation inside the current Subtask
+### 5. Order implementation inside the current execution unit
 
 Use dependency order internally, for example artifact reproducibility → adapter contract → runtime
 isolation → module integration → route/template composition → validation/rollback. This is execution
 sequencing, not a second task-management system.
 
-Do not persist an implementation plan/progress file. If the assigned Coding Subtask contains multiple
+Do not persist an implementation plan/progress file. If the assigned Coding execution unit contains multiple
 independently acceptable integration outcomes or cannot be safely bounded, return a granularity
 blocker to Main so Main can request the required Scrum Master replan instead of splitting Jira work itself.
 
