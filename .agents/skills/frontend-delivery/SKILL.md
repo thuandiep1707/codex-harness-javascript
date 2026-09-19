@@ -50,14 +50,18 @@ Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jir
 6. Main routes the smallest allowed internal-capability set for each selected execution unit and composes bounded `issue-handoff` objects.
 7. Before writable specialist dispatch, Main captures the working-project source baseline, reserves exact allowed write scope, and prevents overlapping writable leases.
 8. Main dispatches dependency-ready specialists within runtime/write-scope capacity. A retry is allowed only after proving the prior attempt had no spawn side effect.
-9. For each returned specialist result, Main verifies assigned scope, context-version, required evidence, source diff, runtime cleanup, and child closure before accepting the result.
-10. When Test Plan returns `testing-route: logic|ui|both`, Main determines the exact existing execution-unit dependencies that each testing unit must wait for, then dispatches Scrum Master `progress-sync` with the confirmed Test Plan result, parent functional-slice key, route, and dependency keys. Scrum Master materializes exactly the required testing execution units; `none` materializes no testing unit. Main never reclassifies the route or dispatches Testing Logic/UI without a confirmed Jira execution unit.
-11. When other confirmed execution evidence crosses a durable Jira boundary, Main dispatches Scrum Master `progress-sync` with only the confirmed result/blocker/revision/workflow-state evidence. Close/verify Scrum Master after its report returns.
-12. Repeat dependency routing until the affected functional-slice scope is acceptance-ready.
-13. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
-14. If Brain returns `blocked` or `revision-required`, keep the functional-slice boundary non-terminal and route only the affected scope through revalidation/replan/revision.
-15. If Brain returns `accepted`, Main dispatches Scrum Master `finalize` with the current acceptance report.
-16. Report workflow completion only after Scrum Master confirms the project-valid terminal/completed Jira transition and all child/runtime cleanup is resolved.
+9. For each returned durable-work specialist result, Main verifies assigned scope, context-version, required evidence, source diff, runtime cleanup, and child closure before accepting it.
+10. After each Coding result, Main composes one transient `verification-handoff` for the same Coding execution unit from the handoff-listed relevant docs, docs baseline, actual source baseline/current state/diff, implementation report, and still-valid prior verification evidence.
+11. Main dispatches Test Plan once for the current `context-version + source-state`. Test Plan alone decides `testing-route: none|logic|ui|both` and the bounded self-test scope.
+12. Main follows that route mechanically: `none` spawns no testing child; `logic` spawns one Testing Logic child; `ui` spawns one Testing UI child; `both` spawns at most one of each for that source state. Scrum Master is not involved in this self-test stage.
+13. Testing children keep routine test-only diagnose/fix/rerun work inside the same child. Main does not respawn Test Plan/Testing while source state is unchanged.
+14. If testing finds production defects, Main collects the reports for that source state and routes one bounded revision back to the same Coding execution unit. After production source or relevant product context changes, rerun Test Plan only for the affected delta.
+15. Persist Coding completion through Scrum Master `progress-sync` only after the current Test Plan route is `none` or all selected self-tests are satisfied.
+16. Repeat dependency routing until the affected functional-slice scope is acceptance-ready.
+17. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
+18. If Brain returns `blocked` or `revision-required`, keep the functional-slice boundary non-terminal and route only the affected scope through revalidation/replan/revision.
+19. If Brain returns `accepted`, Main dispatches Scrum Master `finalize` with the current acceptance report.
+20. Report workflow completion only after Scrum Master confirms the project-valid terminal/completed Jira transition and all child/runtime cleanup is resolved.
 
 ### RESUME
 
@@ -67,7 +71,7 @@ Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jir
 4. Main selects the next dependency-ready execution unit from confirmed Jira state.
 5. Continue specialist routing, reconciliation, and durable Jira synchronization through the same Main/Scrum Master boundaries as normal delivery.
 
-A new chat or developer handoff is not a reason to rerun Brain or planning when durable context remains valid.
+A new chat or developer handoff is not a reason to rerun Brain or planning when durable context remains valid. If a resumed Coding unit has unverified source changes, reconstruct the bounded verification evidence and rerun transient Test Plan rather than creating Jira testing work.
 
 ### REPLAN
 
