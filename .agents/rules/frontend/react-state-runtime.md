@@ -6,7 +6,7 @@ The transient Jira handoff, routed internal capabilities, and supplied approved 
 
 ## Framework evidence
 
-Before changing framework-sensitive behavior, inspect the detected framework/runtime, live project configuration/dependencies, and installed documentation relevant to the Subtask. Do not assume Next.js semantics in a non-Next.js project or rely on remembered behavior from another framework version.
+Before changing framework-sensitive behavior, inspect the detected framework/runtime, live project configuration/dependencies, and installed documentation relevant to the execution unit. Do not assume Next.js semantics in a non-Next.js project or rely on remembered behavior from another framework version.
 
 ## Server/Client boundary
 
@@ -74,4 +74,4 @@ Use the installed framework documentation for dynamic-loading mechanics and `asy
 
 ## Completion
 
-Return framework boundary decisions, state owner, relevant effect/abstraction decisions, routed state/data capabilities used, approvals, dynamic-boundary evidence, validation, and unresolved dependent scope in the implementation report. Do not invent missing architecture to report the Subtask complete.
+Return framework boundary decisions, state owner, relevant effect/abstraction decisions, routed state/data capabilities used, approvals, dynamic-boundary evidence, validation, and unresolved dependent scope in the implementation report. Do not invent missing architecture to report the execution unit complete.
