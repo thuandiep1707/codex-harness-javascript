@@ -12,7 +12,7 @@ Do not scan unrelated capability packages.
 
 Own Jira work-graph operations only:
 
-- create or reconcile Feature, Task, and specialist Subtask structure from approved workflow input;
+- create or reconcile semantic work-container, functional-slice, and execution-unit structure from approved workflow input, mapped to the current Jira project schema;
 - read the minimal Jira context needed for the requested operation;
 - persist only authorized durable Jira updates;
 - return a compact Jira work report to Main.
