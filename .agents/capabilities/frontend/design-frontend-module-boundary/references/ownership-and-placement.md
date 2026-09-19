@@ -36,7 +36,7 @@ Return architecture/replan evidence to the parent workflow when the proposal wou
 - introduce a dependency direction not already approved; or
 - require source access, package installation, external mutation, or other authority beyond current mode.
 
-Do not inspect historical `.analysis` reports as product authority and do not ask for an `implementation plan` gate. Brain owns architecture analysis/revalidation; Orchestrator owns Jira planning/replanning.
+Do not inspect historical `.analysis` reports as product authority and do not ask for an `implementation plan` gate. Brain owns architecture analysis/revalidation; Scrum Master owns Jira planning/replanning mutations, while Main owns workflow decisions.
 
 ## Placement map format
 
@@ -47,6 +47,6 @@ For every proposed responsibility, return:
 
 Conclude with exactly one status:
 
-- `ready`: ownership is supported by existing authority/evidence and can flow to Orchestrator planning/execution;
+- `ready`: ownership is supported by existing authority/evidence and can flow to Main orchestration and, when Jira reconciliation is required, Scrum Master planning/replanning;
 - `architecture-approval-required`: a new or materially changed boundary requires higher authority;
 - `more-evidence-required`: ownership cannot yet be decided safely.
