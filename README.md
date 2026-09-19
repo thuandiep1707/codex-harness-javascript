@@ -5,7 +5,7 @@
 [![GitHub Template](https://img.shields.io/badge/GitHub-Template-181717?logo=github)](https://github.com/thuandiep1707/codex-harness-javascript/generate)
 [![JavaScript](https://img.shields.io/badge/JavaScript-Harness-F7DF1E?logo=javascript&logoColor=000)](https://github.com/thuandiep1707/codex-harness-javascript)
 
-A workflow-driven multi-agent harness for OpenAI Codex that turns product docs and current source into Jira-backed planning, implementation, testing, pause/resume handoff, execution-resource cleanup, and final acceptance.
+A workflow-driven multi-agent harness for OpenAI Codex that turns product docs and current source into Jira-backed planning, implementation, developer self-verification, pause/resume handoff, execution-resource cleanup, and final acceptance.
 
 **Public workflows:** `$frontend-delivery` · `$frontend-planning` · `$docs-development-ready`
 
@@ -102,7 +102,7 @@ $frontend-delivery
 Implement the recruitment scope from the approved product docs end-to-end.
 ```
 
-`$frontend-delivery` does **not** stop just because the Jira work graph was created. It continues through dependency-ready specialist work, testing, reconciliation, runtime cleanup, child-agent closure, and final acceptance unless it reaches a real blocker, approval gate, or explicit pause.
+`$frontend-delivery` does **not** stop just because the Jira work graph was created. It continues through dependency-ready durable work, transient developer self-verification, reconciliation, runtime cleanup, child-agent closure, and final acceptance unless it reaches a real blocker, approval gate, or explicit pause.
 
 ## Example
 
@@ -129,7 +129,15 @@ schema discovery + Jira work graph
 Main
 capability + dependency routing
         ↓
-Test Plan / Design / Coding / Testing
+Design / Coding durable work
+        ↓
+Coding source change
+        ↓
+Test Plan (bounded relevant docs + actual diff)
+        ↓
+none | logic | ui | both
+        ↓
+transient Testing Logic / Testing UI when selected
         ↓
 Main reconciliation
         ↓
@@ -307,7 +315,7 @@ Scrum Master discovers the current project's available Jira work types, fields, 
 
 It does not start by splitting a feature into Design / Coding / Testing buckets or by file/component ownership.
 
-Routine triage, diagnosis, retry, and test-only iteration stay inside the owning specialist lifecycle. They do not become new Jira execution units unless the discovered work is independently actionable and needs its own specialist ownership/scope.
+Test Plan, Testing Logic, and Testing UI are transient developer self-verification attached to the owning Coding execution unit. They never become Jira execution units in the bundled frontend delivery workflow. Routine test-only diagnose/fix/rerun stays inside the same Testing child.
 
 Completing all executable execution units makes the functional-slice boundary `acceptance-ready`; this is a harness semantic state, not a literal Jira status. Brain performs final acceptance first; only an accepted result followed by finalization may transition that boundary through a project-valid transition to the project's terminal/completed workflow state.
 
@@ -372,12 +380,12 @@ Runtime-resource events and child/resource ledgers are transient control-plane e
 | `brain` | Requirement reasoning, authority readiness, architecture analysis, project-stack discovery, revalidation, final acceptance |
 | `scrum-master` | Jira schema discovery, work-graph creation/reconciliation, compact Jira state sync, and authorized durable Jira mutations |
 | `design` | Bounded external design-provider execution |
-| `test-plan` | Acceptance coverage and authoritative testing route: `none | logic | ui | both` |
+| `test-plan` | Decide the smallest developer self-verification route/scope from bounded relevant docs plus the actual Coding source change |
 | `coding` | Bounded production implementation using only routed capabilities |
-| `testing-logic` | Unit/component/integration test work without a real browser |
-| `testing-ui` | Playwright / real-browser UI validation and browser-test work |
+| `testing-logic` | Transient unit/component/integration self-tests selected by Test Plan for the parent Coding execution unit |
+| `testing-ui` | Transient Playwright/real-browser self-tests selected by Test Plan for the parent Coding execution unit |
 
-Specialists do not own Jira mutation, do not read the full product truth independently, and do not expand their scope without returning a blocker to Main. Test Plan owns testing classification; Main routes `none | logic | ui | both` mechanically rather than reclassifying from source or Git diff.
+Specialists do not own Jira mutation. Design/Coding/Testing do not read product docs directly; Test Plan may read only the relevant document paths explicitly listed in its `verification-handoff` plus the bounded actual source diff/current source. Test Plan owns `none | logic | ui | both`; Main follows that route mechanically and Scrum Master is not involved in self-test routing.
 
 ## Repository Structure
 
