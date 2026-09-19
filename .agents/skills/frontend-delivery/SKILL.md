@@ -39,8 +39,8 @@ Keep one Orchestrator child alive across the active delivery workflow. Do not re
 
 For `NEW`:
 
-1. Primary Controller spawns Brain for bounded requirement analysis and project-stack discovery.
-2. Capture Brain result, then explicitly close and verify the Brain child.
+1. Primary Controller spawns Brain for bounded requirement analysis, authority readiness, and project-stack discovery.
+2. Capture Brain result, then explicitly close and verify the Brain child. Continue only when both `analysis-status: ready` and `authority.status: ready`; otherwise stop before Orchestrator planning/execution with the reported blocker.
 3. Primary Controller spawns one Orchestrator child in planning mode with execution intent `deliver` and supplies the approved analysis/Jira context.
 4. Orchestrator returns `status: awaiting-controller` with exact `jira-call` and/or `dispatch-specialist` actions as needed.
 5. Primary Controller executes those actions without changing their intent/payload and sends confirmed action results back to the same Orchestrator child.
@@ -49,9 +49,9 @@ For `NEW`:
 8. Close and verify the Orchestrator child.
 9. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting the workflow complete.
 
-For `RESUME`, skip Brain analysis and Orchestrator decomposition when Jira validity markers and relevant `.docs` baseline remain valid. Spawn/keep one Orchestrator child for the resumed workflow and continue through the same controller-action loop.
+For `RESUME`, skip Brain analysis and Orchestrator decomposition only when Jira validity markers, authority readiness, and the relevant `.docs` baseline remain valid. If authority or relevant contract evidence is stale, run targeted Brain revalidation before any specialist dispatch.
 
-For `REPLAN`, revalidate only changed relevant requirements and replan only affected Jira scope, then continue through the same controller-action loop.
+For `REPLAN`, revalidate only changed relevant requirements and authority for the affected scope. Invalidate only affected Test-plan/validation evidence, replan only that Jira delta, then continue through the same controller-action loop.
 
 For `PAUSE`, stop new specialist dispatch, let the Primary Controller collect/clean active runtime execution, then use the active Orchestrator (or spawn one in pause mode if none is usable) to decide required Jira result/handoff calls. Report a safe pause only after those calls and cleanup are confirmed.
 

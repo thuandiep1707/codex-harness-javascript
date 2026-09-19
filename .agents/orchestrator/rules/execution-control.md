@@ -67,6 +67,8 @@
 - Use only concise durable Jira execution notes: `[BLOCKER]`, `[RESULT]`, `[REVISION]`, `[HANDOFF]`. Never store
   hidden reasoning or routine step-by-step activity.
 - Testing type is owned by Test-plan. Route `none|logic|ui|both` exactly; never reclassify from source or Git diff.
+- Before testing dispatch, require Test-plan `plan-status: ready`, matching current `context-version`, and explicit coverage for every assigned acceptance criterion. Material contract/scope changes invalidate only affected plan/evidence; revalidate that delta before continuing.
+- Treat validation evidence as valid only for the context and covered source state it records. A green suite proves only criteria listed in `acceptance-coverage`; never infer uncovered acceptance from pass counts.
 - Reject output that violates assigned scope, context boundary, protocol, or required evidence.
 - Jira assignee plus workflow status is execution ownership. Do not invent a second durable lock or ownership
   database. Child/resource ledgers are transient runtime supervision owned by the Primary Controller.

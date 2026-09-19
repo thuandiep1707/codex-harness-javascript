@@ -1,5 +1,6 @@
 kind: reconciliation-report
 workflow-mode: "<planning|resume|pause>"
+context-version: "<version>"
 jira:
   feature-key: "<feature-key>"
   requested-task-key: ""

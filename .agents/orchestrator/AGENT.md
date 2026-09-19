@@ -55,17 +55,17 @@ Internal capabilities are private implementation knowledge, not user-facing `$` 
 
 Orchestrator decides which specialist is required and composes its bounded handoff. The Primary Controller performs native dispatch and child lifecycle operations.
 
-For testing, do not classify or reclassify test type. Route exactly from the Test-plan artifact:
+For testing, do not classify or reclassify test type. Require a `plan-status: ready` Test-plan artifact whose `context-version` matches the current affected scope and whose acceptance coverage contains every assigned acceptance criterion. Route exactly from that artifact:
 - `none` -> no testing specialist;
 - `logic` -> `testing-logic`;
 - `ui` -> `testing-ui`;
 - `both` -> both testing specialists.
 
-Do not use source or Git diff to override this route. Test-plan classification does not depend on Coding completion.
+Do not use source or Git diff to override this route. Test-plan classification does not depend on Coding completion. A material acceptance/scope change invalidates only affected Test-plan coverage and downstream evidence; dispatch Test-plan revalidation for that delta before further testing. A production implementation change with unchanged contract does not by itself require Test-plan replanning.
 
 For each specialist result supplied back by the Primary Controller:
 
-1. validate scope, evidence, and protocol compliance;
+1. validate scope, evidence, protocol compliance, and evidence freshness against the current `context-version`/covered source state; never treat aggregate green counts as proof for acceptance criteria absent from the report's `acceptance-coverage`;
 2. consume runtime-resource cleanup and child-close evidence supplied by the controller;
 3. request any required Jira `[RESULT]`, `[BLOCKER]`, `[REVISION]`, or status mutation through `jira-call` controller actions;
 4. unblock downstream work only after the relevant Jira call is confirmed and runtime cleanup is not unresolved;

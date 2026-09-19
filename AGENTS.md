@@ -89,6 +89,23 @@ For every frontend workflow request, identify the working project and resolve th
 
 A new chat or developer handoff is normally `resume`, not `new`.
 
+## Authority and evidence validity
+
+Before planning or specialist execution, Brain analysis/revalidation must establish that the current product truth is executable:
+
+- the authoritative document set is resolved;
+- required approval/readiness is satisfied by project evidence;
+- no unresolved requirement/contract contradiction blocks the requested scope.
+
+`analysis-status: ready` is valid only when `authority.status: ready`. If authority is blocked, stop before Orchestrator planning/execution and surface the blocker instead of spending Coding/Testing work against an unsettled contract.
+
+Testing evidence is scoped evidence, not a permanent global PASS:
+
+- Test-plan must cover every acceptance criterion in the assigned scope and match the current `context-version` before testing specialists are dispatched.
+- A material acceptance/scope change invalidates only the affected Test-plan coverage and downstream evidence; revalidate that delta before continuing.
+- A relevant source change invalidates only evidence whose covered behavior/source state may have changed.
+- A green suite proves only the acceptance criteria explicitly covered by its test report. Never infer uncovered acceptance from aggregate pass counts.
+
 ### Pause intent detection
 
 When active Jira-backed work exists, treat explicit natural-language intent to stop, pause, hand off, or continue later as `pause`. The user does not need a special command. Phrases such as `dừng lại`, `tạm dừng`, `dừng công việc`, `để mai làm tiếp`, or `bàn giao ở đây` are examples, not an exhaustive command list.
@@ -228,8 +245,8 @@ The runtime resource ledger is transient. Do not persist it as a product-reposit
 For `new`:
 
 1. Primary Controller spawns Brain with user objective, working-project identity, relevant `.docs`, and bounded source/config evidence.
-2. Brain returns `analysis-package`, including `implementation-environment` evidence when relevant.
-3. Primary Controller captures the result, then closes/verifies the Brain analysis child.
+2. Brain returns `analysis-package`, including authority readiness and `implementation-environment` evidence when relevant.
+3. Primary Controller captures the result, then closes/verifies the Brain analysis child. If `analysis-status` or `authority.status` is not `ready`, stop before Orchestrator planning/execution and report the blocker.
 4. Primary Controller spawns one Orchestrator child with lifecycle `planning` and execution intent `deliver`, supplying approved analysis and Jira context.
 5. Orchestrator decides Jira Feature/Task/Subtask operations and dependency-ready specialist work, returning exact `controller-actions` with `status: awaiting-controller` whenever runtime execution is required.
 6. Primary Controller executes Jira calls and specialist dispatches exactly as requested, returning confirmed results to the same Orchestrator child.
@@ -238,9 +255,9 @@ For `new`:
 9. Capture the Orchestrator result and close/verify the Orchestrator child.
 10. Spawn Brain for final acceptance, then close/verify the Brain acceptance child before reporting `accepted`.
 
-For `resume`, skip Brain analysis and Orchestrator decomposition when Jira validity markers and relevant `.docs` baseline remain valid. Spawn or continue one Orchestrator child for the resumed workflow and use the same controller-action loop.
+For `resume`, skip Brain analysis and Orchestrator decomposition only when Jira validity markers, authority readiness, and the relevant `.docs` baseline remain valid. Otherwise route to targeted Brain revalidation before specialist execution. Spawn or continue one Orchestrator child for the resumed workflow and use the same controller-action loop.
 
-For `replan`, revalidate only changed relevant requirements/evidence and replan only affected scope, then continue through the same controller-action loop.
+For `replan`, revalidate only changed relevant requirements/evidence, including authority readiness for the affected scope, invalidate only affected Test-plan/validation evidence, and replan only that delta before continuing through the same controller-action loop.
 
 Interrupt continuous delivery only for real authority/capability gates such as material ambiguity, unapproved dependency/architecture adoption, destructive or sensitive external action, unresolved human design choice, a missing required provider confirmed by Primary Controller transport, material scope expansion, or unresolved runtime cleanup.
 
