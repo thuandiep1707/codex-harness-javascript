@@ -20,7 +20,7 @@ The handoff must name target context/layers, direct consumers, characterization 
 migration slice, coexistence/cutover/rollback controls, and unresolved architecture decisions. Missing
 or contradicted authority is a blocker returned to Main.
 
-Do not use a migration Subtask to approve a new bounded context, data-flow/auth contract, template API,
+Do not use a migration execution unit to approve a new bounded context, data-flow/auth contract, template API,
 dependency, or project-wide migration convention.
 
 ## Execution
@@ -32,7 +32,7 @@ the assigned slice. Read `references/characterization-and-cutover.md` only as ne
 observable behavior and distinguish known preserved bugs from explicitly approved changes.
 
 Testing is not self-routed from this skill; execute only validation assigned to the current Coding
-Subtask. Separate testing execution units are routed by Main.
+execution unit. Separate testing execution units are routed by Main.
 
 ### 2. Expose seams
 
@@ -51,12 +51,12 @@ to Main instead of creating or revising a local plan.
 
 ### 4. Order work inside the assigned slice
 
-Break the Coding Subtask internally into dependency-ordered implementation units only for execution,
+Break the Coding execution unit internally into dependency-ordered implementation units only for execution,
 not as a second workflow database. Each unit should identify behavior, required seam, affected source,
 validation, coexistence/cutover gate, rollback relevance, and bridge-removal condition.
 
 Do not persist these units into `.plans/`, `.progresses/`, `.agent/`, or other runtime files. If the
-Subtask itself is too broad for safe execution, return a granularity blocker to Main so Main can request the required Scrum Master replan.
+execution unit itself is too broad for safe execution, return a granularity blocker to Main so Main can request the required Scrum Master replan.
 
 ### 5. Implement bounded scope
 
