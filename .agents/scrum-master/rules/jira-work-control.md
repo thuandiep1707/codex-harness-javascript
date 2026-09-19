@@ -10,7 +10,7 @@ Apply this rule to every Scrum Master Jira operation.
 - Persist only durable boundaries: final `[RESULT]`, real `[BLOCKER]`, material `[REVISION]`, `[HANDOFF]`, or confirmed scope/workflow-state changes.
 - Never persist hidden reasoning, routine triage, retries, intermediate test counts, self-corrected test-only mismatches, runtime-resource state, or child-agent lifecycle state.
 - During `resume-sync`, read only the requested execution unit, its functional-slice boundary, optional work-container context, direct dependencies, latest durable result/handoff evidence, and required validity markers. Do not rebuild the work graph.
-- During `progress-sync`, mutate Jira only from confirmed evidence supplied by Main. Never infer specialist completion, validation, cleanup, source state, or acceptance.
+- During `progress-sync`, mutate Jira only from confirmed evidence supplied by Main. A confirmed Test Plan `testing-route` may mechanically authorize creation/reconciliation of the exact required Testing Logic/UI execution units; never reclassify that route or create speculative testing work. Never infer specialist completion, validation, cleanup, source state, or acceptance.
 - During `pause`, write exactly the durable continuation state required by the supplied pause checkpoint. Do not invent progress or create a new work item merely to represent the pause.
 - During `finalize`, only a current Brain acceptance report with `status: accepted` authorizes completion mutations. Completed execution units alone never authorize the functional-slice boundary to enter a terminal workflow state.
 - Execution ownership is derived from the project's actual ownership/workflow fields plus durable Jira state. Do not invent a second durable lock or ownership database.
