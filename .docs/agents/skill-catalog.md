@@ -30,7 +30,7 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 
 | Capability | Responsibility |
 | --- | --- |
-| `plan-frontend-work` | Plan/resume/pause Jira-backed Functional Tasks/Subtasks, capability routing, handoff composition, reconciliation |
+| `plan-frontend-work` | Plan/resume/pause Jira-backed functional slices/execution units, capability routing, handoff composition, reconciliation |
 
 ### Design
 
@@ -48,8 +48,8 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 
 | Capability | Responsibility |
 | --- | --- |
-| `migrate-legacy-frontend-module` | Migrate approved legacy behavior within one bounded Coding Subtask |
-| `integrate-third-party-frontend` | Implement an approved external integration within one bounded Coding Subtask |
+| `migrate-legacy-frontend-module` | Migrate approved legacy behavior within one bounded Coding execution unit |
+| `integrate-third-party-frontend` | Implement an approved external integration within one bounded Coding execution unit |
 | `nextjs-state-management` | Apply approved state-ownership reasoning when routed |
 | `nextjs-tanstack-query` | Implement explicit approved TanStack Query flows when project evidence supports them |
 | `shadcn` | Work with shadcn primitives/source mechanics only when shadcn is detected/approved and routed |
@@ -58,7 +58,7 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 
 | Capability | Responsibility |
 | --- | --- |
-| `testing` | Implement, run, debug, and report one bounded logic-testing Subtask |
+| `testing` | Implement, run, debug, and report one bounded logic-testing execution unit |
 
 ### Testing UI
 
@@ -71,11 +71,11 @@ Internal capability availability does not mean it should be loaded.
 ```text
 project evidence
 + approved architecture/dependency direction
-+ current Subtask trigger
++ current execution-unit trigger
 + specialist manifest allowlist
 → smallest routed internal capability set
 ```
 
 Capability không được route thì specialist không load. Nếu stack evidence thiếu/conflict thì giữ unresolved thay vì default sang shadcn/Lucide/TanStack/Zustand hoặc library khác.
 
-Routine lint/typecheck/build/browser validation không tự tạo Testing Subtask. Test planning và test implementation vẫn là specialist responsibilities riêng.
+Routine lint/typecheck/build/browser validation không tự tạo Testing execution unit. Test planning và test implementation vẫn là specialist responsibilities riêng.
