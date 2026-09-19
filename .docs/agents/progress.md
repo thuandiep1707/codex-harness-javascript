@@ -8,7 +8,7 @@
 - Internal agent knowledge under `.agents/capabilities/**`, hidden from user workflow discovery.
 - Public frontend workflows: `frontend-delivery` and `frontend-planning`.
 - Separate execution intent (`deliver|plan-only`) from lifecycle (`new|resume|replan|pause|acceptance`).
-- Flow B runtime topology: Main is the Orchestrator; no active Orchestrator child.
+- Flow B runtime topology: Main is the Orchestrator.
 - Main owns dependency routing, capability routing, specialist dispatch, reconciliation, write-scope leases, child lifecycle, and runtime cleanup supervision.
 - Brain owns requirement analysis, authority readiness, project-stack discovery, targeted revalidation, and final acceptance.
 - Scrum Master owns Jira schema discovery, semantic work-graph creation/reconciliation, compact Jira state synchronization, and authorized durable Jira mutations.
@@ -119,19 +119,6 @@ PAUSE
 - no Jira mutation;
 - no direct authoritative product-document access;
 - no scope expansion without returning a blocker to Main.
-
-## Migration state
-
-Legacy Flow A artifacts may still exist temporarily:
-
-```text
-.agents/orchestrator/**
-.codex/agents/orchestrator.toml
-.agents/capabilities/frontend/plan-frontend-work/**
-.protocols/reconciliation-report.yaml
-```
-
-They are not active Flow B runtime contracts. Remove them only after all remaining non-legacy references are verified migrated.
 
 ## Extension direction
 
