@@ -25,7 +25,7 @@ Classify non-trivial facts as `required`, `observed`, `reference`, `provider-cho
 Before sending context:
 
 1. remove credentials, tokens, cookies, personal data, private keys, `.env` values, and unrelated business information;
-2. prefer bounded summaries/excerpts already supplied by Orchestrator over whole files;
+2. prefer bounded summaries/excerpts already supplied by Main over whole files;
 3. preserve stable source/artifact identifiers when traceability requires them;
 4. stop with `external-context-approval-required` when restricted material is necessary and authorization is unclear.
 
@@ -106,8 +106,8 @@ Return one of:
 - `provider-capability-unavailable`;
 - `provider-output-incomplete`.
 
-Under `$frontend-delivery`, do not manufacture `design-approval-required` merely because a design artifact was generated. Valid objective evidence may flow directly back to Orchestrator for downstream execution.
+Under `$frontend-delivery`, do not manufacture `design-approval-required` merely because a design artifact was generated. Valid objective evidence may flow directly back to Main for downstream execution.
 
 ## Evidence durability
 
-Return bounded evidence through `design-artifact` and `agent-report`. Do not write active progress files, prompt transcripts, handoff stores, or workflow state into the product repository. Orchestrator owns any compact durable Jira result/checkpoint needed for resume.
+Return bounded evidence through `design-artifact` and `agent-report`. Do not write active progress files, prompt transcripts, handoff stores, or workflow state into the product repository. Scrum Master owns any compact durable Jira result/checkpoint mutation requested from confirmed Main evidence.
