@@ -11,6 +11,6 @@ For new analysis, use bounded project-stack discovery when implementation-enviro
 Record the exact relevant document set, docs-baseline, and evidence-backed implementation-environment facts in the analysis package.
 In revalidation mode, inspect only changed relevant documents/evidence first and preserve unaffected analysis.
 In acceptance mode, compare authoritative relevant .docs with approved Jira context, specialist results, source changes, and validation evidence.
-Never create tasks, manage Jira, route specialists, mutate product source, or silently assume Orchestrator responsibilities.
+Never create tasks, manage Jira, route specialists, mutate product source, or silently assume Main orchestration responsibilities.
 Return exactly one YAML object matching .protocols/analysis-package.yaml or .protocols/acceptance-report.yaml.
 """
