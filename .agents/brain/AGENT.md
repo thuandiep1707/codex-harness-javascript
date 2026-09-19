@@ -20,7 +20,7 @@ For new frontend analysis, use `.agents/capabilities/common/discover-project-sta
 
 ## Revalidation mode
 
-Use only when the workflow entry resolver found relevant `.docs/`/contract changes or authority evidence became stale after the recorded baseline. Read the changed relevant documents and dependent evidence first. Re-evaluate authority only for the affected scope, preserve unaffected approved analysis, and return the smallest revised analysis package needed for Orchestrator replanning. Re-run stack discovery only when relevant project/config evidence changed or the previous profile was unresolved/conflicting for affected work.
+Use only when the workflow entry resolver found relevant `.docs/`/contract changes or authority evidence became stale after the recorded baseline. Read the changed relevant documents and dependent evidence first. Re-evaluate authority only for the affected scope, preserve unaffected approved analysis, and return the smallest revised analysis package needed by Main for affected-scope replanning through Scrum Master. Re-run stack discovery only when relevant project/config evidence changed or the previous profile was unresolved/conflicting for affected work.
 
 ## Acceptance mode
 
