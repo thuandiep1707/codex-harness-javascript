@@ -43,10 +43,10 @@ Run one linear transaction:
    files/dependencies.
 7. **Verify:** confirm applied files/dependencies match approved preview, no unapproved overwrite
    occurred, and changed files are readable. Return concrete evidence to only topic rules triggered by
-   the current Subtask.
+   the current execution unit.
 
 Do not load `frontend/generated-ui-validation.md` merely because shadcn generated source. Load it only
-when the assigned Subtask independently matches the approved design/provider-artifact trigger.
+when the assigned execution unit independently matches the approved design/provider-artifact trigger.
 
 An official source is not a dependency waiver. If preview adds a package, install script, global CSS,
 asset, worker, runtime, or browser threat, stop and route that evidence before mutation.
