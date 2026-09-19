@@ -4,7 +4,7 @@ Normalize provider responses into bounded design evidence for Main. This capabil
 
 ## Required record
 
-Return evidence compatible with `.protocols/design-artifact.yaml` and the assigned Jira Subtask. Preserve:
+Return evidence compatible with `.protocols/design-artifact.yaml` and the assigned Jira execution unit. Preserve:
 
 - provider/channel and stable project/session/artifact identifiers;
 - artifact type/location/preview/editability/provenance;
@@ -44,7 +44,7 @@ If the provider result is objectively compliant and no approval gate is required
 
 If the user rejects/changes design direction:
 
-- continue the provider prompt chain only when the change stays inside assigned Design Subtask scope;
+- continue the provider prompt chain only when the change stays inside assigned Design execution unit scope;
 - return a revision/replan blocker when the change materially affects product scope, architecture, data exposure, provider role, or expected output;
 - preserve rejected artifact IDs/reasons as evidence when useful.
 
