@@ -14,7 +14,7 @@ Capture the smallest evidence set that protects critical behavior:
 - supported viewport/runtime constraints and material performance thresholds; and
 - known bugs intentionally preserved or explicitly approved for correction.
 
-Coding does not call testing specialist capabilities directly. If characterization, component, integration, contract, or browser test coverage is required beyond Coding's assigned validation scope, return that need to Orchestrator so `testing-logic` and/or `testing-ui` can be routed through Jira.
+Coding does not call testing specialist capabilities directly. If characterization, component, integration, contract, or browser test coverage is required beyond Coding's assigned validation scope, return that need to Main so `testing-logic` and/or `testing-ui` can be routed as separate execution units when required.
 
 ## Build a parity matrix
 
@@ -41,7 +41,7 @@ Before switching consumers:
 4. Verify monitoring/error evidence and rollback mechanics when they are in assigned scope.
 5. Confirm no target consumer still depends on an unapproved legacy path.
 
-Do not silently expand Coding scope into independent test implementation. Missing required coverage is returned to Orchestrator for specialist routing.
+Do not silently expand Coding scope into independent test implementation. Missing required coverage is returned to Main for specialist routing.
 
 ## Rollback and removal
 
