@@ -44,7 +44,7 @@ This harness is built around five ideas:
 | **Workflow-first interface** | Only complete user-facing workflows appear in the `$` picker. Internal capabilities stay private. |
 | **Jira-backed execution context** | Jira stores durable work state, results, handoffs, and continuation context instead of relying on chat memory. |
 | **Pause / Resume by design** | A natural-language pause request creates a durable handoff before the workflow stops. A later session resumes from the smallest valid Jira context. |
-| **Progressive capability loading** | Agents load only routed capabilities for the current subtask instead of loading the whole knowledge base. |
+| **Progressive capability loading** | Agents load only routed capabilities for the current execution unit instead of loading the whole knowledge base. |
 | **Evidence-based stack discovery** | The harness inspects the existing project before routing UI, state, data, testing, or framework capabilities. |
 | **Explicit execution cleanup** | Primary Controller owns native child-agent lifecycle; specialists clean runtime resources they create, with controller-level fallback supervision. |
 | **Strict agent boundaries** | One child agent keeps one configured role: Brain reasons, Orchestrator owns workflow/Jira decisions and routing, Primary Controller owns runtime transport, and Specialists execute bounded work. |
@@ -102,7 +102,7 @@ $frontend-delivery
 Implement the recruitment scope from the approved product docs end-to-end.
 ```
 
-`$frontend-delivery` does **not** stop just because Jira Tasks/Subtasks were created. It continues through dependency-ready specialist work, testing, reconciliation, runtime cleanup, child-agent closure, and final acceptance unless it reaches a real blocker, approval gate, or explicit pause.
+`$frontend-delivery` does **not** stop just because the Jira work graph was created. It continues through dependency-ready specialist work, testing, reconciliation, runtime cleanup, child-agent closure, and final acceptance unless it reaches a real blocker, approval gate, or explicit pause.
 
 ## Example
 
@@ -138,7 +138,7 @@ Brain Acceptance
         ↓
 Orchestrator Finalize
         ↓
-Parent Task Done
+Accepted functional slice finalized in the project-defined terminal Jira state
 ```
 
 If the work is interrupted:
@@ -168,7 +168,7 @@ Only packages under `.agents/skills/` are user-facing workflow entry points.
 | Workflow | Purpose |
 | --- | --- |
 | `$frontend-delivery` | Run frontend work end-to-end from authoritative docs/source through Jira planning, specialist execution, testing, cleanup, final acceptance, and Jira finalization. |
-| `$frontend-planning` | Analyze the requested frontend scope, create the Jira Feature/Task/Subtask graph, and stop before implementation. |
+| `$frontend-planning` | Analyze the requested frontend scope, create or reconcile a Jira work graph from semantic functional slices/execution units mapped to the current project schema, and stop before implementation. |
 | `$docs-development-ready` | Create or complete the coordinated Product / Feature Requirement, Functional Specification, and UI / UX Specification package, then finalize it after approval. |
 
 Everything else is internal capability knowledge and should not appear in the `$` picker.
@@ -213,7 +213,7 @@ $frontend-planning + NEW
 → Brain → Jira planning → STOP
 
 $frontend-delivery + RESUME
-→ reuse valid Jira context → continue the current executable Subtask
+→ reuse valid Jira context → continue the current executable execution unit
 ```
 
 Planning is a lifecycle operation. It does not automatically mean the workflow should stop; the execution intent decides whether planning is the destination or only one stage of delivery.
@@ -236,7 +236,7 @@ Examples:
 An agent may load an internal capability only when:
 
 1. the capability is allowed by that agent's manifest;
-2. the Orchestrator routes it for the current specialist Subtask.
+2. the Orchestrator routes it for the current specialist execution unit.
 
 The system does not load every capability "just in case".
 
@@ -287,10 +287,12 @@ If the required project capability is not available, the workflow should surface
 
 ## Jira Work Model
 
+The harness uses semantic work roles rather than assuming Jira issue-type names:
+
 ```text
-Feature Context
-  └── Task: one Functional Slice
-        └── Subtask: one independently actionable specialist work unit
+work-container   # optional grouping/context
+  └── functional-slice   # one scope + acceptance boundary
+        └── execution-unit # one independently actionable specialist work item
 ```
 
 The Orchestrator decomposes work by user outcome and functional boundary:
@@ -299,21 +301,22 @@ The Orchestrator decomposes work by user outcome and functional boundary:
 requirement
 → user outcomes
 → functional slices
-→ Tasks
-→ specialist Subtasks
+→ specialist execution units
 ```
+
+Scrum Master discovers the current project's available Jira work types, fields, options, relationships, and workflow states, then maps those semantic roles to the project's actual schema. `Epic`, `Feature`, `Story`, `Task`, `Bug`, `Sub-task`, and custom work types are project-specific representations, not harness constants.
 
 It does not start by splitting a feature into Design / Coding / Testing buckets or by file/component ownership.
 
-Routine triage, diagnosis, retry, and test-only iteration stay inside the owning specialist lifecycle. They do not become new Jira Subtasks unless the discovered work is independently actionable and needs its own specialist ownership/scope.
+Routine triage, diagnosis, retry, and test-only iteration stay inside the owning specialist lifecycle. They do not become new Jira execution units unless the discovered work is independently actionable and needs its own specialist ownership/scope.
 
-Completing all executable Subtasks makes the parent Task `acceptance-ready`, not Done. Brain performs final acceptance first; only an accepted result followed by Orchestrator finalization may transition the parent Task to Done.
+Completing all executable execution units makes the functional-slice boundary `acceptance-ready`; this is a harness semantic state, not a literal Jira status. Brain performs final acceptance first; only an accepted result followed by finalization may transition that boundary through a project-valid transition to the project's terminal/completed workflow state.
 
 Context is inherited rather than duplicated:
 
-- Feature stores common approved product and architecture context;
-- Task stores the functional-slice delta;
-- Subtask stores the specialist execution delta and routed capability identifiers;
+- optional work-container stores common approved product and architecture context when the Jira model provides that level;
+- functional-slice stores the outcome/scope/acceptance delta;
+- execution-unit stores the specialist execution delta and routed capability identifiers;
 - Specialist receives a transient handoff and does not independently rebuild full product context.
 
 ## Pause / Resume
