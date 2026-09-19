@@ -1,12 +1,12 @@
 # Frontend Coding Rules
 
-Apply this baseline to every frontend production-code Subtask. Keep it small: load detailed topic rules only when the router below matches the transient handoff or current source evidence.
+Apply this baseline to every frontend production-code execution unit. Keep it small: load detailed topic rules only when the router below matches the transient handoff or current source evidence.
 
 ## Authority
 
 Use this order:
 
-1. assigned Jira Subtask + transient `issue-handoff`;
+1. assigned Jira execution unit + transient `issue-handoff`;
 2. approved architecture/design/dependency evidence supplied by Main;
 3. internal capabilities explicitly routed in the handoff + this repository's mandatory rules;
 4. live product configuration and installed framework/library documentation;
@@ -18,7 +18,7 @@ Do not choose an implementation library merely because a capability exists in th
 
 ## Topic router
 
-| Evidence in current Subtask/source | Load |
+| Evidence in current execution unit/source | Load |
 | --- | --- |
 | Creating, splitting, placing, or changing component structure/public component contracts | `frontend/atomic-components.md` |
 | Icons, SVG, images, logos, markers, visual assets | `frontend/icons-images-assets.md` |
@@ -32,10 +32,10 @@ The always-loaded Coding `component-decomposition-gate.md` decides whether the A
 
 ## Before coding
 
-1. Confirm the exact bounded Subtask objective, included/excluded scope, allowed write surface, direct dependencies, routed internal capabilities, and required validation from the handoff.
+1. Confirm the exact bounded execution unit objective, included/excluded scope, allowed write surface, direct dependencies, routed internal capabilities, and required validation from the handoff.
 2. Inspect nearby source and direct consumers before creating or moving files/components/hooks/types.
 3. Inspect only live config needed for the change (`package.json`, `tsconfig`, ESLint, Prettier, component-library config, framework config, etc.).
-4. Use installed framework/library documentation for APIs touched by the Subtask.
+4. Use installed framework/library documentation for APIs touched by the execution unit.
 5. Stop at unresolved architecture, design, dependency, or public-contract decisions instead of inventing project policy.
 
 ## Ownership and placement
@@ -91,7 +91,7 @@ Coding validates only what the current handoff and working project's established
 
 ## Unresolved dependent scope
 
-When one topic decision blocks only part of the assigned Subtask, return one compact unresolved record containing:
+When one topic decision blocks only part of the assigned execution unit, return one compact unresolved record containing:
 
 - rule owner/trigger;
 - evidence inspected;
@@ -104,4 +104,4 @@ Do not persist unresolved records in local plan/progress files. Return them thro
 
 ## Completion
 
-Return only evidence for the assigned Subtask: implemented behavior, changed files, public contracts, structural/decomposition evidence when triggered, validation, deviations, limitations, and test handoff. Do not update Jira yourself and do not claim unresolved required behavior as complete.
+Return only evidence for the assigned execution unit: implemented behavior, changed files, public contracts, structural/decomposition evidence when triggered, validation, deviations, limitations, and test handoff. Do not update Jira yourself and do not claim unresolved required behavior as complete.
