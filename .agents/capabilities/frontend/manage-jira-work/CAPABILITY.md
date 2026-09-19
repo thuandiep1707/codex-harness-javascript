@@ -74,9 +74,9 @@ Load only the minimum Jira chain required by the request:
 3. optional work-container context when present;
 4. direct dependencies;
 5. latest durable result/handoff evidence;
-6. context/version validity markers required by Main.
+6. context/version validity markers required by Main, including analysis readiness, authority readiness, work-graph readiness, docs baseline, and relevant document references.
 
-Return a compact work graph and current state. Do not echo full descriptions when keys/workflow-state/dependencies are sufficient.
+Return those markers in `jira-work-report.validity` together with the compact work graph/current state. Do not echo full descriptions when keys/workflow-state/dependencies are sufficient.
 
 ## 5. Progress sync
 
@@ -87,9 +87,12 @@ Allowed durable categories:
 - final `[RESULT]`;
 - real `[BLOCKER]`;
 - material `[REVISION]`;
-- confirmed scope/workflow-state changes.
+- confirmed scope/workflow-state changes;
+- mechanical execution-graph materialization explicitly authorized by Main from a confirmed Test Plan `testing-route`.
 
-Resolve any project-specific target field or workflow transition from current Jira metadata before mutation.
+For Test Plan routing, create/reconcile only the required testing execution units for `logic`, `ui`, or `both`; create none for `none`. Preserve the parent functional slice and confirmed route exactly. Do not reclassify testing, invent extra testing work, or materialize speculative testing units before the Test Plan result exists.
+
+Resolve any project-specific target field, work type, relationship, or workflow transition from current Jira metadata before mutation.
 
 Do not reinterpret specialist evidence, acceptance coverage, validation results, runtime cleanup, or source changes. Main owns those orchestration decisions.
 
@@ -119,6 +122,7 @@ Keep it compact:
 - runnable/blocked/completed execution-unit identifiers when relevant;
 - field resolutions actually used for mutations;
 - confirmed/failed mutations;
-- blockers/revisions.
+- blockers/revisions;
+- validity markers required for resume/replan decisions.
 
 Do not duplicate full Jira content, full schema metadata, unused allowed-value lists, or hidden reasoning into the report.
