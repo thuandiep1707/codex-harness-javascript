@@ -53,7 +53,7 @@ Map failures conservatively:
 Use only the minimized context supplied through the current `issue-handoff` and allowed dependency/design evidence.
 
 - Do not read `.docs` directly from the Design specialist.
-- Use approved brand/tokens/design-system evidence only when supplied by Orchestrator and supported by Stitch.
+- Use approved brand/tokens/design-system evidence only when supplied by Main and supported by Stitch.
 - Upload images/HTML/design-system material only when the handoff authorizes external transfer and provenance is clear.
 - Keep unknown/deferred project decisions open instead of presenting them as approved provider rules.
 
@@ -107,6 +107,6 @@ Open/render returned visual evidence before accepting provider success. Inspect 
 - Record visible fonts, images, URLs, packages, mock data, and interaction assumptions relevant downstream.
 - Do not use Stitch build/component helpers to write application source from this Design capability.
 - Do not treat provider-created design-system values as approved application tokens merely because Stitch generated them.
-- Return dependency/integration implications to Orchestrator; do not call Coding/security/integration capabilities directly.
+- Return dependency/integration implications to Main; do not call Coding/security/integration capabilities directly.
 - Return bounded evidence through `design-artifact`/`agent-report`; do not write runtime progress files or local implementation plans.
 - Preserve provider lineage so downstream implementation can distinguish provider decisions from agent summaries.
