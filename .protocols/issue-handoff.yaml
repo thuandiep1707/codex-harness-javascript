@@ -5,18 +5,17 @@ working-project: "<project-name>"
 context-version: "<version>"
 target-agent: "<design|test-plan|coding|testing-logic|testing-ui>"
 jira:
-  feature-key: "<feature-key>"
-  task-key: "<parent-task-key>"
-  subtask-key: "<specialist-subtask-key>"
-  assignee: ""
-  status: ""
+  work-container-key: ""
+  functional-slice-key: "<functional-slice-key>"
+  execution-unit-key: "<specialist-execution-key>"
+  workflow-state: ""
 context:
-  feature-summary: |
-    Common approved context inherited from the Jira Feature.
-  task-delta: |
-    Functional-slice context owned by the parent Jira Task.
-  subtask-delta: |
-    Execution context owned by the current Jira Subtask.
+  common-context: |
+    Common approved context inherited from the resolved Jira work-container when one exists.
+  functional-slice-delta: |
+    Outcome, scope, and acceptance context owned by the functional-slice boundary.
+  execution-unit-delta: |
+    Bounded execution context owned by the specialist execution unit.
 objective: "<bounded specialist objective>"
 scope:
   included: []
