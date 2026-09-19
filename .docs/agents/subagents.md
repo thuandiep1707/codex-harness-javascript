@@ -19,7 +19,8 @@ Lifecycle `planning/resume/pause` is separate from execution intent. Planning mo
 | Design | `design` | Use connected design provider and return design evidence |
 | Test plan | `test-plan` | Produce a bounded risk-based test-plan result |
 | Coding | `coding` | Implement one bounded Coding Subtask using routed internal capabilities |
-| Testing | `testing` | Implement/run one bounded Testing Subtask using routed internal capabilities |
+| Testing Logic | `testing-logic` | Implement/run bounded unit/component/integration tests without a real browser |
+| Testing UI | `testing-ui` | Execute bounded real-browser UI validation and Playwright tests |
 
 The Primary Controller is intentionally thin but is the only runtime transport owner. Brain does not create tasks. Orchestrator does not perform specialist implementation, invoke native child-agent lifecycle APIs, or call Jira directly. Chat history is never required to resume valid Jira work.
 

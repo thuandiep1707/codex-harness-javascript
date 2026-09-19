@@ -56,7 +56,7 @@ The Design specialist ends after returning the structured design result. Orchest
 
 Do not:
 
-- call Brain/Coding/Testing capabilities directly;
+- call another agent's capabilities directly;
 - select implementation libraries because provider code happens to use them;
 - write application code;
 - update Jira directly;

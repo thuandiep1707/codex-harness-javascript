@@ -54,11 +54,15 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 | `nextjs-tanstack-query` | Implement explicit approved TanStack Query flows when project evidence supports them |
 | `shadcn` | Work with shadcn primitives/source mechanics only when shadcn is detected/approved and routed |
 
-### Testing
+### Testing Logic
 
 | Capability | Responsibility |
 | --- | --- |
-| `testing` | Implement, run, debug, and report one bounded Testing Subtask |
+| `testing` | Implement, run, debug, and report one bounded logic-testing Subtask |
+
+### Testing UI
+
+No internal capability package; the `testing-ui` role uses its configured browser/runtime capabilities and shared testing rules.
 
 ## Routing rule
 

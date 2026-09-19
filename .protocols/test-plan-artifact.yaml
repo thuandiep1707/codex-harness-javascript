@@ -3,9 +3,10 @@ jira-subtask-key: "<subtask-key>"
 scope:
   included: []
   excluded: []
+testing-route: "<none|logic|ui|both>"
 acceptance-coverage:
   - acceptance-id: "ac-1"
-    test-layer: "<unit|component|integration>"
+    test-layer: "<unit|component|integration|browser>"
     scenarios: []
     evidence-required: []
 test-data: []

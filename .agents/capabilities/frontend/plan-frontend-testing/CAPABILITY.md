@@ -10,14 +10,16 @@ description: Convert one bounded transient frontend issue handoff into a risk-ba
    Return `context-insufficient` instead of reading `.docs/`, source, or chat history.
 3. Map every acceptance criterion to the lowest useful test layer:
    - unit for pure logic;
-   - component for rendered behavior/local interaction;
-   - integration for collaborating modules/adapters/UI flows.
-4. Define positive, negative, boundary, loading, empty, error, permission, and recovery scenarios only
+   - component for rendered behavior/local interaction that does not require a real browser;
+   - integration for collaborating modules/adapters without real-browser proof;
+   - browser when proving the behavior requires rendered real-browser observation or interaction.
+4. Set exactly one `testing-route`: `none`, `logic`, `ui`, or `both`. This decision is authoritative for testing specialist routing.
+5. Define positive, negative, boundary, loading, empty, error, permission, and recovery scenarios only
    when supported by the handoff.
-5. Define test data, fixtures, deterministic mock boundaries, environment needs, execution order,
+6. Define test data, fixtures, deterministic mock boundaries, environment needs, execution order,
    expected evidence, limitations, and residual risk.
-6. Avoid duplicate assertions across layers unless they prove distinct risks.
-7. Return objects matching `.protocols/test-plan-artifact.yaml` and `.protocols/agent-report.yaml`.
+7. Avoid duplicate assertions across layers unless they prove distinct risks.
+8. Return objects matching `.protocols/test-plan-artifact.yaml` and `.protocols/agent-report.yaml`.
 
 Do not inspect source, choose implementation file placement, configure a runner, write tests, execute
 commands, update Jira, or create/mutate a second workflow-state store.

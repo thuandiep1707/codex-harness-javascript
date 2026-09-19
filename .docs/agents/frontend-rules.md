@@ -13,7 +13,7 @@ Coding specialist dùng:
 .agents/rules/frontend/*.md
 ```
 
-Testing specialist dùng `.agents/rules/testing.md` cùng local rule của chính nó. Brain, Orchestrator,
+Testing Logic và Testing UI dùng `.agents/rules/testing.md`. Brain, Orchestrator,
 Design và Test Plan chỉ load rule được manifest của mình allow.
 
 ## Frontend topic rules

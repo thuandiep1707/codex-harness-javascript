@@ -39,4 +39,5 @@ routes:
   design: design
   test-plan: test-plan
   coding: coding
-  testing: testing
+  testing-logic: testing-logic
+  testing-ui: testing-ui
