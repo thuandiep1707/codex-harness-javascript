@@ -53,7 +53,7 @@ Independent specialist work may run concurrently only when existing runtime-capa
 
 Scrum Master is the Jira write authority for workflow structure and durable workflow updates.
 
-Specialists do not mutate Jira. When Jira read access is available, a specialist may read only the assigned issue context required for its bounded work.
+Specialists do not access Jira directly in the current Flow B contract. Scrum Master owns Jira reads/mutations and Main supplies specialists only the bounded Jira-derived handoff/evidence required for execution.
 
 Main should retain only compact Jira execution state needed for routing, such as issue keys, dependencies, statuses, context version, and target role. Full Jira issue content should not be copied into Main unless a workflow decision specifically requires it.
 
@@ -107,9 +107,10 @@ $frontend-delivery
 → Main dispatches dependency-ready specialists
    ├─ Coding
    ├─ Design
-   ├─ Test Plan
-   ├─ Testing Logic
-   └─ Testing UI
+   └─ Test Plan
+→ confirmed Test Plan route
+→ Scrum Master materializes required Testing Logic/UI execution units when needed
+→ Main dispatches those dependency-ready testing units
 → Main verifies reports, source scope, runtime cleanup, and child closure
 → Scrum Master persists required durable Jira results/checkpoints when needed
 → close Scrum Master
@@ -158,8 +159,3 @@ $frontend-planning
 3. Only an accepted Brain result authorizes Scrum Master to perform final Jira completion mutations.
 4. Main reports completion only after those Jira mutations, child cleanup, and runtime cleanup are confirmed.
 
-## Migration note
-
-The feature branch may temporarily contain topology-A wording in rules, protocols, manifests, or workflow files until each is migrated in a dedicated commit.
-
-Do not weaken an existing safety boundary merely to remove topology-A terminology. Topology-specific contracts should be replaced deliberately in later commits.
