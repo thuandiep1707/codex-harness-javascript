@@ -5,23 +5,21 @@ context-version: "<version>"
 status: "<completed|partial|blocked>"
 
 jira:
-  feature-key: ""
-  requested-task-key: ""
-  requested-subtask-key: ""
+  project-key: ""
+  requested-work-item-key: ""
 
 work-graph:
-  tasks:
+  items:
     - key: ""
-      status: ""
+      semantic-role: "<work-container|functional-slice|execution-unit>"
+      jira-work-type: ""
+      parent-key: ""
+      workflow-state: ""
+      target-agent: ""
       dependencies: []
-      subtasks:
-        - key: ""
-          target-agent: "<design|test-plan|coding|testing-logic|testing-ui>"
-          status: ""
-          dependencies: []
-  runnable-subtasks: []
-  blocked-subtasks: []
-  completed-subtasks: []
+  runnable-execution-units: []
+  blocked-execution-units: []
+  completed-execution-units: []
 
 field-resolution:
   - semantic: ""
