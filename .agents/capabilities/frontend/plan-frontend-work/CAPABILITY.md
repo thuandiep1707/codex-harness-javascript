@@ -83,7 +83,7 @@ Pause is a workflow exit gate, not a normal specialist assignment.
 
 When the Primary Controller supplies `pause`:
 
-1. Freeze new specialist dispatch decisions. Do not request new Design, Test Plan, Coding, Testing, or Brain work.
+1. Freeze new specialist dispatch decisions. Do not request new Design, Test Plan, Coding, Testing Logic, Testing UI, or Brain work.
 2. Consume only active/incomplete Subtasks, parent Task/Feature context, available specialist reports, runtime cleanup evidence, latest durable results/handoffs, and relevant current source identity/state supplied by the controller.
 3. Reconcile execution truth without inventing progress.
 4. Request any proven missing `[RESULT]` notes and stale-status corrections through exact `jira-call` controller actions.

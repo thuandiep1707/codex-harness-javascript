@@ -1,6 +1,6 @@
 ---
 name: testing
-description: Implement, run, debug, or review bounded unit, component, and integration tests for a Next.js, React, TypeScript frontend from a transient issue handoff and approved test-plan evidence. Use only for the Testing specialist after the relevant production contract exists; do not use for test planning, routine lint/build validation, project-document access, or production implementation.
+description: Implement, run, debug, or review bounded unit, component, and integration tests for a Next.js, React, TypeScript frontend from a transient issue handoff and approved test-plan evidence. Use only for the Logic Testing specialist after the relevant production contract exists; do not use for test planning, routine lint/build validation, project-document access, or production implementation.
 ---
 
 # Frontend Test Implementation
@@ -34,4 +34,4 @@ description: Implement, run, debug, or review bounded unit, component, and integ
 6. Return objects matching `.protocols/test-report.yaml` and `.protocols/agent-report.yaml`.
 
 Do not change production behavior merely to pass tests, weaken assertions, add fixed sleeps, hide
-failures, update Jira, create runtime workflow files, or expand beyond the assigned Testing Subtask.
+failures, update Jira, create runtime workflow files, or expand beyond the assigned logic-testing Subtask.

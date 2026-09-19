@@ -17,7 +17,7 @@ This is a user-facing planning-only workflow.
 6. Capture the final planning result, then close/verify the Orchestrator child.
 7. Stop before specialist implementation.
 
-Do not dispatch Design, Test Plan, Coding, or Testing specialists in this workflow.
+Do not dispatch Design, Test Plan, Coding, Testing Logic, or Testing UI specialists in this workflow.
 
 ## Planning rules
 

@@ -1,17 +1,17 @@
 # Frontend Testing Rules
 
-Apply this rule only to a Testing specialist Subtask that creates, changes, runs, or reviews frontend
+Apply this rule only to a Testing Logic or Testing UI Subtask that creates, changes, runs, or reviews frontend
 tests. The Jira Subtask and transient handoff already decide that testing work is in scope; do not
 create a local test plan, ask a separate yes/no testing decision gate, or update `.analysis/`/`.docs/`.
 
-Load only the routed internal testing capability allowed by the Testing manifest for concrete runner
+Load only the routed internal testing capability allowed by the current testing specialist manifest for concrete runner
 and test-workflow guidance.
 
 ## Authority and boundary
 
 Use this order:
 
-1. assigned Testing Subtask + transient handoff;
+1. assigned testing Subtask + transient handoff;
 2. approved test-plan evidence supplied by Orchestrator when required;
 3. relevant production contract/source and current test-runner configuration;
 4. this rule + routed testing capability.

@@ -14,7 +14,7 @@ Capture the smallest evidence set that protects critical behavior:
 - supported viewport/runtime constraints and material performance thresholds; and
 - known bugs intentionally preserved or explicitly approved for correction.
 
-Coding does not call the Testing specialist's internal capability directly. If characterization, component, integration, contract, or browser test coverage is required beyond Coding's assigned validation scope, return that need to Orchestrator so an appropriate Testing Subtask/capability can be routed through Jira.
+Coding does not call testing specialist capabilities directly. If characterization, component, integration, contract, or browser test coverage is required beyond Coding's assigned validation scope, return that need to Orchestrator so `testing-logic` and/or `testing-ui` can be routed through Jira.
 
 ## Build a parity matrix
 

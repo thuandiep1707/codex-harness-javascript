@@ -17,7 +17,7 @@
 - Specialist handoff carries only routed internal capability identifiers; specialists do not load all capabilities.
 - Removed baseline hard-locks that assumed shadcn/Lucide/Tailwind/TanStack simply because control-repo knowledge exists.
 - Separate Brain and Orchestrator roles.
-- Four isolated specialists: Design, Test Plan, Coding, Testing.
+- Five isolated specialists: Design, Test Plan, Coding, Testing Logic, Testing UI.
 - YAML manifests and transient protocol templates.
 - Specialist `.docs/` prohibition.
 - Jira as durable work + execution-context truth.
