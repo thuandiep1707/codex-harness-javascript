@@ -18,7 +18,7 @@ and only source in the allowed migration scope. Never read `.docs/` or `.analysi
 
 The handoff must name target context/layers, direct consumers, characterization expectations, allowed
 migration slice, coexistence/cutover/rollback controls, and unresolved architecture decisions. Missing
-or contradicted authority is a blocker to Orchestrator.
+or contradicted authority is a blocker returned to Main.
 
 Do not use a migration Subtask to approve a new bounded context, data-flow/auth contract, template API,
 dependency, or project-wide migration convention.
@@ -32,7 +32,7 @@ the assigned slice. Read `references/characterization-and-cutover.md` only as ne
 observable behavior and distinguish known preserved bugs from explicitly approved changes.
 
 Testing is not self-routed from this skill; execute only validation assigned to the current Coding
-Subtask. Separate testing Subtasks remain owned by Orchestrator.
+Subtask. Separate testing execution units are routed by Main.
 
 ### 2. Expose seams
 
@@ -47,7 +47,7 @@ Do not copy the legacy folder structure into the target context.
 
 Read `references/migration-strategy-options.md` when strategy detail is needed. If the handoff does not
 fix a strategy and choosing one would affect architecture/coexistence/cutover policy, return a blocker
-to Orchestrator instead of creating or revising a local plan.
+to Main instead of creating or revising a local plan.
 
 ### 4. Order work inside the assigned slice
 
@@ -56,8 +56,7 @@ not as a second workflow database. Each unit should identify behavior, required 
 validation, coexistence/cutover gate, rollback relevance, and bridge-removal condition.
 
 Do not persist these units into `.plans/`, `.progresses/`, `.agent/`, or other runtime files. If the
-Subtask itself is too broad for safe execution, return a granularity blocker so Orchestrator can split
-Jira work.
+Subtask itself is too broad for safe execution, return a granularity blocker to Main so Main can request the required Scrum Master replan.
 
 ### 5. Implement bounded scope
 
@@ -65,7 +64,7 @@ Preserve DDD dependency direction and thin route composition. Reuse approved pri
 keep feature UI in module presentation, and avoid unrelated cleanup, style rewrites, dependency
 upgrades, or architecture generalization.
 
-On material scope/architecture change, stop dependent work and return the change to Orchestrator.
+On material scope/architecture change, stop dependent work and return the change to Main.
 Do not record a local progress file.
 
 ### 6. Validate and cut over
