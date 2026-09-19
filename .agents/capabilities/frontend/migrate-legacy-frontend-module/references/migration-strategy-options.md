@@ -47,4 +47,4 @@ Return:
 - temporary bridge/debt owner and removal gate; and
 - decisions still awaiting architecture authority.
 
-If the required strategy would establish/change project-wide migration policy beyond the assigned Jira scope, stop the dependent work and return that decision to Orchestrator as replan/approval evidence. Do not update a local plan or encode one Subtask's choice as repository convention.
+If the required strategy would establish/change project-wide migration policy beyond the assigned Jira scope, stop the dependent work and return that decision to Main as replan/approval evidence. Do not update a local plan or encode one Subtask's choice as repository convention.
