@@ -61,8 +61,6 @@ Main = Orchestrator
   └ Testing UI
 ```
 
-There is no Orchestrator child in the active runtime contract.
-
 Main owns:
 
 - workflow lifecycle and execution-intent decisions;
@@ -420,8 +418,6 @@ One child agent = one configured role. Never execute another role.
 | `testing-ui` | `.agents/specialists/testing-ui/` | Real-browser UI validation and Playwright execution |
 
 Main is the Orchestrator and is not represented by a child-agent module.
-
-Legacy `.agents/orchestrator/`, `.codex/agents/orchestrator.toml`, `.agents/capabilities/frontend/plan-frontend-work/`, and `.protocols/reconciliation-report.yaml` may remain temporarily during branch migration. They are not active Flow B runtime contracts and must not be dispatched/consumed by Main.
 
 Test Plan owns testing classification and returns exactly one route: `none|logic|ui|both`. Main routes it mechanically and never reclassifies from source or Git diff.
 
