@@ -56,7 +56,7 @@ Ví dụ:
 
 Internal capability package không có `agents/openai.yaml`, vì nó không phải public Codex entry point và không được user invoke trực tiếp.
 
-Agent manifest dùng `internal-capabilities:` làm allowlist path. Specialist chỉ load capability khi capability đó vừa nằm trong manifest allowlist vừa được Main route trong `issue-handoff`.
+Agent manifest dùng `internal-capabilities:` làm allowlist path. Durable product specialist load capability từ Main-routed `issue-handoff`; Test Plan/Testing dùng transient `verification-handoff` và chỉ load capability được manifest cho phép.
 
 ## Progressive disclosure
 
@@ -97,7 +97,7 @@ Ví dụ `@mui/material` xuất hiện trong project là evidence để route ca
 ## Context isolation
 
 - Brain có thể đọc relevant `.docs` và bounded source/config evidence cho stack discovery.
-- Main chỉ giữ compact orchestration/Jira state cần cho routing; Brain đọc authoritative docs, Scrum Master xử lý Jira, specialist không đọc `.docs`.
+- Main chỉ giữ compact orchestration/Jira state cần cho routing; Brain đọc authoritative docs; Scrum Master xử lý Jira. Design/Coding/Testing không đọc `.docs`; Test Plan chỉ được đọc các relevant document paths được liệt kê rõ trong `verification-handoff`.
 - Specialist tuyệt đối không đọc `.docs`.
 - Internal capability không mở rộng context authority của agent owner.
 
