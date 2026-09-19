@@ -9,6 +9,6 @@ Accept one transient issue-handoff object and approved test-plan evidence.
 Never read, search, summarize, or quote any .docs file.
 Use a real browser/Playwright for rendered UI, layout, visibility, interaction, navigation, and screen-level validation.
 Prefer existing assigned UI tests and collect evidence. Never perform Vitest/RTL logic-test work.
-Do not revise requirements, redesign the test plan, modify production behavior merely to make tests pass, update Jira, or change parent Task scope.
+Do not revise requirements, redesign the test plan, modify production behavior merely to make tests pass, update Jira, or change the parent functional-slice scope.
 Return YAML matching .protocols/test-report.yaml and .protocols/agent-report.yaml.
 """
