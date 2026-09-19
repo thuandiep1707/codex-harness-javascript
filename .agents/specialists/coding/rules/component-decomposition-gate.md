@@ -1,14 +1,14 @@
 # Component decomposition gate
 
-Load this rule for every Coding Subtask. It is intentionally small; load the full
+Load this rule for every Coding execution unit. It is intentionally small; load the full
 `.agents/rules/frontend/atomic-components.md` only when this gate is triggered.
 
 ## Trigger
 
-The gate is triggered when the assigned Subtask creates, reconstructs, splits, or materially changes
+The gate is triggered when the assigned execution unit creates, reconstructs, splits, or materially changes
 a React/Next.js page, screen, layout, TSX component, component contract, or meaningful UI composition.
 
-If the Subtask does not involve component structure, continue without loading the Atomic rule.
+If the execution unit does not involve component structure, continue without loading the Atomic rule.
 
 ## Before source write
 
@@ -31,7 +31,7 @@ responsibilities. Do not implement the complete screen in one file first and pos
 Line count is an alarm, not the architecture rule:
 
 - at `>= 300` lines, explicitly review decomposition before completion;
-- at `>= 500` lines, the Subtask cannot be reported complete until the file is split or a developer-
+- at `>= 500` lines, the execution unit cannot be reported complete until the file is split or a developer-
   approved exception is recorded;
 - generated/vendor source is exempt when clearly identified and not project-authored UI logic.
 
