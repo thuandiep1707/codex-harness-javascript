@@ -12,7 +12,7 @@ and test-workflow guidance.
 Use this order:
 
 1. assigned testing Subtask + transient handoff;
-2. approved test-plan evidence supplied by Orchestrator when required;
+2. approved test-plan evidence supplied by Main when required;
 3. relevant production contract/source and current test-runner configuration;
 4. this rule + routed testing capability.
 
@@ -23,7 +23,7 @@ Task scope. Return a blocker when expected behavior/test authority is insufficie
 
 - Testing Logic owns non-browser unit/component/integration tests and their harness only. It never writes or runs Playwright/E2E/browser tests.
 - Testing UI owns Playwright/E2E/browser tests and browser harness only when write scope is explicitly assigned. It never writes or runs Vitest/RTL logic tests.
-- Neither testing role writes production behavior. A production defect is returned to Orchestrator for Coding.
+- Neither testing role writes production behavior. A production defect is returned to Main for Coding routing.
 - Coding does not own real-browser acceptance. Browser proof required by Test-plan is executed by Testing UI.
 
 Do not broaden a handoff to cross these ownership boundaries merely because a failing assertion is nearby.
@@ -36,7 +36,7 @@ Within one assigned testing Subtask, keep routine test iteration inside the same
 2. diagnose the failure against the current handoff/Test-plan contract;
 3. when the mismatch is proven test-only and inside allowed write scope, correct only that test/harness issue;
 4. rerun and repeat while role, contract, and scope remain unchanged;
-5. return to Orchestrator only when complete or when a production defect, authority ambiguity, scope expansion, dependency, or cross-role validation boundary is reached.
+5. return to Main only when complete or when a production defect, authority ambiguity, scope expansion, dependency, or cross-role validation boundary is reached.
 
 Do not create a new specialist cycle for each ordinary triage/fix/rerun step.
 
@@ -120,13 +120,13 @@ Record:
 - runtime resources acquired/released/unresolved;
 - residual risk or blocker.
 
-If a test exposes a production defect, report it to Orchestrator. Do not silently alter production
+If a test exposes a production defect, report it to Main. Do not silently alter production
 behavior unless the current specialist assignment explicitly authorizes production changes (normally
 it does not).
 
 ## Completion
 
-Return one `test-report` and one `agent-report` object to Orchestrator. Do not persist runtime reports
+Return one `test-report` and one `agent-report` object directly to Main. Do not persist runtime reports
 into the product repository and do not update Jira directly. `completed` requires the assigned test
 scope, required validation evidence, and cleanup of owned runtime resources to be satisfied
 deterministically.
