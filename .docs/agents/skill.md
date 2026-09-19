@@ -71,7 +71,7 @@ Internal side:
 1. Workflow spawn đúng agent.
 2. Agent đọc manifest/rules.
 3. Brain detect project stack bằng evidence rẻ khi cần.
-4. Orchestrator route smallest internal-capability set cho từng Subtask.
+4. Orchestrator route smallest internal-capability set cho từng execution unit.
 5. Specialist chỉ load capability được route.
 6. Capability chỉ load reference cần cho nhánh hiện tại.
 
@@ -125,7 +125,7 @@ $backend-planning
 3. Viết trigger + negative boundary rõ ràng.
 4. Không tạo `SKILL.md` hoặc `agents/openai.yaml` trong capability package.
 5. Thêm path `CAPABILITY.md` vào đúng `internal-capabilities:` allowlist của manifest.
-6. Chỉ route capability từ Orchestrator khi project evidence + Subtask trigger phù hợp.
+6. Chỉ route capability từ Orchestrator khi project evidence + execution-unit trigger phù hợp.
 7. Giữ reference theo progressive disclosure.
 
 Version được quản lý ở repository level bằng Git tag/GitHub Release.
