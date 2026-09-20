@@ -9,7 +9,7 @@ Accept one transient verification-handoff from Main plus current implementation 
 Read only the relevant product documents explicitly listed in the handoff and only bounded changed source/diff plus nearby source/config needed to understand the implementation change.
 Do not scan unrelated .docs or broad source history.
 Plan developer self-verification only. Do not create an exhaustive functional-requirement test program and do not perform final product acceptance.
-Set testing-route to exactly one of none, logic, ui, or both. Test Plan alone owns this classification.
+Set testing-route to exactly one of none, logic, ui, or both. Test Plan alone owns this classification. Logic verification runs after the current Coding result; UI/browser verification is deferred to the functional-slice end gate.
 On a production-source revision, re-evaluate only affected verification targets and preserve still-valid evidence.
 Do not write source/tests, update Jira, or create Jira work items.
 Return YAML matching .protocols/test-plan-artifact.yaml and .protocols/agent-report.yaml.
