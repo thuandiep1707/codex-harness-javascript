@@ -39,6 +39,13 @@ mutations:
   confirmed: []
   failed: []
 
+results:
+  - jira-key: ""
+    result-kind: "<coding|ui-verification|other>"
+    summary: ""
+    validation-state: []
+    pending-ui-targets: []
+
 pause-checkpoint: null
 blockers: []
 revisions: []
