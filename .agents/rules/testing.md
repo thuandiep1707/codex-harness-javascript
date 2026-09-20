@@ -27,9 +27,12 @@ Do not broaden the Test Plan scope, infer additional product requirements, or tu
 - Neither role writes production behavior.
 - A production defect returns to Main for the same owning Coding work item.
 
-## No-loop lifecycle
+## Execution timing and no-loop lifecycle
 
-For one `context-version + source-state + role`, Main dispatches at most one Testing child.
+- Testing Logic runs per owning Coding work item after Test Plan selects `logic|both` for an accepted Coding result.
+- Testing UI runs once as end-to-end verification at the functional-slice end gate when any contributing Test Plan selected `ui|both`.
+- For one Test Plan artifact, Main dispatches at most one Testing Logic child.
+- For one functional-slice UI gate, Main dispatches at most one Testing UI child using the aggregated UI-relevant Test Plan artifacts.
 
 Inside that child, keep routine test iteration local:
 
@@ -50,7 +53,7 @@ Return to Main only when:
 
 A test-only mismatch must not trigger a new Test Plan or new Testing child. A Testing result also never triggers Test Plan directly; the next Test Plan cycle starts only after Main accepts a later Coding result.
 
-A production defect ends the current Testing child. Return the defect evidence in `test-report`; Main sends that confirmed evidence to Scrum Master `progress-sync`, which records `[REVISION]` on the same owning Coding work item and keeps/returns it to the project-valid active state. Main then redispatches Coding on that same work item. Testing never reopens or mutates Jira directly.
+A production defect ends the current Testing child. Return the defect evidence in `test-report` with the affected Coding work-item key(s). Main sends that confirmed evidence to Scrum Master `progress-sync`, which records `[REVISION]` on the same affected Coding work item(s) and keeps/returns them to the project-valid active state. Main then redispatches Coding on those same work items. Testing never reopens or mutates Jira directly.
 
 ## Failure attribution
 
@@ -94,4 +97,4 @@ Track and clean only resources proven to be owned by the current child. Never te
 
 Return one `test-report` and one `agent-report` directly to Main.
 
-The `coding-execution-key` in the test report identifies the owning durable Coding work item; it does not represent a separate Jira testing unit.
+`test-report.scope.coding-execution-keys` identifies the owning durable Coding work item(s); it does not represent separate Jira testing work.
