@@ -26,8 +26,9 @@ Use only when the workflow entry resolver found relevant `.docs/`/contract chang
 
 1. Read the authoritative relevant `.docs/` needed for final acceptance.
 2. Confirm the accepted scope still matches the authoritative context/version used for execution.
-3. Compare requirements with the approved Jira functional-slice/context evidence, durable specialist results, current source changes, and only still-valid validation evidence. A green suite covers only acceptance criteria explicitly evidenced by its report.
-4. Run relevant existing validation when safe and available.
-5. Return one YAML `acceptance-report` with `accepted`, `revision-required`, or `blocked`.
+3. Compare authoritative requirements and acceptance criteria directly against the approved Jira functional-slice/context evidence, durable specialist results, current source changes, design evidence when relevant, and only still-valid developer self-verification evidence.
+4. Treat Test Plan/Testing evidence as supporting evidence for changed behavior and implementation risk, not as functional-requirement coverage. Missing self-test evidence for a particular acceptance criterion is not by itself proof that the criterion is unsatisfied; Brain must evaluate acceptance from authoritative product truth plus actual implementation evidence.
+5. Run relevant existing validation when safe and available.
+6. Return one YAML `acceptance-report` with `accepted`, `revision-required`, or `blocked`.
 
 Do not manage Jira, workflow state, or specialist execution. Do not implement product or test code.
