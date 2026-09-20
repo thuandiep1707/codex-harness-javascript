@@ -25,8 +25,8 @@ Lifecycle state remains separate from execution intent.
 | Design | `design` | Use connected design provider and return design evidence |
 | Test plan | `test-plan` | Transiently decide the smallest developer self-verification route/scope for a Coding change from bounded relevant docs + actual source diff |
 | Coding | `coding` | Implement one bounded durable Coding execution unit using routed internal capabilities |
-| Testing Logic | `testing-logic` | Transiently run bounded non-browser developer self-tests selected by Test Plan |
-| Testing UI | `testing-ui` | Transiently run bounded real-browser developer self-tests selected by Test Plan |
+| Testing Logic | `testing-logic` | Transient per-Coding-work-item non-browser self-test gate selected by Test Plan |
+| Testing UI | `testing-ui` | Transient end-to-end real-browser gate for the functional slice using deferred UI targets |
 
 There is no Orchestrator child in Flow B. The main chat is the Orchestrator.
 
@@ -85,7 +85,7 @@ These are harness semantics, not Jira issue-type names. Scrum Master discovers t
 
 Functional slices remain scope/acceptance boundaries. Durable product specialists such as Design/Coding execute Jira execution units.
 
-Test Plan, Testing Logic, and Testing UI are developer self-verification roles attached transiently to the owning Coding work item. They are not separate Jira work items and do not expand the durable work graph.
+Test Plan and Testing Logic are transiently attached to an owning Coding work item; Testing UI is a transient functional-slice end gate aggregating UI targets from completed Coding work items. None of them is a separate Jira work item or expands the durable work graph.
 
 Scrum Master creates or reconciles the Jira graph. Main decides execution order from confirmed Jira work state and dependency readiness.
 
@@ -109,10 +109,11 @@ $frontend-delivery
 → Main dispatches dependency-ready durable product work
    ├─ Coding
    └─ Design
-→ after each Coding source change: transient Test Plan
-→ none | logic | ui | both
-→ transient Testing Logic/UI only when selected
-→ production defect -> same Coding work item revision
+→ after each accepted Coding result: transient Test Plan
+→ Logic target: Testing Logic now, per Coding work item
+→ UI target: persist pending UI evidence with Coding result
+→ after all durable work in slice: one end-to-end Testing UI gate
+→ production defect -> `[REVISION]` on affected existing Coding work item(s)
 → Main verifies reports, source scope, runtime cleanup, and child closure
 → Scrum Master persists only final durable Coding result/blocker/revision/checkpoint when needed
 → close Scrum Master
