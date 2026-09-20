@@ -1,6 +1,6 @@
 ---
 name: plan-frontend-testing
-description: Plan the smallest developer self-verification scope for one Coding execution unit from bounded relevant product docs, the actual source diff/current source, implementation evidence, and prior verification evidence. Use only for Test Plan; do not write or execute tests.
+description: Plan the smallest developer self-verification scope for one Coding change from bounded relevant product docs, the actual source diff/current source, implementation evidence, and prior verification evidence. Use only for Test Plan; do not write or execute tests.
 ---
 
 # Plan Frontend Testing
