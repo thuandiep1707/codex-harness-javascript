@@ -171,7 +171,7 @@ Main may:
 - resolve the requested public workflow, working project, lifecycle entry, and execution intent;
 - dispatch, retry, interrupt, wait for, close, and verify configured native child agents;
 - choose the next dependency-ready specialist execution unit;
-- compose bounded transient `issue-handoff` objects for durable product work and `verification-handoff` objects for transient developer self-verification;
+- compose bounded transient `issue-handoff` objects for durable product work using compact Jira identity, exact Jira read allowlists, and transient execution controls; compose `verification-handoff` objects for transient developer self-verification;
 - route only manifest-allowed internal capabilities justified by current evidence;
 - capture mechanical Git baseline/diff evidence;
 - reserve and release transient write-scope leases;
@@ -205,7 +205,9 @@ Scrum Master returns `.protocols/jira-work-report.yaml`.
 
 Main consumes the compact report and does not duplicate full Jira issue descriptions into its working context unless a workflow decision specifically requires them.
 
-Specialists never mutate Jira.
+Durable product specialists with their own Jira execution unit (currently Design and Coding) may read Jira directly, but only by the exact keys allowlisted in the current `issue-handoff`: their own execution unit, parent functional-slice boundary, optional work-container when explicitly required, and listed direct dependencies. They must not browse/search unrelated Jira work, broad comment history, sprint state, or sibling branches.
+
+Specialists never mutate Jira. Jira creation, comments, field updates, workflow transitions, and other durable mutations remain Scrum Master responsibilities.
 
 ## Agent delegation transport
 
@@ -442,7 +444,7 @@ Brain may read relevant authoritative documentation and bounded source/config ev
 
 Scrum Master receives approved analysis/workflow evidence plus the Jira context required for its bounded operation. It does not inspect product source for specialist implementation decisions.
 
-Design, Coding, Testing Logic, and Testing UI must never read authoritative product documentation directly. Test Plan is the explicit bounded exception: it may read only the relevant document paths listed in its `verification-handoff`. All specialists otherwise receive only bounded transient handoff + allowed dependency evidence + necessary source/provider state + explicitly routed internal capability paths.
+Design, Coding, Testing Logic, and Testing UI must never read authoritative product documentation directly. Test Plan is the explicit bounded exception: it may read only the relevant document paths listed in its `verification-handoff`. Design and Coding may additionally resolve durable execution context from only the exact Jira keys allowlisted by their `issue-handoff`; Testing roles remain Jira-independent. All specialists otherwise receive only bounded transient handoff + allowed dependency evidence + necessary source/provider state + explicitly routed internal capability paths.
 
 If context/routing is insufficient, return a blocker. Never bypass isolation using chat history or broad source archaeology.
 

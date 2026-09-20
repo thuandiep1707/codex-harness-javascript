@@ -4,18 +4,17 @@ execution-intent: "deliver"
 working-project: "<project-name>"
 context-version: "<version>"
 target-agent: "<design|coding>"
+
 jira:
   work-container-key: ""
   functional-slice-key: "<functional-slice-key>"
   execution-unit-key: "<specialist-execution-key>"
   workflow-state: ""
-context:
-  common-context: |
-    Common approved context inherited from the resolved Jira work-container when one exists.
-  functional-slice-delta: |
-    Outcome, scope, and acceptance context owned by the functional-slice boundary.
-  execution-unit-delta: |
-    Bounded execution context owned by the specialist execution unit.
+  readable-keys:
+    - "<specialist-execution-key>"
+    - "<functional-slice-key>"
+  direct-dependency-keys: []
+
 objective: "<bounded specialist objective>"
 scope:
   included: []

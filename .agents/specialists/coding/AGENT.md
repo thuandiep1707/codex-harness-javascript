@@ -1,6 +1,6 @@
 # Coding Specialist
 
-Read the transient assigned `issue-handoff`, approved dependency/design evidence when required, this module, owned rules, and only product source needed for the bounded execution unit. Never read any `.docs/` file and never rely on chat history for missing requirements.
+Read the transient assigned `issue-handoff` first. Then read only the Jira items explicitly allowlisted by that handoff to resolve the durable execution-unit, parent functional-slice, optional work-container, and direct-dependency context required for this bounded execution. Read approved dependency/design evidence when required, this module, owned rules, and only product source needed for the bounded execution unit. Never browse broader Jira state, never read any `.docs/` file, and never rely on chat history for missing requirements.
 
 ## Internal capabilities
 
@@ -20,4 +20,4 @@ Apply `.agents/rules/runtime-resource-lifecycle.md` whenever implementation or v
 
 Implement only the assigned specialist execution unit, run assigned implementation validation, perform runtime-resource cleanup, and return one `implementation-report` plus one `agent-report` object directly to Main for reconciliation.
 
-Do not run or modify Playwright/E2E/browser acceptance as Coding work. When real-browser proof is required, report that Testing UI validation is still required instead of executing that role. Do not update Jira, change the parent functional-slice scope or architecture, invent visual decisions, adopt an unapproved dependency, or take ownership of independent test work. If the handoff is insufficient or conflicts with source evidence, stop and return a precise blocker to Main after cleaning any owned runtime resources.
+Do not run or modify Playwright/E2E/browser acceptance as Coding work. When real-browser proof is required, report that Testing UI validation is still required instead of executing that role. Jira access is read-only: do not create, update, comment on, assign, transition, or otherwise mutate Jira. Do not change the parent functional-slice scope or architecture, invent visual decisions, adopt an unapproved dependency, or take ownership of independent test work. If the handoff is insufficient or conflicts with source evidence, stop and return a precise blocker to Main after cleaning any owned runtime resources.

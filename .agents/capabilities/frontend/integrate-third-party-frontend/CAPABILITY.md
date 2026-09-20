@@ -13,12 +13,15 @@ architecture into the business domain.
 
 ## Required authority
 
-Read the transient handoff, frontend Coding rules, and only source/configuration in the allowed
-integration scope. Never read `.docs/` or `.analysis/`.
+Read the transient handoff first, then only the Jira execution-unit, parent functional-slice, optional
+work-container, and direct-dependency items explicitly allowlisted by that handoff. Read frontend Coding
+rules and only source/configuration in the allowed integration scope. Never browse broader Jira state or
+read `.docs/` or `.analysis/`.
 
-The handoff must name business ownership, vendor placement, exact artifact identity, integration mode,
-supply-chain approval, runtime controls, rollback/removal expectations, and allowed mutation surface.
-Missing or contradicted authority is a blocker returned to Main.
+The bounded Jira execution context plus transient handoff execution controls must establish business
+ownership, vendor placement, exact artifact identity, integration mode, supply-chain approval, runtime
+controls, rollback/removal expectations, and allowed mutation surface. Missing or contradicted authority
+is a blocker returned to Main.
 
 Inspection/clone permission is not installation, vendoring, publishing, or mutation approval.
 

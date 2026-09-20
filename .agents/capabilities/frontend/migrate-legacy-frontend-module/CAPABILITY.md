@@ -13,12 +13,15 @@ rollback, and legacy removal verifiable.
 
 ## Required authority
 
-Read the transient handoff, approved dependency/design evidence when present, frontend Coding rules,
-and only source in the allowed migration scope. Never read `.docs/` or `.analysis/`.
+Read the transient handoff first, then only the Jira execution-unit, parent functional-slice, optional
+work-container, and direct-dependency items explicitly allowlisted by that handoff. Read approved
+dependency/design evidence when present, frontend Coding rules, and only source in the allowed migration
+scope. Never browse broader Jira state or read `.docs/` or `.analysis/`.
 
-The handoff must name target context/layers, direct consumers, characterization expectations, allowed
-migration slice, coexistence/cutover/rollback controls, and unresolved architecture decisions. Missing
-or contradicted authority is a blocker returned to Main.
+The bounded Jira execution context plus transient handoff execution controls must establish target
+context/layers, direct consumers, characterization expectations, allowed migration slice,
+coexistence/cutover/rollback controls, and unresolved architecture decisions. Missing or contradicted
+authority is a blocker returned to Main.
 
 Do not use a migration execution unit to approve a new bounded context, data-flow/auth contract, template API,
 dependency, or project-wide migration convention.

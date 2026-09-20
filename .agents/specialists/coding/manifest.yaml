@@ -13,6 +13,7 @@ produces:
 context:
   allowed:
     - transient-issue-handoff
+    - bounded-jira-read-context
     - approved-dependency-evidence
     - <working-project>/**
   forbidden:
@@ -33,3 +34,4 @@ capabilities:
   required:
     - workspace-read
     - workspace-write
+    - jira-read

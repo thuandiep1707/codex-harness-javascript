@@ -9,6 +9,7 @@ produces:
 context:
   allowed:
     - transient-issue-handoff
+    - bounded-jira-read-context
     - design-provider-state
   forbidden:
     - <working-project>/.docs/**
@@ -21,4 +22,5 @@ rules:
 capabilities:
   required:
     - design-provider
+    - jira-read
   optional: []

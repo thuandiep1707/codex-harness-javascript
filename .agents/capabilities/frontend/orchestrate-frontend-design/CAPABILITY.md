@@ -1,20 +1,21 @@
 ---
 name: orchestrate-frontend-design
-description: Use an already-connected Figma, Stitch, or equivalent design provider to create or revise frontend visual evidence from one complete transient issue handoff, then return stable provider identity, previews, decisions, constraints, and approval state. Use only for the Design specialist; never read project .docs, implement product code, or substitute an agent-authored mockup when the provider is unavailable.
+description: Use an already-connected Figma, Stitch, or equivalent design provider to create or revise frontend visual evidence from one bounded Jira execution context plus transient issue handoff, then return stable provider identity, previews, decisions, constraints, and approval state. Use only for the Design specialist; never read project .docs, implement product code, mutate Jira, or substitute an agent-authored mockup when the provider is unavailable.
 ---
 
 # Orchestrate Frontend Design
 
 ## 1. Validate the handoff
 
-Read only the assigned transient `issue-handoff` object. Confirm target users/content, required
-screens/states, fixed constraints, acceptance criteria, provider requirement, and artifact expectations
-are sufficient. Return `context-insufficient` instead of reading `.docs/`, source, or chat history.
+Read the assigned transient `issue-handoff` first, then only the Jira items explicitly allowlisted by
+that handoff. Confirm target users/content, required screens/states, fixed constraints, acceptance
+criteria, provider requirement, and artifact expectations are sufficient. Return `context-insufficient`
+instead of reading broader Jira state, `.docs/`, source, or chat history.
 
 ## 2. Select the connected provider
 
-Honor the provider fixed by the handoff when its capability is connected/authorized. Use another
-provider only when the handoff explicitly permits it.
+Honor the provider fixed by the bounded Jira execution context or handoff when its capability is
+connected/authorized. Use another provider only when that bounded authority explicitly permits it.
 
 Load one provider reference as needed:
 
@@ -26,8 +27,8 @@ create a local substitute.
 
 ## 3. Execute and inspect
 
-Read `references/prompt-orchestration.md` as needed. Build provider prompts only from the transient
-handoff, call the provider, and inspect the returned artifact. Iterate only for objective mismatch,
+Read `references/prompt-orchestration.md` as needed. Build provider prompts only from the bounded Jira
+execution context plus transient handoff, call the provider, and inspect the returned artifact. Iterate only for objective mismatch,
 provider error, or explicit feedback.
 
 Never send credentials/unrelated project content. Generated HTML/CSS/component code remains design
