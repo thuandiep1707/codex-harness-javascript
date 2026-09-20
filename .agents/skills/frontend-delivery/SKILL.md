@@ -52,14 +52,14 @@ Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jir
 8. Before writable specialist dispatch, Main captures the working-project source baseline, reserves exact allowed write scope, and prevents overlapping writable leases.
 9. Main dispatches dependency-ready specialists within runtime/write-scope capacity. A retry is allowed only after proving the prior attempt had no spawn side effect.
 10. For each returned durable-work specialist result, Main verifies assigned scope, context-version, required evidence, source diff, runtime cleanup, and child closure before accepting it.
-11. Each accepted Coding result triggers exactly one Test Plan cycle for that Coding change. Main composes one transient `verification-handoff` from the relevant docs, docs baseline, actual source diff/current source, and implementation report.
-12. Test Plan alone decides `testing-route: none|logic|ui|both` and the bounded self-test scope. Main dispatches Test Plan once for that accepted Coding result.
-13. Main follows the route mechanically. The Jira Coding work item remains non-terminal during self-verification. Every selected Testing child returns one `test-report` to Main and keeps routine test-only diagnose/fix/rerun work inside that child.
-14. If a Testing report identifies a production defect, Main dispatches Scrum Master `progress-sync` with the confirmed defect evidence. Scrum Master writes a durable `[REVISION]` comment and keeps or returns the same Coding work item to the project-valid active/in-progress state. Main then redispatches Coding on that same work item.
-15. Testing results and test-file changes never trigger Test Plan directly. Only the next accepted Coding result starts the next Test Plan cycle.
-16. If the Test Plan route is `none` or all selected Testing reports pass, Main dispatches Scrum Master `progress-sync` with the confirmed Coding result plus self-verification evidence and requests the project-valid completion transition for that Coding work item.
-17. Only after Scrum Master confirms completion may Main treat that Coding work item's dependency as satisfied.
-18. Repeat dependency routing until the affected functional-slice scope is acceptance-ready.
+11. Each accepted Coding result triggers exactly one Test Plan cycle for that Coding change.
+12. If Test Plan selects `logic|both`, Main dispatches exactly one Testing Logic child for that Coding work item. A Logic production defect is returned in `test-report`, persisted by Scrum Master as `[REVISION]` on the same work item, and Coding is redispatched there.
+13. When Logic passes or is not required, Main dispatches Scrum Master `progress-sync` to persist the Coding `[RESULT]` and complete that work item. If Test Plan selected `ui|both`, the durable result also stores the bounded pending UI verification targets plus their owning Coding key.
+14. Only after Scrum Master confirms Coding completion may Main treat that dependency as satisfied and continue dependency routing.
+15. When all required durable work for a functional slice is complete, Main gathers any pending UI targets from those durable Coding results. If targets exist, Main dispatches exactly one Testing UI child for the functional-slice end-to-end gate.
+16. Testing UI returns one `test-report`. On pass, Main persists the functional-slice UI verification result through Scrum Master `progress-sync`. On a production defect, Main sends the affected Coding key(s) and evidence to Scrum Master, which records `[REVISION]` and returns those same Coding work items to active/in-progress before Main redispatches Coding.
+17. Testing results and test-file changes never trigger Test Plan directly. Only a later accepted Coding result starts another Test Plan cycle.
+18. A functional slice becomes acceptance-ready only after all required durable work is complete and its UI gate is passed or not required.
 19. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
 20. If Brain returns `blocked` or `revision-required`, keep the functional-slice boundary non-terminal and route only the affected scope through revalidation/replan/revision.
 21. If Brain returns `accepted`, Main dispatches Scrum Master `finalize` with the current acceptance report.
