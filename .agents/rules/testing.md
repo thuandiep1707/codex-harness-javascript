@@ -2,7 +2,7 @@
 
 Apply this rule only to transient Testing Logic or Testing UI self-verification selected by the current Test Plan for one owning Coding work item.
 
-Testing is not a separate Jira work stream. Test Plan, Testing Logic, and Testing UI do not create Jira execution units, do not update Jira, and do not perform final product acceptance.
+Testing is not a separate Jira work stream. Test Plan, Testing Logic, and Testing UI do not create Jira work items, do not update Jira, and do not perform final product acceptance.
 
 ## Authority and boundary
 
