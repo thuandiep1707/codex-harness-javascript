@@ -91,7 +91,14 @@ Allowed durable categories:
 - material `[REVISION]`;
 - confirmed scope/workflow-state changes.
 
-Developer self-verification (Test Plan, Testing Logic, Testing UI) is transient execution owned by Main and must not create or materialize Jira execution units.
+Developer self-verification (Test Plan, Testing Logic, Testing UI) is transient execution owned by Main and must not create separate Jira work items.
+
+For a Coding work item, `progress-sync` may perform only confirmed lifecycle mutations supplied by Main:
+- before Coding dispatch, transition the same item from its project-valid todo/open state to the resolved active/in-progress state when a transition is required;
+- after self-verification passes (or Test Plan returns `none`), persist the final Coding `[RESULT]` plus verification evidence and transition that same item to the project-valid completed state;
+- when Testing reports a production defect, write a concise durable `[REVISION]` comment and keep or return that same item to the resolved active/in-progress state.
+
+Never create a separate testing/retest/fix work item for this lifecycle.
 
 Resolve any project-specific target field or workflow transition from current Jira metadata before mutation.
 
