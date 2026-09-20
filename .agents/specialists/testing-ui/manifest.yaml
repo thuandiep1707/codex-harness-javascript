@@ -1,6 +1,6 @@
 name: testing-ui
 role: developer-ui-self-test
-description: Execute bounded real-browser developer self-verification for one parent Coding execution unit according to the current Test Plan.
+description: Execute bounded real-browser developer self-verification for one owning Coding work item according to the current Test Plan.
 accepts:
   - verification-handoff
   - test-plan-artifact
