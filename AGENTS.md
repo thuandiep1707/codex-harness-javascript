@@ -120,7 +120,7 @@ Developer self-verification evidence is scoped to the Coding change and is not a
 
 - after a Coding source change, Test Plan reads only the handoff-listed relevant docs plus the bounded actual source diff/current source needed to understand that change;
 - Test Plan alone decides the smallest self-test route `none|logic|ui|both` and verification scope;
-- Test Plan/Testing Logic/Testing UI are transient verification children of the same Coding execution unit, not Jira execution units and not a standalone QA workflow;
+- Test Plan/Testing Logic/Testing UI are transient verification children of the same owning Coding work item, not separate Jira work items and not a standalone QA workflow;
 - product acceptance remains Brain's responsibility; Test Plan does not attempt exhaustive functional-requirement coverage;
 - a relevant source/document change invalidates only verification evidence whose covered behavior/source state changed;
 - for the same `context-version + source-state`, Main must reuse valid Test Plan/test evidence instead of spawning duplicate verification children.
@@ -294,8 +294,8 @@ For `new`:
 9. Main dispatches Test Plan once for that `context-version + source-state`. Test Plan alone returns `testing-route: none|logic|ui|both` and the bounded verification targets/write scope.
 10. Main mechanically follows that route: `none` spawns no testing child; `logic` spawns one Testing Logic child; `ui` spawns one Testing UI child; `both` spawns at most one of each for that source state. Scrum Master is not involved.
 11. Each Testing child keeps routine test-only diagnose/fix/rerun work inside the same child. Main must not spawn another Test Plan/Testing child while the covered source state is unchanged.
-12. If selected testing reports production defects, Main collects the reports for that source state and routes one bounded revision back to the same Coding execution unit. Only after production source or relevant product context changes may Main run Test Plan again, and that revalidation covers only the affected delta.
-13. A Coding execution unit reaches its durable completed/result boundary only after its current self-verification route is `none` or all selected self-tests are satisfied. Then Main may dispatch Scrum Master `progress-sync` with the confirmed final Coding result/validation evidence.
+12. If selected testing reports production defects, Main collects the reports for that source state and routes one bounded revision back to the same owning Coding work item. Only after production source or relevant product context changes may Main run Test Plan again, and that revalidation covers only the affected delta.
+13. The owning Coding work item reaches its durable completed/result boundary only after its current self-verification route is `none` or all selected self-tests are satisfied. Then Main may dispatch Scrum Master `progress-sync` with the confirmed final Coding result/validation evidence.
 14. Main repeats dependency routing until the affected functional-slice scope is acceptance-ready.
 15. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
 16. If Brain returns `revision-required` or `blocked`, Main keeps the Jira scope non-terminal and routes only the affected scope through revalidation/replan/revision.
