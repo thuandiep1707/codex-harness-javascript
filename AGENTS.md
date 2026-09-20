@@ -425,10 +425,10 @@ One child agent = one configured role. Never execute another role.
 | `brain` | `.agents/brain/` | Requirements, architecture reasoning, stack detection, ambiguity, revalidation, final acceptance |
 | `scrum-master` | `.agents/scrum-master/` | Jira schema/work-graph management and authorized durable Jira mutations |
 | `design` | `.agents/specialists/design/` | External design-provider execution |
-| `test-plan` | `.agents/specialists/test-plan/` | Risk-based test-plan result and testing route |
+| `test-plan` | `.agents/specialists/test-plan/` | Developer self-verification planning and authoritative `none|logic|ui|both` route |
 | `coding` | `.agents/specialists/coding/` | Bounded production implementation using routed internal capabilities |
-| `testing-logic` | `.agents/specialists/testing-logic/` | Unit/component/integration tests without a real browser |
-| `testing-ui` | `.agents/specialists/testing-ui/` | Real-browser UI validation and Playwright execution |
+| `testing-logic` | `.agents/specialists/testing-logic/` | Transient non-browser self-tests for the owning Coding work item |
+| `testing-ui` | `.agents/specialists/testing-ui/` | Transient real-browser self-tests for the owning Coding work item |
 
 Main is the Orchestrator and is not represented by a child-agent module.
 
@@ -442,7 +442,7 @@ Brain may read relevant authoritative documentation and bounded source/config ev
 
 Scrum Master receives approved analysis/workflow evidence plus the Jira context required for its bounded operation. It does not inspect product source for specialist implementation decisions.
 
-Specialists must never read authoritative product documentation directly. They receive only bounded transient handoff + allowed dependency evidence + necessary source/provider state + explicitly routed internal capability paths.
+Design, Coding, Testing Logic, and Testing UI must never read authoritative product documentation directly. Test Plan is the explicit bounded exception: it may read only the relevant document paths listed in its `verification-handoff`. All specialists otherwise receive only bounded transient handoff + allowed dependency evidence + necessary source/provider state + explicitly routed internal capability paths.
 
 If context/routing is insufficient, return a blocker. Never bypass isolation using chat history or broad source archaeology.
 
