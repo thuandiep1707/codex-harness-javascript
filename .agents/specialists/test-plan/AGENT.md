@@ -37,7 +37,7 @@ Do not request a new Testing child merely because a previous test failed:
 
 - a test-only mismatch remains inside the current Testing child's routine fix/rerun loop;
 - a production defect returns to the same owning Coding work item;
-- run Test Plan again only after production source or relevant product context actually changes.
+- Main invokes Test Plan once after each accepted Coding result; Testing results and test-file changes do not trigger another Test Plan cycle.
 
 ## Output
 
