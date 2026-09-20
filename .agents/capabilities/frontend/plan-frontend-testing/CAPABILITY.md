@@ -30,12 +30,12 @@ Identify only verification targets justified by the actual change and its releva
 
 Choose exactly one route:
 
-- `none`: no additional Logic/UI self-test is justified for the current delta;
-- `logic`: unit/component/integration self-test is sufficient;
-- `ui`: real-browser UI self-test is required;
-- `both`: both evidence classes are required.
+- `none`: no additional Logic/UI self-test is justified for the current Coding change;
+- `logic`: unit/component/integration self-test is required after this Coding result;
+- `ui`: real-browser UI self-test is required at the functional-slice end gate;
+- `both`: run Logic after this Coding result and retain UI/browser targets for the functional-slice end gate.
 
-Test Plan alone owns this classification. Main and Scrum Master must not reinterpret it.
+Test Plan alone owns this classification. Main and Scrum Master must not reinterpret it. Timing is fixed by the harness: Logic is per Coding result; UI is end-to-end at the functional-slice end gate.
 
 Do not require a test merely because an acceptance criterion exists. Relevant product requirements provide behavioral context; the source change and risk determine the developer self-test scope.
 
