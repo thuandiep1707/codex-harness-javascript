@@ -20,7 +20,8 @@ source:
 
 implementation-evidence:
   implementation-report: null # plan/logic path
-  test-plan-artifacts: []      # one for logic; aggregated UI-relevant plans for final UI
+  test-plan-artifact: null     # logic path
+  durable-ui-targets: []       # final UI path; persisted from completed Coding results
   previous-test-reports: []
 
 verification:
