@@ -315,7 +315,7 @@ Scrum Master discovers the current project's available Jira work types, fields, 
 
 It does not start by splitting a feature into Design / Coding / Testing buckets or by file/component ownership.
 
-Test Plan, Testing Logic, and Testing UI are transient developer self-verification attached to the owning Coding execution unit. They never become Jira execution units in the bundled frontend delivery workflow. Routine test-only diagnose/fix/rerun stays inside the same Testing child.
+Test Plan, Testing Logic, and Testing UI are transient developer self-verification attached to the owning Coding work item. They never become separate Jira work items in the bundled frontend delivery workflow. Routine test-only diagnose/fix/rerun stays inside the same Testing child.
 
 Completing all executable execution units makes the functional-slice boundary `acceptance-ready`; this is a harness semantic state, not a literal Jira status. Brain performs final acceptance first; only an accepted result followed by finalization may transition that boundary through a project-valid transition to the project's terminal/completed workflow state.
 
@@ -382,8 +382,8 @@ Runtime-resource events and child/resource ledgers are transient control-plane e
 | `design` | Bounded external design-provider execution |
 | `test-plan` | Decide the smallest developer self-verification route/scope from bounded relevant docs plus the actual Coding source change |
 | `coding` | Bounded production implementation using only routed capabilities |
-| `testing-logic` | Transient unit/component/integration self-tests selected by Test Plan for the parent Coding execution unit |
-| `testing-ui` | Transient Playwright/real-browser self-tests selected by Test Plan for the parent Coding execution unit |
+| `testing-logic` | Transient unit/component/integration self-tests selected by Test Plan for the owning Coding work item |
+| `testing-ui` | Transient Playwright/real-browser self-tests selected by Test Plan for the owning Coding work item |
 
 Specialists do not own Jira mutation. Design/Coding/Testing do not read product docs directly; Test Plan may read only the relevant document paths explicitly listed in its `verification-handoff` plus the bounded actual source diff/current source. Test Plan owns `none | logic | ui | both`; Main follows that route mechanically and Scrum Master is not involved in self-test routing.
 
