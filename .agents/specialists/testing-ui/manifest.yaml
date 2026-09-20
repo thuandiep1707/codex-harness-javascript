@@ -3,7 +3,7 @@ role: developer-ui-self-test
 description: Execute one aggregated end-to-end real-browser self-verification gate for a functional slice from all contributing UI-relevant Test Plans.
 accepts:
   - verification-handoff
-  - test-plan-artifacts
+  - durable-ui-verification-targets
   - product-source
   - test-runner-configuration
 produces:
