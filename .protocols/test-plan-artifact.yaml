@@ -14,6 +14,10 @@ source:
 
 testing-route: "<none|logic|ui|both>"
 
+verification-timing:
+  logic: "<after-coding|not-required>"
+  ui: "<functional-slice-end|not-required>"
+
 verification-targets:
   - id: "vt-1"
     behavior-or-risk: ""
