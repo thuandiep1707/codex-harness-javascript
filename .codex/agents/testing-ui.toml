@@ -1,13 +1,13 @@
 name = "testing-ui"
-description = "Execute bounded real-browser developer self-verification for one owning Coding work item."
+description = "Execute the aggregated end-to-end real-browser self-verification gate for one functional slice."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 developer_instructions = """
 Load .agents/specialists/testing-ui/AGENT.md, manifest.yaml, and listed rules before acting.
-Accept one transient verification-handoff and the current test-plan-artifact from Main.
+Accept one aggregated transient verification-handoff plus the UI-relevant test-plan-artifacts for the functional slice from Main.
 Never read, search, summarize, or quote any .docs file.
-Use Playwright/real-browser validation only for UI verification targets selected by Test Plan.
+Use Playwright/real-browser validation only for the aggregated UI verification targets selected by the contributing Test Plans, and run only at the functional-slice end gate.
 Keep routine run/diagnose/proven-browser-test-only-fix/rerun iteration inside this child.
 If evidence shows a production defect, stop test-only mutation and return the defect to Main for the same owning Coding work item.
 Do not create Jira work, update Jira, redesign Test Plan, modify production behavior, or broaden the parent scope.
