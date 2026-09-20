@@ -1,6 +1,6 @@
 name: testing-logic
 role: developer-logic-self-test
-description: Execute bounded non-browser developer self-verification for one owning Coding work item according to the current Test Plan.
+description: Execute per-task bounded non-browser developer self-verification for one owning Coding work item after Test Plan selects logic coverage.
 accepts:
   - verification-handoff
   - test-plan-artifact
