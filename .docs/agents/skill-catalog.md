@@ -78,4 +78,4 @@ project evidence
 
 Main chỉ route capability nằm trong specialist manifest allowlist và được current evidence + execution-unit trigger yêu cầu. Capability không được route thì specialist không load. Nếu stack evidence thiếu/conflict thì giữ unresolved thay vì default sang shadcn/Lucide/TanStack/Zustand hoặc library khác.
 
-Test Plan, Testing Logic và Testing UI là transient developer self-verification; chúng không tạo Jira execution unit. Test Plan quyết định `none|logic|ui|both`; Main chỉ dispatch mechanically.
+Test Plan, Testing Logic và Testing UI là transient developer self-verification; chúng không tạo Jira work item. Test Plan quyết định `none|logic|ui|both`; Main chỉ dispatch mechanically.
