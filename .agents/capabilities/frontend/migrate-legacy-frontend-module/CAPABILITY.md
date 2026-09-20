@@ -32,7 +32,7 @@ the assigned slice. Read `references/characterization-and-cutover.md` only as ne
 observable behavior and distinguish known preserved bugs from explicitly approved changes.
 
 Testing is not self-routed from this skill; execute only validation assigned to the current Coding
-execution unit. Separate testing execution units are routed by Main.
+execution unit. Developer self-verification is routed separately by Main through transient Test Plan / Testing Logic / Testing UI roles without creating Jira testing work items.
 
 ### 2. Expose seams
 
