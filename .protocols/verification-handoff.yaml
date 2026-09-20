@@ -5,7 +5,7 @@ phase: "<plan|logic|ui>"
 
 parent:
   functional-slice-key: "<functional-slice-key>"
-  coding-execution-key: "<coding-execution-key>"
+  coding-execution-keys: [] # exactly one for plan/logic; one-or-more aggregated owners for final UI
 
 documents:
   relevant-documents: []
@@ -19,8 +19,8 @@ source:
   allowed-read-paths: []
 
 implementation-evidence:
-  implementation-report: null
-  previous-test-plan: null
+  implementation-report: null # plan/logic path
+  test-plan-artifacts: []      # one for logic; aggregated UI-relevant plans for final UI
   previous-test-reports: []
 
 verification:
