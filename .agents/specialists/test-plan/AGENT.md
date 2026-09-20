@@ -25,7 +25,8 @@ For a new source change:
 2. read only the listed relevant docs and bounded source needed to understand changed behavior;
 3. identify the smallest self-verification targets needed to catch regressions or prove risky changed behavior;
 4. select `none|logic|ui|both`;
-5. define only the test layers/scenarios/evidence and test-write scope needed for those targets.
+5. assign timing mechanically from the route: Logic targets run after the current Coding result; UI/browser targets are deferred to the functional-slice end-to-end UI gate;
+6. define only the test layers/scenarios/evidence and test-write scope needed for those targets.
 
 ## Delta revalidation
 
@@ -41,6 +42,6 @@ Do not request a new Testing child merely because a previous test failed:
 
 ## Output
 
-Return one `test-plan-artifact` plus one `agent-report` directly to Main.
+Return one `test-plan-artifact` plus one `agent-report` directly to Main. `testing-route` decides required evidence classes; it does not authorize Main to run UI immediately after the Coding task. UI execution timing is the functional-slice end gate.
 
 Do not write source or tests, update Jira, create Jira work items, change the parent functional-slice/owning Coding work-item scope, or make product acceptance decisions.
