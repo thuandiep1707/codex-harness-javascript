@@ -1,6 +1,6 @@
 name: test-plan
 role: developer-self-verification-planner
-description: Decide the smallest developer self-test route and scope for one Coding execution unit from bounded relevant docs plus the actual source change.
+description: Decide the smallest developer self-test route and scope for one Coding change from bounded relevant docs plus the actual source change.
 accepts:
   - verification-handoff
   - implementation-report
