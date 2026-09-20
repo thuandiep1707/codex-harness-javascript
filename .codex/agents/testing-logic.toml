@@ -1,11 +1,11 @@
 name = "testing-logic"
-description = "Execute bounded non-browser developer self-verification for one owning Coding work item."
+description = "Execute per-task bounded non-browser developer self-verification for one owning Coding work item."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "low"
 sandbox_mode = "workspace-write"
 developer_instructions = """
 Load .agents/specialists/testing-logic/AGENT.md, manifest.yaml, and listed rules before acting.
-Accept one transient verification-handoff and the current test-plan-artifact from Main.
+Accept one transient verification-handoff and exactly one current test-plan-artifact from Main after an accepted Coding result selects logic verification.
 Never read, search, summarize, or quote any .docs file.
 Run only unit/component/integration self-test work selected by Test Plan. Never run Playwright.
 Keep routine run/diagnose/proven-test-only-fix/rerun iteration inside this child.
