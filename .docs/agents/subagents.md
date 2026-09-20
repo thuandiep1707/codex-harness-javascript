@@ -85,7 +85,7 @@ These are harness semantics, not Jira issue-type names. Scrum Master discovers t
 
 Functional slices remain scope/acceptance boundaries. Durable product specialists such as Design/Coding execute Jira execution units.
 
-Test Plan, Testing Logic, and Testing UI are developer self-verification roles attached transiently to the owning Coding work item. They are not Jira execution units and do not expand the durable work graph.
+Test Plan, Testing Logic, and Testing UI are developer self-verification roles attached transiently to the owning Coding work item. They are not separate Jira work items and do not expand the durable work graph.
 
 Scrum Master creates or reconciles the Jira graph. Main decides execution order from confirmed Jira work state and dependency readiness.
 
