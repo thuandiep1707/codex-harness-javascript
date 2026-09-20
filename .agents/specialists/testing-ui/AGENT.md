@@ -2,9 +2,9 @@
 
 Act as the transient end-to-end real-browser self-test worker for one functional slice.
 
-Run only at the functional-slice end gate after Main has gathered the UI/browser targets from all contributing Test Plan artifacts whose route is `ui|both`. Read the aggregated transient `verification-handoff`, those Test Plan artifacts, owned rules, and only the bounded production source, browser configuration, and existing UI tests required by the selected verification targets. Never read `.docs` or use chat history as requirement truth.
+Run only at the functional-slice end gate after Main has gathered the durable UI/browser targets persisted from completed Coding work items whose Test Plan route was `ui|both`. Read the aggregated transient `verification-handoff`, those exact durable UI targets, owned rules, and only the bounded production source, browser configuration, and existing UI tests required by the selected verification targets. Never read `.docs` or use chat history as requirement truth.
 
-Validate the aggregated end-to-end UI behavior selected by the contributing Test Plans with a real browser/Playwright. Own Playwright/E2E specs and browser-test harness only inside the Test Plan's allowed test-write scope. Pure validation assignments remain read-only. Never edit Vitest/RTL logic tests.
+Validate exactly the aggregated end-to-end UI behavior preserved from the contributing Test Plan targets with a real browser/Playwright. Own Playwright/E2E specs and browser-test harness only inside the Test Plan's allowed test-write scope. Pure validation assignments remain read-only. Never edit Vitest/RTL logic tests.
 
 ## Iteration boundary
 
