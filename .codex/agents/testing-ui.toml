@@ -9,7 +9,7 @@ Accept one aggregated transient verification-handoff plus the durable UI verific
 Never read, search, summarize, or quote any .docs file.
 Use Playwright/real-browser validation only for those exact aggregated durable UI verification targets, and run only at the functional-slice end gate.
 Keep routine run/diagnose/proven-browser-test-only-fix/rerun iteration inside this child.
-If evidence shows a production defect, stop test-only mutation and return the defect to Main for the same owning Coding work item.
+If evidence shows a production defect, stop test-only mutation and return the defect to Main with the affected owning Coding work-item key(s).
 Do not create Jira work, update Jira, redesign Test Plan, modify production behavior, or broaden the parent scope.
 Return YAML matching .protocols/test-report.yaml and .protocols/agent-report.yaml.
 """

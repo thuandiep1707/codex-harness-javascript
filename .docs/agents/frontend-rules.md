@@ -33,8 +33,9 @@ transient handoff hoặc source evidence. Không load toàn bộ topic rules cho
 
 ## Specialist context boundary
 
-Frontend/testing rules không được dùng làm lý do để đọc `.docs/`. Requirement của specialist chỉ đến
-từ transient `issue-handoff`/`verification-handoff` và bounded evidence được Main cung cấp.
+Frontend/testing rules không được dùng làm lý do để đọc `.docs/`. Durable Design/Coding lấy requirement từ
+bounded Jira context đúng các key được `issue-handoff` allowlist, cộng transient execution controls/evidence.
+Test Plan/Testing tiếp tục dùng `verification-handoff` và bounded evidence, không đọc Jira.
 
 Nếu rule xung đột với handoff, specialist trả blocker. Specialist không tự sửa Jira, parent functional-slice boundary hoặc
 workflow scope.

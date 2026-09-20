@@ -13,7 +13,8 @@
 - Brain owns requirement analysis, authority readiness, project-stack discovery, targeted revalidation, and final acceptance.
 - Scrum Master owns Jira schema discovery, semantic work-graph creation/reconciliation, compact Jira state synchronization, and authorized durable Jira mutations.
 - Five isolated specialist roles: Design and Coding own durable product execution; Test Plan, Testing Logic, and Testing UI are transient developer self-verification roles.
-- Durable product work uses bounded `issue-handoff`; developer self-verification uses bounded `verification-handoff` with relevant docs/source evidence.
+- Durable product work uses compact bounded `issue-handoff` objects carrying Jira identity/read allowlists plus execution controls; Design/Coding resolve their durable execution context directly from only those allowlisted Jira keys.
+- Developer self-verification uses bounded `verification-handoff` with relevant docs/source evidence and remains Jira-independent.
 - Specialists return structured results directly to Main and do not mutate Jira.
 - Removed baseline hard-locks that assumed shadcn/Lucide/Tailwind/TanStack merely because control-repo knowledge exists.
 - Jira is durable work + execution-context truth.

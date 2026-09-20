@@ -97,7 +97,7 @@ Ví dụ `@mui/material` xuất hiện trong project là evidence để route ca
 ## Context isolation
 
 - Brain có thể đọc relevant `.docs` và bounded source/config evidence cho stack discovery.
-- Main chỉ giữ compact orchestration/Jira state cần cho routing; Brain đọc authoritative docs; Scrum Master xử lý Jira. Design/Coding/Testing không đọc `.docs`; Test Plan chỉ được đọc các relevant document paths được liệt kê rõ trong `verification-handoff`.
+- Main chỉ giữ compact orchestration/Jira state cần cho routing; Brain đọc authoritative docs; Scrum Master sở hữu Jira mutation. Design/Coding không đọc `.docs` nhưng được read-only đúng Jira keys được allowlist trong `issue-handoff`; Testing không đọc Jira; Test Plan chỉ được đọc các relevant document paths được liệt kê rõ trong `verification-handoff`.
 - Specialist tuyệt đối không đọc `.docs`.
 - Internal capability không mở rộng context authority của agent owner.
 

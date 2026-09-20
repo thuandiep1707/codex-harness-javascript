@@ -430,7 +430,7 @@ One child agent = one configured role. Never execute another role.
 | `test-plan` | `.agents/specialists/test-plan/` | Developer self-verification planning and authoritative `none|logic|ui|both` route |
 | `coding` | `.agents/specialists/coding/` | Bounded production implementation using routed internal capabilities |
 | `testing-logic` | `.agents/specialists/testing-logic/` | Transient non-browser self-tests for the owning Coding work item |
-| `testing-ui` | `.agents/specialists/testing-ui/` | Transient real-browser self-tests for the owning Coding work item |
+| `testing-ui` | `.agents/specialists/testing-ui/` | Aggregated transient real-browser end-to-end gate for one functional slice, covering UI targets from one-or-more Coding work items |
 
 Main is the Orchestrator and is not represented by a child-agent module.
 

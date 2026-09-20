@@ -53,9 +53,9 @@ Independent specialist work may run concurrently only when existing runtime-capa
 
 Scrum Master is the Jira write authority for workflow structure and durable workflow updates.
 
-Specialists do not access Jira directly in the current Flow B contract. Scrum Master owns Jira reads/mutations and Main supplies specialists only the bounded Jira-derived handoff/evidence required for execution.
+Durable product specialists with their own execution unit (currently Design and Coding) may read Jira directly, but only by the exact keys allowlisted in their current `issue-handoff`: own execution unit, parent functional slice, optional work-container when required, and listed direct dependencies. They must not browse/search unrelated Jira work or mutate Jira. Test Plan and Testing remain Jira-independent.
 
-Main should retain only compact Jira execution state needed for routing, such as issue keys, dependencies, statuses, context version, and target role. Full Jira issue content should not be copied into Main unless a workflow decision specifically requires it.
+Main should retain only compact Jira execution state needed for routing, such as issue keys, dependencies, statuses, context version, and target role. Full Jira issue content should not be copied into Main or relayed through the handoff unless a workflow decision specifically requires it.
 
 ## Internal capability model
 
@@ -95,7 +95,7 @@ Brain may read authoritative documentation plus bounded source/config evidence r
 
 Scrum Master receives the approved analysis/workflow request necessary to create or reconcile Jira state and returns a compact Jira work report.
 
-Design/Coding remain bounded by their durable issue handoff. Test Plan is the explicit exception to the normal specialist document boundary: it may read only the relevant product documents listed in its transient verification handoff plus the bounded actual source diff/current source needed to plan self-verification. Testing Logic/UI do not read product docs and consume Test Plan's bounded targets. No specialist may use chat history as requirement truth.
+Design/Coding remain bounded by their durable issue handoff and may resolve durable execution context only from the exact Jira keys allowlisted by that handoff. Test Plan is the explicit exception to the normal specialist document boundary: it may read only the relevant product documents listed in its transient verification handoff plus the bounded actual source diff/current source needed to plan self-verification. Testing Logic/UI do not read product docs and consume Test Plan's bounded targets. No specialist may use chat history as requirement truth.
 
 ## Delivery sequence
 

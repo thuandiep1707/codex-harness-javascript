@@ -324,7 +324,8 @@ Context is inherited rather than duplicated:
 - optional work-container stores common approved product and architecture context when the Jira model provides that level;
 - functional-slice stores the outcome/scope/acceptance delta;
 - execution-unit stores the specialist execution delta and routed capability identifiers;
-- Specialist receives a transient handoff and does not independently rebuild full product context.
+- Main gives durable Design/Coding workers a compact transient handoff with Jira identity, exact read allowlists, and execution controls;
+- Design/Coding resolve only those allowlisted Jira items directly instead of Main relaying full Jira descriptions; Test Plan/Testing remain Jira-independent.
 
 ## Pause / Resume
 
@@ -383,9 +384,9 @@ Runtime-resource events and child/resource ledgers are transient control-plane e
 | `test-plan` | Decide the smallest developer self-verification route/scope from bounded relevant docs plus the actual Coding source change |
 | `coding` | Bounded production implementation using only routed capabilities |
 | `testing-logic` | Transient unit/component/integration self-tests selected by Test Plan for the owning Coding work item |
-| `testing-ui` | Transient Playwright/real-browser self-tests selected by Test Plan for the owning Coding work item |
+| `testing-ui` | Aggregated transient Playwright/real-browser end-to-end gate for one functional slice, covering UI targets from one-or-more Coding work items |
 
-Specialists do not own Jira mutation. Design/Coding/Testing do not read product docs directly; Test Plan may read only the relevant document paths explicitly listed in its `verification-handoff` plus the bounded actual source diff/current source. Test Plan owns `none | logic | ui | both`; Main follows that route mechanically and Scrum Master is not involved in self-test routing.
+Specialists do not own Jira mutation. Design/Coding may read only the exact Jira keys allowlisted by their `issue-handoff`, but do not read product docs directly. Test Plan may read only the relevant document paths explicitly listed in its `verification-handoff` plus the bounded actual source diff/current source; Testing roles remain Jira-independent. Test Plan owns `none | logic | ui | both`; Main follows that route mechanically and Scrum Master is not involved in self-test routing.
 
 ## Repository Structure
 

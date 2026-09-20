@@ -36,7 +36,7 @@ Main owns workflow decisions and runtime transport:
 - specialist result reconciliation;
 - compact transient workflow state.
 
-Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jira reads required by its assigned operation, and authorized durable Jira mutations.
+Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jira reads required by its assigned operation, and all authorized durable Jira mutations. Durable product specialists with their own execution unit (currently Design and Coding) may independently read only the exact Jira keys allowlisted in the current `issue-handoff`; Test Plan/Testing remain Jira-independent.
 
 ## Continuous delivery
 
@@ -47,10 +47,10 @@ Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jir
 3. Main dispatches Scrum Master `planning` with execution intent `deliver` and the approved analysis.
 4. Scrum Master discovers the current Jira project schema, maps semantic work roles to supported Jira work types/fields/workflow states, creates or reconciles the Jira work graph, and returns compact `jira-work-report`.
 5. Main closes/verifies Scrum Master and selects dependency-ready execution units from confirmed Jira state.
-6. Main routes the smallest allowed internal-capability set for each selected execution unit and composes bounded `issue-handoff` objects.
+6. Main routes the smallest allowed internal-capability set for each selected execution unit and composes bounded `issue-handoff` objects containing compact Jira identity, exact Jira read allowlists, and transient execution controls rather than copied Jira narrative context.
 7. Before dispatching Coding, Main uses Scrum Master `progress-sync` when needed to transition the same Jira work item from its resolved todo/open state into the project-valid active/in-progress state.
 8. Before writable specialist dispatch, Main captures the working-project source baseline, reserves exact allowed write scope, and prevents overlapping writable leases.
-9. Main dispatches dependency-ready specialists within runtime/write-scope capacity. A retry is allowed only after proving the prior attempt had no spawn side effect.
+9. Main dispatches dependency-ready specialists within runtime/write-scope capacity. Design/Coding resolve durable execution requirements only from the exact Jira keys allowlisted by their handoff and must not browse broader Jira state or mutate Jira. A retry is allowed only after proving the prior attempt had no spawn side effect.
 10. For each returned durable-work specialist result, Main verifies assigned scope, context-version, required evidence, source diff, runtime cleanup, and child closure before accepting it.
 11. Each accepted Coding result triggers exactly one Test Plan cycle for that Coding change.
 12. If Test Plan selects `logic|both`, Main dispatches exactly one Testing Logic child for that Coding work item. A Logic production defect is returned in `test-report`, persisted by Scrum Master as `[REVISION]` on the same work item, and Coding is redispatched there.
