@@ -95,8 +95,10 @@ Developer self-verification (Test Plan, Testing Logic, Testing UI) is transient 
 
 For a Coding work item, `progress-sync` may perform only confirmed lifecycle mutations supplied by Main:
 - before Coding dispatch, transition the same item from its project-valid todo/open state to the resolved active/in-progress state when a transition is required;
-- after self-verification passes (or Test Plan returns `none`), persist the final Coding `[RESULT]` plus verification evidence and transition that same item to the project-valid completed state;
-- when Testing reports a production defect, write a concise durable `[REVISION]` comment and keep or return that same item to the resolved active/in-progress state.
+- after Test Plan returns `none|ui`, or after required Testing Logic passes for `logic|both`, persist the final Coding `[RESULT]` and transition that same item to the project-valid completed state;
+- when `ui|both` was selected, include in that Coding `[RESULT]` the bounded pending UI verification targets and their owning Coding key so the functional-slice UI gate is recoverable after pause/resume;
+- after the functional-slice Testing UI gate passes, persist one compact UI-verification `[RESULT]` on the functional-slice boundary;
+- when Testing Logic or Testing UI reports a production defect, write a concise durable `[REVISION]` comment on every affected existing Coding work item and keep or return those same items to the resolved active/in-progress state.
 
 Never create a separate testing/retest/fix work item for this lifecycle.
 
@@ -130,6 +132,7 @@ Keep it compact:
 - runnable/blocked/completed execution-unit identifiers when relevant;
 - field resolutions actually used for mutations;
 - confirmed/failed mutations;
+- latest compact durable results, including pending UI verification targets when present;
 - blockers/revisions;
 - validity markers required for resume/replan decisions.
 
