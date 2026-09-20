@@ -14,7 +14,7 @@ produces:
 context:
   allowed:
     - transient-verification-handoff
-    - approved-test-plan-evidence
+    - durable-ui-verification-targets
     - bounded-product-source
     - existing-ui-tests
     - browser-configuration
