@@ -41,7 +41,7 @@ Only execution units are executable by specialists. For each functional slice cr
 
 Do not create empty or fake execution units merely to make every functional slice have the same shape. When a specialist category is unnecessary, omit it and record the reason on the functional slice when that reason would otherwise be ambiguous.
 
-Test Plan, Testing Logic, and Testing UI are transient developer self-verification roles in the frontend delivery workflow. Do not create Jira execution units for those roles. Their verification evidence remains attached to the owning Coding execution unit through Main's orchestration.
+Test Plan, Testing Logic, and Testing UI are transient developer self-verification roles in the frontend delivery workflow. Do not create separate Jira work items for those roles. Their verification evidence belongs to the owning Coding work item and is coordinated transiently by Main.
 
 Scrum Master may record the intended specialist role for an execution unit but does not dispatch that specialist and does not select its internal capability packages.
 
