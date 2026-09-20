@@ -48,9 +48,9 @@ Return to Main only when:
 - required external/runtime capability is unavailable; or
 - cleanup cannot be completed.
 
-A test-only mismatch must not trigger a new Test Plan or new Testing child.
+A test-only mismatch must not trigger a new Test Plan or new Testing child. A Testing result also never triggers Test Plan directly; the next Test Plan cycle starts only after Main accepts a later Coding result.
 
-A production defect ends the current Testing child. Main may route one bounded revision to the same owning Coding work item. Only after production source or relevant product context actually changes may Main invoke Test Plan again for the affected delta.
+A production defect ends the current Testing child. Return the defect evidence in `test-report`; Main sends that confirmed evidence to Scrum Master `progress-sync`, which records `[REVISION]` on the same owning Coding work item and keeps/returns it to the project-valid active state. Main then redispatches Coding on that same work item. Testing never reopens or mutates Jira directly.
 
 ## Failure attribution
 
