@@ -57,7 +57,7 @@ NEW/REPLAN
 -> Design/Coding execution + Main reconciliation
 -> after Coding change: transient Test Plan from relevant docs + actual source diff
 -> transient Testing Logic/UI only when selected
--> production defect returns to the same Coding execution unit
+-> production defect returns to the same Coding work item
 -> Scrum Master progress-sync only when durable Coding result/blocker/revision persistence is required
 -> Brain acceptance
 -> Scrum Master finalize when accepted
