@@ -1,13 +1,18 @@
 kind: test-report
-coding-execution-key: "<coding-execution-key>"
 context-version: "<version>"
 role: "<logic|ui>"
+
+scope:
+  functional-slice-key: "<functional-slice-key>"
+  coding-execution-keys: [] # one for logic; one-or-more for final UI
+
 source-state: "<verified-current-source-state>"
 test-plan-source-state: "<source-state-covered-by-plan>"
 status: "<passed|failed|blocked>"
 
 verification-target-results:
   - target-id: "vt-1"
+    coding-execution-key: "<origin-coding-key>"
     status: "<passed|failed|blocked|not-run>"
     evidence: []
 
@@ -22,6 +27,7 @@ failure-analysis:
   - failure: ""
     cause: "<test-only-mismatch|production-defect|harness-environment|authority-ambiguous|unknown>"
     attribution: "<current-change|pre-existing|unknown>"
+    affected-coding-execution-keys: []
     evidence: []
 
 execution:
@@ -31,4 +37,8 @@ execution:
 evidence: []
 coverage-limitations: []
 residual-risks: []
-production-defects: []
+
+production-defects:
+  - summary: ""
+    affected-coding-execution-keys: []
+    evidence: []
