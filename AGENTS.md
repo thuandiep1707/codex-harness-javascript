@@ -290,7 +290,7 @@ For `new`:
 5. Main closes/verifies Scrum Master and routes the smallest valid internal capabilities for dependency-ready execution units.
 6. Main dispatches dependency-ready specialists, respecting runtime capacity and write-scope leases.
 7. For each returned durable-work specialist result, Main verifies assigned scope, context-version, protocol/evidence validity, source diff, runtime cleanup, and child closure.
-8. After a Coding result with a current source state, Main composes one transient `verification-handoff` for that same Coding execution unit using the handoff-listed relevant docs, docs baseline, actual source baseline/current state/diff, implementation report, and any still-valid prior verification evidence.
+8. After a Coding result with a current source state, Main composes one transient `verification-handoff` for that same owning Coding work item using the handoff-listed relevant docs, docs baseline, actual source baseline/current state/diff, implementation report, and any still-valid prior verification evidence.
 9. Main dispatches Test Plan once for that `context-version + source-state`. Test Plan alone returns `testing-route: none|logic|ui|both` and the bounded verification targets/write scope.
 10. Main mechanically follows that route: `none` spawns no testing child; `logic` spawns one Testing Logic child; `ui` spawns one Testing UI child; `both` spawns at most one of each for that source state. Scrum Master is not involved.
 11. Each Testing child keeps routine test-only diagnose/fix/rerun work inside the same child. Main must not spawn another Test Plan/Testing child while the covered source state is unchanged.
