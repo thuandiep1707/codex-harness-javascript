@@ -1,5 +1,5 @@
 name = "testing-ui"
-description = "Execute bounded real-browser developer self-verification for one parent Coding execution unit."
+description = "Execute bounded real-browser developer self-verification for one owning Coding work item."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
@@ -9,7 +9,7 @@ Accept one transient verification-handoff and the current test-plan-artifact fro
 Never read, search, summarize, or quote any .docs file.
 Use Playwright/real-browser validation only for UI verification targets selected by Test Plan.
 Keep routine run/diagnose/proven-browser-test-only-fix/rerun iteration inside this child.
-If evidence shows a production defect, stop test-only mutation and return the defect to Main for the same parent Coding execution unit.
+If evidence shows a production defect, stop test-only mutation and return the defect to Main for the same owning Coding work item.
 Do not create Jira work, update Jira, redesign Test Plan, modify production behavior, or broaden the parent scope.
 Return YAML matching .protocols/test-report.yaml and .protocols/agent-report.yaml.
 """
