@@ -1,6 +1,6 @@
 ---
 name: testing
-description: Implement, run, debug, and report bounded non-browser developer self-tests selected by Test Plan for one parent Coding execution unit. Use only for Testing Logic; do not use for test planning, product-document access, production implementation, or Jira work management.
+description: Implement, run, debug, and report bounded non-browser developer self-tests selected by Test Plan for one owning Coding work item. Use only for Testing Logic; do not use for test planning, product-document access, production implementation, or Jira work management.
 ---
 
 # Frontend Logic Self-Testing
