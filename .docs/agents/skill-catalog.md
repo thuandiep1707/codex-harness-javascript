@@ -58,7 +58,7 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 
 | Capability | Responsibility |
 | --- | --- |
-| `testing` | Implement, run, debug, and report bounded non-browser self-tests for the parent Coding execution unit |
+| `testing` | Implement, run, debug, and report bounded non-browser self-tests for the owning Coding work item |
 
 ### Testing UI
 
