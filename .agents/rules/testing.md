@@ -1,6 +1,6 @@
 # Frontend Developer Self-Testing Rules
 
-Apply this rule only to transient Testing Logic or Testing UI self-verification selected by the current Test Plan for one parent Coding execution unit.
+Apply this rule only to transient Testing Logic or Testing UI self-verification selected by the current Test Plan for one owning Coding work item.
 
 Testing is not a separate Jira work stream. Test Plan, Testing Logic, and Testing UI do not create Jira execution units, do not update Jira, and do not perform final product acceptance.
 
@@ -25,7 +25,7 @@ Do not broaden the Test Plan scope, infer additional product requirements, or tu
 - Testing Logic never writes/runs Playwright/E2E/browser tests.
 - Testing UI never writes/runs Vitest/RTL logic tests.
 - Neither role writes production behavior.
-- A production defect returns to Main for the same parent Coding execution unit.
+- A production defect returns to Main for the same owning Coding work item.
 
 ## No-loop lifecycle
 
@@ -50,7 +50,7 @@ Return to Main only when:
 
 A test-only mismatch must not trigger a new Test Plan or new Testing child.
 
-A production defect ends the current Testing child. Main may route one bounded revision to the same Coding execution unit. Only after production source or relevant product context actually changes may Main invoke Test Plan again for the affected delta.
+A production defect ends the current Testing child. Main may route one bounded revision to the same owning Coding work item. Only after production source or relevant product context actually changes may Main invoke Test Plan again for the affected delta.
 
 ## Failure attribution
 
@@ -94,4 +94,4 @@ Track and clean only resources proven to be owned by the current child. Never te
 
 Return one `test-report` and one `agent-report` directly to Main.
 
-The `coding-execution-key` in the test report identifies the parent durable Coding execution unit; it does not represent a separate Jira testing unit.
+The `coding-execution-key` in the test report identifies the owning durable Coding work item; it does not represent a separate Jira testing unit.
