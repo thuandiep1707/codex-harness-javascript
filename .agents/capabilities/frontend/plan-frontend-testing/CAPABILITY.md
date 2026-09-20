@@ -52,16 +52,16 @@ For each target record:
 
 Avoid duplicated coverage across layers unless the layers prove materially different risks.
 
-## Delta revalidation
+## Revision revalidation
 
-When production source changes after a production defect:
+When Main supplies a later accepted Coding result after a production-defect revision:
 
-1. compare the new source state against the source state covered by the previous Test Plan/test reports;
+1. compare that Coding change against the source state covered by the previous Test Plan/test reports;
 2. retain still-valid verification targets/evidence;
-3. invalidate only targets affected by the new source or relevant-document delta;
+3. invalidate only targets affected by the new Coding change or approved relevant-document delta;
 4. return a route for the affected verification only.
 
-A test-only mismatch must remain inside the current Testing child lifecycle and must not trigger a new Test Plan cycle.
+A test-only mismatch or Testing result must remain inside the current Testing lifecycle and must not trigger a new Test Plan cycle by itself.
 
 ## Output
 
