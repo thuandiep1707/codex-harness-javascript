@@ -1,5 +1,5 @@
 kind: acceptance-report
-jira-feature-key: "<feature-key>"
+jira-scope-key: "<functional-slice-key>"
 context-version: "<version>"
 status: "<accepted|revision-required|blocked>"
 requirement-results:

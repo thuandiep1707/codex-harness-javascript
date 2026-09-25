@@ -4,7 +4,9 @@ resource-id: "<runtime-resource-id>"
 owner:
   agent: "<agent-name>"
   child-agent-id: ""
-  jira-subtask-key: ""
+  # For transient verification roles, use the parent Coding Jira execution key.
+  jira-execution-key: ""
+  context-version: "<version>"
 resource:
   kind: "<process|process-group|server|watcher|browser|other>"
   command: ""

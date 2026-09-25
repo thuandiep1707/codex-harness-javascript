@@ -13,8 +13,7 @@ Coding specialist dùng:
 .agents/rules/frontend/*.md
 ```
 
-Testing Logic và Testing UI dùng `.agents/rules/testing.md`. Brain, Orchestrator,
-Design và Test Plan chỉ load rule được manifest của mình allow.
+Testing Logic và Testing UI dùng `.agents/rules/testing.md`. Brain, Design và Test Plan chỉ load rule được manifest của mình allow.
 
 ## Frontend topic rules
 
@@ -28,16 +27,17 @@ Design và Test Plan chỉ load rule được manifest của mình allow.
 | `async-states.md` | Loading, error, empty, permission, missing configuration |
 | `generated-ui-validation.md` | Final validation for UI derived from design evidence |
 
-Coding luôn load decomposition gate nhỏ. Gate chỉ load full `atomic-components.md` khi Subtask thật sự
+Coding luôn load decomposition gate nhỏ. Gate chỉ load full `atomic-components.md` khi execution unit thật sự
 đụng component/page/screen structure. Sau đó Coding chỉ load các topic rule khác khi trigger có trong
 transient handoff hoặc source evidence. Không load toàn bộ topic rules cho mọi task.
 
 ## Specialist context boundary
 
-Frontend/testing rules không được dùng làm lý do để đọc `.docs/`. Requirement của specialist chỉ đến
-từ transient `issue-handoff` và dependency evidence được Orchestrator cung cấp.
+Frontend/testing rules không được dùng làm lý do để đọc `.docs/`. Durable Design/Coding lấy requirement từ
+bounded Jira context đúng các key được `issue-handoff` allowlist, cộng transient execution controls/evidence.
+Test Plan/Testing tiếp tục dùng `verification-handoff` và bounded evidence, không đọc Jira.
 
-Nếu rule xung đột với handoff, specialist trả blocker. Specialist không tự sửa Jira, parent Task hoặc
+Nếu rule xung đột với handoff, specialist trả blocker. Specialist không tự sửa Jira, parent functional-slice boundary hoặc
 workflow scope.
 
 ## Khi thêm rule

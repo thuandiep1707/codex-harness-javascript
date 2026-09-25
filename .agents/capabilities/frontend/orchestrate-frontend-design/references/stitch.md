@@ -1,6 +1,6 @@
 # Google Stitch provider adapter
 
-Use Google Stitch only when the assigned Design Subtask routes this provider and a live Stitch MCP/plugin is already available. This adapter maps the bounded Jira-derived handoff to provider actions; it does not create a second workflow, progress store, or implementation plan.
+Use Google Stitch only when the assigned Design execution unit routes this provider and a live Stitch MCP/plugin is already available. This adapter maps the bounded Jira-derived handoff to provider actions; it does not create a second workflow, progress store, or implementation plan.
 
 Verified against Google Labs Code Stitch SDK/skills on 2026-07-17. Live schemas, authentication, provider support, and account capabilities can change, so discover them before mutation.
 
@@ -16,7 +16,7 @@ Verified against Google Labs Code Stitch SDK/skills on 2026-07-17. Live schemas,
 Before selecting a Stitch action:
 
 1. inspect live Stitch tools exposed to the active Design specialist;
-2. confirm project discovery/creation, screen generation/retrieval/edit/variant capabilities actually required by the Subtask;
+2. confirm project discovery/creation, screen generation/retrieval/edit/variant capabilities actually required by the execution unit;
 3. confirm artifact types, image/HTML support, device-type enums, and design-system capabilities before using them;
 4. preserve discovered tool names/schema facts only as transient/provider evidence returned in the Design report;
 5. never encode live provider tool names as permanent application policy.
@@ -44,7 +44,7 @@ Map failures conservatively:
 ## Start or resume provider project
 
 - Reuse an explicit Stitch project when the handoff references continuing work.
-- Create a project only when the assigned Design Subtask authorizes a new provider workspace.
+- Create a project only when the assigned Design execution unit authorizes a new provider workspace.
 - Preserve canonical project/screen IDs returned by the provider.
 - Retrieve current target screens before editing so mutations address the correct artifact.
 
@@ -53,7 +53,7 @@ Map failures conservatively:
 Use only the minimized context supplied through the current `issue-handoff` and allowed dependency/design evidence.
 
 - Do not read `.docs` directly from the Design specialist.
-- Use approved brand/tokens/design-system evidence only when supplied by Orchestrator and supported by Stitch.
+- Use approved brand/tokens/design-system evidence only when supplied by Main and supported by Stitch.
 - Upload images/HTML/design-system material only when the handoff authorizes external transfer and provenance is clear.
 - Keep unknown/deferred project decisions open instead of presenting them as approved provider rules.
 
@@ -107,6 +107,6 @@ Open/render returned visual evidence before accepting provider success. Inspect 
 - Record visible fonts, images, URLs, packages, mock data, and interaction assumptions relevant downstream.
 - Do not use Stitch build/component helpers to write application source from this Design capability.
 - Do not treat provider-created design-system values as approved application tokens merely because Stitch generated them.
-- Return dependency/integration implications to Orchestrator; do not call Coding/security/integration capabilities directly.
+- Return dependency/integration implications to Main; do not call Coding/security/integration capabilities directly.
 - Return bounded evidence through `design-artifact`/`agent-report`; do not write runtime progress files or local implementation plans.
 - Preserve provider lineage so downstream implementation can distinguish provider decisions from agent summaries.

@@ -1,0 +1,55 @@
+kind: jira-work-report
+operation: "<planning|replan|resume-sync|progress-sync|pause|finalize>"
+execution-intent: "<plan-only|deliver>"
+context-version: "<version>"
+status: "<completed|partial|blocked>"
+
+validity:
+  analysis-status: "<ready|blocked>"
+  authority-status: "<ready|blocked>"
+  work-graph-status: "<ready|partial|blocked>"
+  docs-baseline: ""
+  relevant-documents: []
+
+jira:
+  project-key: ""
+  requested-work-item-key: ""
+
+work-graph:
+  items:
+    - key: ""
+      semantic-role: "<work-container|functional-slice|execution-unit>"
+      jira-work-type: ""
+      parent-key: ""
+      workflow-state: ""
+      target-agent: ""
+      dependencies: []
+  runnable-execution-units: []
+  blocked-execution-units: []
+  completed-execution-units: []
+
+field-resolution:
+  - semantic: ""
+    field-id: ""
+    field-name: ""
+    value: ""
+    confidence: "<exact|compatible>"
+
+mutations:
+  confirmed: []
+  failed: []
+
+results:
+  - jira-key: ""
+    result-kind: "<coding|ui-verification|other>"
+    summary: ""
+    validation-state: []
+    pending-ui-targets: []
+
+pause-checkpoint: null
+blockers: []
+revisions: []
+
+# Common metadata extension: embed the mapping from .protocols/scope-usage.yaml.
+# null means missing audit metadata, never known-empty usage; business fields remain unchanged.
+scope-usage: null

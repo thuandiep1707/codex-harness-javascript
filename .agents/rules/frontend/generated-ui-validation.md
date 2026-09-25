@@ -12,7 +12,7 @@ Before reporting completion, identify:
 
 - approved design/provider evidence and relevant screen/state references;
 - implementation files and direct consumers;
-- topic rules triggered by the current Subtask;
+- topic rules triggered by the current execution unit;
 - approved scope/exceptions;
 - unresolved dependent areas.
 
@@ -41,7 +41,7 @@ Confirm that:
 - provider output did not establish package, folder, architecture, responsive, accessibility,
 runtime, or design-system conventions;
 - placement follows product-repository ownership instead of provider file structure;
-- changed source/config/assets remain inside the assigned Subtask scope;
+- changed source/config/assets remain inside the assigned execution unit scope;
 - direct consumers and material states were inspected.
 
 ## Repository validation
@@ -50,11 +50,11 @@ Use the validation matrix in `../frontend-coding.md` and the commands required b
 repository. Record results and reasons for skipped required checks. Do not weaken configuration,
 hide warnings, or edit unrelated source to make validation pass.
 
-A material deviation from the assigned Jira Subtask/design/architecture evidence must return to
-Orchestrator as revision/blocker; do not create a local approval plan.
+A material deviation from the assigned Jira execution unit/design/architecture evidence must return to
+Main as revision/blocker; do not create a local approval plan.
 
 ## Automation boundary
 
 Use existing Prettier, ESLint, TypeScript, build, and approved test tooling. Do not add a custom lint
 plugin, validation script, CI workflow, or dependency merely to enforce this prose rule. Route any
-future automation proposal through an explicit Jira Task/developer decision.
+future automation proposal through an explicit Jira work item/developer decision.

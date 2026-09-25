@@ -1,37 +1,46 @@
 ---
 name: testing
-description: Implement, run, debug, or review bounded unit, component, and integration tests for a Next.js, React, TypeScript frontend from a transient issue handoff and approved test-plan evidence. Use only for the Logic Testing specialist after the relevant production contract exists; do not use for test planning, routine lint/build validation, project-document access, or production implementation.
+description: Implement, run, debug, and report bounded non-browser developer self-tests selected by Test Plan for one owning Coding work item. Use only for Testing Logic; do not use for test planning, product-document access, production implementation, or Jira work management.
 ---
 
-# Frontend Test Implementation
+# Frontend Logic Self-Testing
 
-## Load bounded authority
+Use only after Main supplies:
 
-1. Read the transient assigned `issue-handoff` and approved `test-plan-artifact` evidence.
-2. Read `.agents/rules/testing.md`, this agent's context rule, and only source/existing tests/package
-   scripts/runner configuration/setup required by the handoff.
-3. Never read `.docs/` or revise requirements from source observations/chat history.
-4. Do not install or reconfigure a runner unless the handoff explicitly authorizes it.
+- a transient `verification-handoff`;
+- the current `test-plan-artifact`;
+- bounded production source/current source state;
+- existing tests and runner configuration relevant to the selected logic targets.
 
-## Load only relevant references
+## Scope
 
-- `unit-testing.md` for unit tests.
-- `integration-testing.md` for component/integration tests.
-- `assertions-and-waiting.md` for asynchronous assertions.
-- `configuration.md` only for an approved configuration Subtask.
-- `authentication.md` for approved authenticated scenarios.
-- `api-testing.md` for approved API/contract coverage.
-- `network-mocking.md` for an approved network seam.
-- `debugging.md` only after a failure/flake.
+Execute only Test Plan targets whose layers are unit, component, or integration.
 
-## Implement and execute
+Load detailed references only when required by the selected target:
 
-1. Preserve assigned test layers, scenarios, data, fixtures, seams, and evidence requirements.
-2. Use real pure collaborators where practical; mock only approved external/unstable seams.
-3. Follow repository placement/naming and observable-behavior rules.
-4. Run the narrowest target first, diagnose the causal failure, and rerun until deterministic.
-5. Run baseline validation required by the handoff/current repository.
-6. Return objects matching `.protocols/test-report.yaml` and `.protocols/agent-report.yaml`.
+- `unit-testing.md`
+- `react.md`
+- `integration-testing.md`
+- `api-testing.md`
+- `assertions-and-waiting.md`
+- `network-mocking.md`
+- `authentication.md`
+- `configuration.md`
+- `debugging.md`
+- `nextjs.md`
 
-Do not change production behavior merely to pass tests, weaken assertions, add fixed sleeps, hide
-failures, update Jira, create runtime workflow files, or expand beyond the assigned logic-testing Subtask.
+Do not load every reference by default.
+
+## Iteration
+
+Keep routine run/diagnose/proven-test-only-fix/rerun work inside the same Testing Logic child.
+
+Fix a test/harness only when current Test Plan evidence and production behavior clearly prove the mismatch is test-only and the change stays inside the allowed test-write scope.
+
+If evidence indicates a production defect, stop test mutation and return that defect to Main for the same parent Coding execution unit.
+
+Do not create Jira work, update Jira, call another specialist, rerun Test Plan yourself, modify production behavior, or expand the verification scope.
+
+## Output
+
+Return `.protocols/test-report.yaml` and `.protocols/agent-report.yaml` with evidence only for the selected verification targets.

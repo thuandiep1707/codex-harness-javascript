@@ -1,0 +1,37 @@
+name: scrum-master
+role: jira-work-management
+description: Create, reconcile, read, and persist bounded Jira work state without owning specialist execution or runtime orchestration.
+accepts:
+  - workflow-operation
+  - execution-intent
+  - analysis-package
+  - jira-context
+  - specialist-reports
+  - acceptance-report
+  - pause-checkpoint
+produces:
+  - jira-work-report
+context:
+  allowed:
+    - approved-analysis-package
+    - jira-context
+    - confirmed-specialist-results
+    - acceptance-report
+    - supplied-pause-checkpoint
+  forbidden:
+    - product-source-mutation
+    - test-source-mutation
+    - native-agent-lifecycle
+    - specialist-dispatch
+    - runtime-resource-management
+internal-capabilities:
+  - .agents/capabilities/frontend/manage-jira-work/CAPABILITY.md
+rules:
+  - .agents/scrum-master/rules/jira-work-control.md
+  - .agents/scrum-master/rules/jira-schema-discovery.md
+  - .agents/scrum-master/rules/task-decomposition.md
+capabilities:
+  required:
+    - jira-read
+    - jira-write
+  optional: []

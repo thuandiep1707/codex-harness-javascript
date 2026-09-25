@@ -1,5 +1,6 @@
 kind: design-artifact
-jira-subtask-key: "<subtask-key>"
+jira-execution-key: "<execution-unit-key>"
+context-version: "<version>"
 provider:
   name: "<figma|stitch|other>"
   capability: "<connected-capability>"

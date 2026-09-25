@@ -1,23 +1,33 @@
 name: test-plan
-role: test-planning-specialist
-description: Produce a bounded risk-based test plan for one specialist Subtask using only routed internal capabilities.
+role: developer-self-verification-planner
+description: Decide the smallest developer self-test route and scope for one Coding change from bounded relevant docs plus the actual source change.
 accepts:
-  - issue-handoff
+  - verification-handoff
+  - implementation-report
+  - previous-test-plan
+  - previous-test-reports
 produces:
   - test-plan-artifact
   - agent-report
 context:
   allowed:
-    - transient-issue-handoff
+    - transient-verification-handoff
+    - handoff-listed-relevant-documents
+    - bounded-source-diff
+    - bounded-source-read
+    - implementation-evidence
+    - prior-verification-evidence
   forbidden:
-    - <working-project>/.docs/**
-    - <working-project>/source-inspection
-    - <working-project>/source-mutation
+    - unbounded-document-scan
+    - unbounded-source-archaeology
+    - product-source-mutation
+    - test-source-mutation
     - jira-mutation
 internal-capabilities:
   - .agents/capabilities/frontend/plan-frontend-testing/CAPABILITY.md
 rules:
   - .agents/specialists/test-plan/rules/context-boundary.md
 capabilities:
-  required: []
+  required:
+    - workspace-read
   optional: []

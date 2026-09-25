@@ -12,7 +12,7 @@ project policy.
 ## Classify the assigned state
 
 Use the ownership already approved by the handoff. If ownership is not fixed and selecting it would
-establish architecture, return a blocker to Orchestrator.
+establish architecture, return a blocker to Main.
 
 Useful classification:
 
@@ -53,4 +53,4 @@ and installed framework/library versions.
 
 Return selected approved owner, consumers, state source, changed files, hydration/runtime impact,
 validation, and unresolved architecture/dependency decisions. Do not create local plan/progress files
-or expand the Jira Subtask.
+or expand the Jira execution unit.

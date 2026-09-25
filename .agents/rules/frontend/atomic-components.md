@@ -2,7 +2,7 @@
 
 Load this rule only when the Coding decomposition gate or frontend router detects component creation, splitting, placement, or public component-contract work.
 
-This rule owns component decomposition, Atomic/DDD placement, discovery order, and public APIs. It does not authorize new product scope, architecture, dependencies, design decisions, or a UI library beyond the assigned Jira Subtask and supplied evidence.
+This rule owns component decomposition, Atomic/DDD placement, discovery order, and public APIs. It does not authorize new product scope, architecture, dependencies, design decisions, or a UI library beyond the assigned Jira execution unit and supplied evidence.
 
 ## Decompose before implementation
 
@@ -60,7 +60,7 @@ When a required UI responsibility is not yet mapped:
 4. prefer composition of existing approved primitives when it preserves required semantics/interaction;
 5. propose a project-authored primitive only after local, routed-library, and meaningful composition options fail.
 
-A capability path is not adoption authority. For example, use the shadcn capability only when Orchestrator routed it from evidence that the project actually uses/approves shadcn. The same rule applies to MUI, HeroUI, Radix, or future capability packages.
+A capability path is not adoption authority. For example, use the shadcn capability only when Main routed it from evidence that the project actually uses/approves shadcn. The same rule applies to MUI, HeroUI, Radix, or future capability packages.
 
 Do not duplicate, fork, regenerate, or cosmetically wrap an existing approved primitive merely to change ownership or styling.
 
@@ -73,7 +73,7 @@ A new project-authored primitive requires explicit developer/architecture author
 - owner, filename, public contract, known consumers;
 - accessibility, styling, runtime boundary, maintenance, and replacement impact.
 
-Do not create the primitive while approval is pending. Continue independent assigned work when possible and return the unresolved decision to Orchestrator.
+Do not create the primitive while approval is pending. Continue independent assigned work when possible and return the unresolved decision to Main.
 
 ## Public APIs
 

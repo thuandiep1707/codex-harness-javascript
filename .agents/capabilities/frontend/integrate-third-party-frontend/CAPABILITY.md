@@ -13,12 +13,15 @@ architecture into the business domain.
 
 ## Required authority
 
-Read the transient handoff, frontend Coding rules, and only source/configuration in the allowed
-integration scope. Never read `.docs/` or `.analysis/`.
+Read the transient handoff first, then only the Jira execution-unit, parent functional-slice, optional
+work-container, and direct-dependency items explicitly allowlisted by that handoff. Read frontend Coding
+rules and only source/configuration in the allowed integration scope. Never browse broader Jira state or
+read `.docs/` or `.analysis/`.
 
-The handoff must name business ownership, vendor placement, exact artifact identity, integration mode,
-supply-chain approval, runtime controls, rollback/removal expectations, and allowed mutation surface.
-Missing or contradicted authority is a blocker to Orchestrator.
+The bounded Jira execution context plus transient handoff execution controls must establish business
+ownership, vendor placement, exact artifact identity, integration mode, supply-chain approval, runtime
+controls, rollback/removal expectations, and allowed mutation surface. Missing or contradicted authority
+is a blocker returned to Main.
 
 Inspection/clone permission is not installation, vendoring, publishing, or mutation approval.
 
@@ -39,7 +42,7 @@ source, iframe/embed, separate frontend, or reimplementation only within decisio
 handoff.
 
 If mode selection would change architecture, deployment, security, dependency, or ownership policy,
-return a blocker/revision to Orchestrator instead of creating/revising a local plan.
+return a blocker/revision to Main instead of creating/revising a local plan.
 
 ### 3. Design the vendor seam
 
@@ -55,17 +58,17 @@ framework-sensitive behavior. Cover only the assigned scope across Client/Server
 portals/stacking, workers, WASM/WebGL, assets, CSP/cross-origin, browser messaging/network calls,
 resource disposal, accessibility, and performance.
 
-Return security/threat gaps to Orchestrator for Brain review; do not load Brain skills yourself.
+Return security/threat gaps to Main so Main can route Brain review when required; do not load Brain skills yourself.
 
-### 5. Order implementation inside the current Subtask
+### 5. Order implementation inside the current execution unit
 
 Use dependency order internally, for example artifact reproducibility → adapter contract → runtime
 isolation → module integration → route/template composition → validation/rollback. This is execution
 sequencing, not a second task-management system.
 
-Do not persist an implementation plan/progress file. If the assigned Coding Subtask contains multiple
+Do not persist an implementation plan/progress file. If the assigned Coding execution unit contains multiple
 independently acceptable integration outcomes or cannot be safely bounded, return a granularity
-blocker so Orchestrator can split Jira work.
+blocker to Main so Main can request the required Scrum Master replan instead of splitting Jira work itself.
 
 ### 6. Implement and validate
 
@@ -74,7 +77,7 @@ unrelated formatting/rewrites. Run required build/typecheck/lint and assigned ru
 Record upstream identity, local patches, owner, upgrade procedure, rollback, and exit/removal criteria.
 
 Any new dependency, artifact, integration mode, runtime requirement, or architecture decision returns
-to Orchestrator before dependent implementation continues.
+to Main before dependent implementation continues.
 
 ## Output
 

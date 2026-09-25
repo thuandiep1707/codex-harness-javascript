@@ -1,5 +1,11 @@
 # Agent runtime map
 
+## Migration baseline
+
+This branch defines the Flow B runtime topology. It changes orchestration placement only.
+
+Existing safety, scope, validation, cleanup, authority, and capability-routing boundaries remain in force unless a later migration commit changes topology-specific wording explicitly.
+
 ## Public workflow entry points
 
 | Workflow | Execution intent | Result |
@@ -7,117 +13,152 @@
 | `$frontend-delivery` | `deliver` | Continue end-to-end until acceptance/pause/blocker |
 | `$frontend-planning` | `plan-only` | Create/reconcile Jira work graph then stop |
 
-Lifecycle `planning/resume/pause` is separate from execution intent. Planning mode does not imply plan-only.
+Lifecycle state remains separate from execution intent.
 
 ## Runtime roles
 
 | Role | Codex agent | Responsibility |
 | --- | --- | --- |
-| Primary controller | main chat | Resolve workflow/lifecycle; own native child-agent lifecycle, Jira connector transport, and runtime cleanup supervision; execute Orchestrator controller actions |
-| Brain | `brain` | Analyze relevant `.docs`, detect implementation environment, record baseline, targeted revalidation, final acceptance |
-| Orchestrator | `orchestrator` | Jira/workflow decisions, capability routing, specialist dispatch decisions, resume, pause/handoff decisions, reconciliation |
+| Main Orchestrator | main chat | Own workflow decisions, dependency routing, specialist dispatch, native child lifecycle, write-scope leases, runtime cleanup supervision, and transient execution state |
+| Brain | `brain` | Analyze authoritative product context, detect implementation environment, targeted revalidation, and final acceptance |
+| Scrum Master | `scrum-master` | Create/reconcile Jira work graph and perform authorized durable Jira mutations; return compact Jira work state to Main |
 | Design | `design` | Use connected design provider and return design evidence |
-| Test plan | `test-plan` | Produce a bounded risk-based test-plan result |
-| Coding | `coding` | Implement one bounded Coding Subtask using routed internal capabilities |
-| Testing Logic | `testing-logic` | Implement/run bounded unit/component/integration tests without a real browser |
-| Testing UI | `testing-ui` | Execute bounded real-browser UI validation and Playwright tests |
+| Test plan | `test-plan` | Transiently decide the smallest developer self-verification route/scope for a Coding change from bounded relevant docs + actual source diff |
+| Coding | `coding` | Implement one bounded durable Coding execution unit using routed internal capabilities |
+| Testing Logic | `testing-logic` | Transient per-Coding-work-item non-browser self-test gate selected by Test Plan |
+| Testing UI | `testing-ui` | Transient end-to-end real-browser gate for the functional slice using deferred UI targets |
 
-The Primary Controller is intentionally thin but is the only runtime transport owner. Brain does not create tasks. Orchestrator does not perform specialist implementation, invoke native child-agent lifecycle APIs, or call Jira directly. Chat history is never required to resume valid Jira work.
+There is no Orchestrator child in Flow B. The main chat is the Orchestrator.
 
-## Controller action loop
+Brain, Scrum Master, and specialists are short-lived native child agents. Chat history is never durable workflow truth.
 
-Orchestrator makes the decision; Primary Controller performs the transport:
+## Main orchestration loop
+
+Main owns the decision and runtime transport directly:
 
 ```text
-Orchestrator
-→ controller-action (jira-call | dispatch-specialist)
-→ Primary Controller executes exactly
-→ confirmed controller-action-result
-→ same Orchestrator child
-→ next action or terminal result
+Main
+→ dispatch bounded child
+→ child executes assigned role
+→ child returns structured result
+→ Main verifies result / cleanup / scope
+→ Main selects the next dependency-ready action
 ```
 
-Keep one Orchestrator child alive across an active workflow instead of respawning it after every specialist result. Specialists are short-lived sibling children spawned and closed by the Primary Controller.
+Main must not perform specialist implementation work itself.
 
-A tool missing inside the Orchestrator child is not a workflow capability failure. Only a failed Primary Controller transport attempt establishes Jira/native-dispatch unavailability.
+Independent specialist work may run concurrently only when existing runtime-capacity and write-scope rules allow it.
+
+## Jira ownership
+
+Scrum Master is the Jira write authority for workflow structure and durable workflow updates.
+
+Durable product specialists with their own execution unit (currently Design and Coding) may read Jira directly, but only by the exact keys allowlisted in their current `issue-handoff`: own execution unit, parent functional slice, optional work-container when required, and listed direct dependencies. They must not browse/search unrelated Jira work or mutate Jira. Test Plan and Testing remain Jira-independent.
+
+Main should retain only compact Jira execution state needed for routing, such as issue keys, dependencies, statuses, context version, and target role. Full Jira issue content should not be copied into Main or relayed through the handoff unless a workflow decision specifically requires it.
 
 ## Internal capability model
 
 Internal capabilities live under `.agents/capabilities/**`, outside Codex public workflow discovery.
 
-Brain may use `discover-project-stack` to detect current framework/UI/icon/state/testing evidence. Orchestrator maps that evidence + Subtask trigger + specialist manifest to the smallest capability set and records the routed identifiers in the Subtask/handoff.
+Brain may detect current framework/UI/icon/state/testing evidence. Main combines approved analysis, current Jira work state, execution-unit trigger, and specialist manifest to select the smallest valid capability set.
 
 Specialist rule:
 
 ```text
 manifest allowlist
-∩ handoff internal-capabilities
+∩ routed internal-capabilities
 = capabilities allowed to load
 ```
 
-Do not load every manifest capability. Missing/conflicting stack evidence is unresolved, not a reason to default to a library.
+Missing/conflicting project evidence remains unresolved; do not invent a default dependency or library.
 
-## Jira hierarchy
+## Jira work model
 
 ```text
-Feature context
-  -> Task: functional slice
-      -> Subtask: specialist execution unit
+work-container   # optional grouping/context
+  -> functional-slice   # scope + acceptance boundary
+      -> execution-unit # specialist-owned executable work
 ```
 
-Parent Tasks are scope/acceptance boundaries. Specialists execute Subtasks only. Orchestrator decides only the specialist Subtasks actually required by a functional slice; Primary Controller executes the resulting Jira connector calls.
+These are harness semantics, not Jira issue-type names. Scrum Master discovers the current project's work types, fields, options, relationships, and workflow states, then maps the semantic work model to what that project actually supports.
+
+Functional slices remain scope/acceptance boundaries. Durable product specialists such as Design/Coding execute Jira execution units.
+
+Test Plan and Testing Logic are transiently attached to an owning Coding work item; Testing UI is a transient functional-slice end gate aggregating UI targets from completed Coding work items. None of them is a separate Jira work item or expands the durable work graph.
+
+Scrum Master creates or reconciles the Jira graph. Main decides execution order from confirmed Jira work state and dependency readiness.
 
 ## Context boundary
 
-Brain may read relevant `.docs` for analysis/revalidation/acceptance plus bounded source/config evidence for stack discovery. Orchestrator may read relevant `.docs` during planning/replanning and minimal supplied Jira/source evidence during resume/pause. Specialists may not read `.docs`.
+Brain may read authoritative documentation plus bounded source/config evidence required for analysis, revalidation, and acceptance.
 
-Every specialist receives a transient handoff composed from Feature context + Task delta + Subtask delta + direct dependency evidence + routed internal capability identifiers. Specialists return results to Primary Controller, which forwards the confirmed result to the active Orchestrator child. Only Primary Controller calls Jira; Orchestrator decides what Jira action is required.
+Scrum Master receives the approved analysis/workflow request necessary to create or reconcile Jira state and returns a compact Jira work report.
+
+Design/Coding remain bounded by their durable issue handoff and may resolve durable execution context only from the exact Jira keys allowlisted by that handoff. Test Plan is the explicit exception to the normal specialist document boundary: it may read only the relevant product documents listed in its transient verification handoff plus the bounded actual source diff/current source needed to plan self-verification. Testing Logic/UI do not read product docs and consume Test Plan's bounded targets. No specialist may use chat history as requirement truth.
 
 ## Delivery sequence
 
 ```text
 $frontend-delivery
-→ Brain analysis + stack discovery
+→ Main resolves lifecycle entry
+→ Brain analysis/revalidation when required
 → close Brain
-→ one Orchestrator child (intent=deliver)
-→ controller-action loop
-   ├─ jira-call → Primary → result → Orchestrator
-   └─ dispatch-specialist → Primary → specialist → cleanup/close → result → Orchestrator
-→ Orchestrator terminal reconciliation
-→ close Orchestrator
+→ Scrum Master creates/reconciles Jira work graph
+→ close Scrum Master
+→ Main dispatches dependency-ready durable product work
+   ├─ Coding
+   └─ Design
+→ after each accepted Coding result: transient Test Plan
+→ Logic target: Testing Logic now, per Coding work item
+→ UI target: persist pending UI evidence with Coding result
+→ after all durable work in slice: one end-to-end Testing UI gate
+→ production defect -> `[REVISION]` on affected existing Coding work item(s)
+→ Main verifies reports, source scope, runtime cleanup, and child closure
+→ Scrum Master persists only final durable Coding result/blocker/revision/checkpoint when needed
+→ close Scrum Master
 → Brain acceptance
+→ close Brain
+→ Scrum Master performs final authorized Jira finalization
+→ close Scrum Master
+→ Main reports terminal workflow state
 ```
 
-No confirmation gate after Jira planning unless a real unresolved authority/blocker exists.
+No confirmation gate exists after Jira planning unless a real authority/blocker condition requires one.
 
 ## Planning-only sequence
 
 ```text
 $frontend-planning
-→ Brain analysis
+→ Main resolves lifecycle entry
+→ Brain analysis/revalidation when required
 → close Brain
-→ one Orchestrator child (intent=plan-only)
-→ jira-call controller-action loop
-→ confirmed Jira graph
-→ close Orchestrator
+→ Scrum Master creates/reconciles Jira work graph
+→ Main receives compact Jira work report
+→ close Scrum Master
 → STOP
 ```
 
 ## Resume
 
-1. Resolve current Jira Subtask.
-2. Verify relevant docs have not materially changed since baseline.
-3. Load Feature + parent Task + current Subtask + direct dependencies + routed capability identifiers + latest durable checkpoint/result.
-4. Validate routing against cheap current source/config evidence.
-5. Spawn one Orchestrator child and execute only the required specialist through the Primary Controller action loop.
+1. Main resolves the current Jira-backed workflow state.
+2. Verify relevant authority/docs baseline using existing validity rules.
+3. Run targeted Brain revalidation only when required.
+4. Use Scrum Master only when Jira graph reconciliation or durable Jira mutation is required.
+5. Main dispatches only dependency-ready bounded specialist work.
+6. Continue from durable Jira/source truth rather than hidden child memory.
 
 ## Pause
 
-1. Primary Controller recognizes natural-language pause intent and stops new specialist dispatch.
-2. Primary Controller collects/cleans active specialist runtime state and supplies proven evidence to Orchestrator.
-3. Orchestrator decides missing `[RESULT]`/status/HANDOFF Jira operations and returns exact `jira-call` actions.
-4. Primary Controller executes the Jira calls and returns confirmations to the same Orchestrator child.
-5. Return `paused` only after Jira persistence and runtime cleanup succeed; otherwise `pause-blocked` or `runtime-cleanup-blocked`.
-6. Close/verify Orchestrator before reporting the workflow safely paused.
+1. Main stops new specialist dispatch.
+2. Main collects proven specialist/runtime state and performs required cleanup.
+3. Scrum Master persists the required durable Jira result/handoff state.
+4. Main reports `paused` only after Jira persistence and runtime cleanup are confirmed.
 
-Custom-agent TOMLs intentionally omit Jira/native-dispatch configuration for Orchestrator. Runtime transport is owned by the Primary Controller/session; specialist-specific external capabilities must already be connected and authorized.
+## Final acceptance
+
+1. Main gathers only the approved Jira/results/source/validation evidence required by Brain acceptance.
+2. Brain returns `accepted`, `revision-required`, or `blocked`.
+3. Only an accepted Brain result authorizes Scrum Master to perform final Jira completion mutations.
+4. Main reports completion only after those Jira mutations, child cleanup, and runtime cleanup are confirmed.
+

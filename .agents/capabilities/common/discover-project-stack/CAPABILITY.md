@@ -44,4 +44,4 @@ For every detected technology, retain concise source evidence such as dependency
 
 ## Routing
 
-Return a compact implementation-environment profile to Brain. Orchestrator may map that profile plus the current Subtask trigger to an allowed internal capability. A detected package is not itself permission to change, install, upgrade, or standardize it.
+Return a compact implementation-environment profile to Brain. Main may map that profile plus the current execution-unit trigger and specialist manifest allowlist to an allowed internal capability. A detected package is not itself permission to change, install, upgrade, or standardize it.

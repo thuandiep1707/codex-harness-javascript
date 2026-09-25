@@ -1,5 +1,7 @@
 kind: agent-report
-jira-subtask-key: "<subtask-key>"
+# For transient verification roles, this is the parent Coding Jira execution key.
+jira-execution-key: "<execution-unit-key>"
+context-version: "<version>"
 agent: "<agent-name>"
 status: "<completed|blocked|failed>"
 summary: ""

@@ -1,8 +1,11 @@
 # Test-plan context boundary
 
-- Never open, search, summarize, or quote `.docs/`.
-- Do not inspect source to reverse-engineer missing requirements.
-- Treat the transient issue handoff as the complete behavior/risk contract.
-- Prefer a blocker over invented acceptance criteria, states, data, or environments.
-- Plan tests only; implementation belongs to `testing-logic` and/or `testing-ui` as routed.
-- Do not update Jira or create a local workflow/progress store.
+- Use the transient `verification-handoff` as the scope boundary.
+- Read only product documents explicitly listed in `documents.relevant-documents`; never scan unrelated `.docs`.
+- Read only the supplied source diff/changed files and bounded nearby source/config needed to understand the changed behavior.
+- Treat authoritative docs as product-behavior context and current source/diff as implementation-change evidence.
+- Do not infer missing requirements from chat history or unrelated source.
+- Do not attempt exhaustive functional-requirement coverage; plan only developer self-verification justified by the current change/risk.
+- Preserve prior verification evidence when its covered behavior/source state remains valid.
+- Return `context-insufficient` when bounded evidence is insufficient instead of broadening the search.
+- Do not write source/tests, update Jira, create a local workflow store, or perform final product acceptance.
