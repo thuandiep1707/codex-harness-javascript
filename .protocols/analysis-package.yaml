@@ -25,7 +25,7 @@ implementation-environment:
   detected: []
   unresolved: []
   conflicting: []
-  evidence: []
+  evidence: [] # Sanitized evidence only. Never include raw SECRET environment values.
 acceptance-criteria:
   - id: "ac-1"
     statement: ""
