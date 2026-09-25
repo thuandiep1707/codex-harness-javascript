@@ -20,6 +20,34 @@ description: Analyze relevant human-owned frontend documents and verified source
 7. Identify required external capabilities and blocking open questions.
 8. Return YAML matching `.protocols/analysis-package.yaml`.
 
+### Source scope
+
+Treat a user-supplied module or source scope as the starting anchor, not a hard directory boundary.
+
+Follow source dependencies outside that anchor only when they are materially required to explain the
+requested behavior, architecture, state flow, or integration. Do not stop merely because a relevant
+dependency crosses the initial module boundary.
+
+Stop expanding when the requested scope is sufficiently explained by current project evidence, or
+when a required dependency cannot be resolved from accessible project evidence. Do not broaden source
+inspection for unrelated implementation details.
+
+### Preserve material relationships
+
+When one behavior is supported by evidence from multiple categories, preserve the material
+relationship between those facts.
+
+Do not reduce a connected behavior chain into unrelated statements merely to fit separate protocol
+sections. Where relevant, retain the direction of the relationship, such as `invokes`, `reads from`,
+`writes to`, `depends on`, `transforms`, `receives from`, `renders from`, or `is constrained by`.
+
+Preserve only relationships needed for downstream reasoning about requirements, behavior,
+architecture, state/data flow, integration contracts, or acceptance. Do not reproduce every
+intermediate helper or dependency when it does not materially affect those decisions.
+
+Keep these relationships inside the existing `analysis-package` fields. Do not create a separate
+analysis graph, secondary protocol, or alternate output format.
+
 Do not create tasks, choose specialists, update Jira, or implement code.
 
 ## Revalidation
