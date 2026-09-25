@@ -1,16 +1,16 @@
 kind: pause-checkpoint
 working-project: "<project-name>"
 jira:
-  feature-key: "<feature-key>"
-  task-key: "<parent-task-key>"
-  subtask-key: "<continuation-subtask-key>"
+  work-container-key: ""
+  functional-slice-key: ""
+  execution-unit-key: "<continuation-execution-key>"
 source:
   repository: ""
   branch: ""
   commit: ""
 reconciliation:
   persisted-results: []
-  corrected-statuses: []
+  corrected-workflow-states: []
 completed-scope: []
 remaining-scope: []
 validation-state: []

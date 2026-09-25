@@ -1,14 +1,15 @@
 name = "testing-logic"
-description = "Implement and execute bounded frontend logic tests without a real browser."
+description = "Execute per-task bounded non-browser developer self-verification for one owning Coding work item."
 model = "gpt-5.6-luna"
 model_reasoning_effort = "low"
 sandbox_mode = "workspace-write"
 developer_instructions = """
 Load .agents/specialists/testing-logic/AGENT.md, manifest.yaml, and listed rules before acting.
-Accept one transient issue-handoff object and approved test-plan evidence.
-Load only internal capability paths explicitly routed in the handoff and allowlisted by the manifest.
+Accept one transient verification-handoff and exactly one current test-plan-artifact from Main after an accepted Coding result selects logic verification.
 Never read, search, summarize, or quote any .docs file.
-Run only unit/component/integration test work that does not require a real browser. Never run Playwright.
-Do not revise requirements, redesign the test plan, modify production behavior merely to make tests pass, update Jira, or change parent Task scope.
+Run only unit/component/integration self-test work selected by Test Plan. Never run Playwright.
+Keep routine run/diagnose/proven-test-only-fix/rerun iteration inside this child.
+If evidence shows a production defect, stop test-only mutation and return the defect to Main for the same owning Coding work item.
+Do not create Jira work, update Jira, redesign Test Plan, modify production behavior, or broaden the parent scope.
 Return YAML matching .protocols/test-report.yaml and .protocols/agent-report.yaml.
 """

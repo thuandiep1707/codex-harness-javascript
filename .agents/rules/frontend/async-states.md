@@ -24,7 +24,7 @@ empty data are different contracts.
 ## Pattern reuse
 
 Reuse an existing state component only when meaning, placement, interaction, and owner match the
-current Subtask. Do not invent or install a spinner, skeleton, shimmer, overlay, retry panel, empty
+current execution unit. Do not invent or install a spinner, skeleton, shimmer, overlay, retry panel, empty
 illustration, notification convention, state icon/color/copy, or placeholder pattern without supplied
 approval evidence.
 

@@ -1,10 +1,10 @@
 # Design handoff
 
-Normalize provider responses into bounded design evidence for Orchestrator. This capability does not create a second workflow state, implementation plan, or downstream agent routing system.
+Normalize provider responses into bounded design evidence for Main. This capability does not create a second workflow state, implementation plan, or downstream agent routing system.
 
 ## Required record
 
-Return evidence compatible with `.protocols/design-artifact.yaml` and the assigned Jira Subtask. Preserve:
+Return evidence compatible with `.protocols/design-artifact.yaml` and the assigned Jira execution unit. Preserve:
 
 - provider/channel and stable project/session/artifact identifiers;
 - artifact type/location/preview/editability/provenance;
@@ -13,7 +13,7 @@ Return evidence compatible with `.protocols/design-artifact.yaml` and the assign
 - generated-code assumptions with disposition `design-reference-only`;
 - approval state when human selection is genuinely required.
 
-Do not persist runtime progress files in the product repository. Orchestrator owns durable Jira `[RESULT]`, `[BLOCKER]`, `[REVISION]`, or `[HANDOFF]` projection.
+Do not persist runtime progress files in the product repository. Scrum Master owns authorized durable Jira `[RESULT]`, `[BLOCKER]`, `[REVISION]`, or `[HANDOFF]` projection when Main determines persistence is required.
 
 ## Artifact rules
 
@@ -28,7 +28,7 @@ Do not persist runtime progress files in the product repository. Orchestrator ow
 - Mark returned code `design-reference-only`.
 - Record packages, CDN URLs, fonts, images, mock data, scripts, global styles, and runtime assumptions visible in the artifact.
 - Do not install dependencies, copy files into product source, or treat generated structure as DDD/Atomic ownership evidence.
-- If adoption would require a dependency/integration decision, return that fact to Orchestrator; do not invoke another agent capability directly.
+- If adoption would require a dependency/integration decision, return that fact to Main; do not invoke another agent capability directly.
 
 ### Editable/provider-native artifacts
 
@@ -40,11 +40,11 @@ Do not persist runtime progress files in the product repository. Orchestrator ow
 
 Human approval is required only when the assigned handoff explicitly requires it or multiple materially different valid provider outcomes remain without an objective criterion.
 
-If the provider result is objectively compliant and no approval gate is required by the handoff, return the evidence to Orchestrator and allow the parent `$frontend-delivery` workflow to continue automatically.
+If the provider result is objectively compliant and no approval gate is required by the handoff, return the evidence to Main and allow the parent `$frontend-delivery` workflow to continue automatically.
 
 If the user rejects/changes design direction:
 
-- continue the provider prompt chain only when the change stays inside assigned Design Subtask scope;
+- continue the provider prompt chain only when the change stays inside assigned Design execution unit scope;
 - return a revision/replan blocker when the change materially affects product scope, architecture, data exposure, provider role, or expected output;
 - preserve rejected artifact IDs/reasons as evidence when useful.
 
@@ -52,7 +52,7 @@ Do not create or revise a local implementation plan.
 
 ## Downstream boundary
 
-The Design specialist ends after returning the structured design result. Orchestrator decides downstream Jira routing and internal capabilities.
+The Design specialist ends after returning the structured design result. Main decides downstream specialist/capability routing; Scrum Master owns any required Jira mutation.
 
 Do not:
 

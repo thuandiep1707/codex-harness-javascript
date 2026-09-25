@@ -1,22 +1,20 @@
 kind: issue-handoff
-workflow-mode: "<planning|resume>"
-execution-intent: "<plan-only|deliver>"
+lifecycle-entry: "<new|resume|replan>"
+execution-intent: "deliver"
 working-project: "<project-name>"
 context-version: "<version>"
-target-agent: "<design|test-plan|coding|testing-logic|testing-ui>"
+target-agent: "<design|coding>"
+
 jira:
-  feature-key: "<feature-key>"
-  task-key: "<parent-task-key>"
-  subtask-key: "<specialist-subtask-key>"
-  assignee: ""
-  status: ""
-context:
-  feature-summary: |
-    Common approved context inherited from the Jira Feature.
-  task-delta: |
-    Functional-slice context owned by the parent Jira Task.
-  subtask-delta: |
-    Execution context owned by the current Jira Subtask.
+  work-container-key: ""
+  functional-slice-key: "<functional-slice-key>"
+  execution-unit-key: "<specialist-execution-key>"
+  workflow-state: ""
+  readable-keys:
+    - "<specialist-execution-key>"
+    - "<functional-slice-key>"
+  direct-dependency-keys: []
+
 objective: "<bounded specialist objective>"
 scope:
   included: []

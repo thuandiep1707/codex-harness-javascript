@@ -1,132 +1,100 @@
-# Frontend Testing Rules
+# Frontend Developer Self-Testing Rules
 
-Apply this rule only to a Testing Logic or Testing UI Subtask that creates, changes, runs, or reviews frontend
-tests. The Jira Subtask and transient handoff already decide that testing work is in scope; do not
-create a local test plan, ask a separate yes/no testing decision gate, or update `.analysis/`/`.docs/`.
+Apply this rule only to transient Testing Logic or Testing UI self-verification selected by the current Test Plan for one owning Coding work item.
 
-Load only the routed internal testing capability allowed by the current testing specialist manifest for concrete runner
-and test-workflow guidance.
+Testing is not a separate Jira work stream. Test Plan, Testing Logic, and Testing UI do not create Jira work items, do not update Jira, and do not perform final product acceptance.
 
 ## Authority and boundary
 
 Use this order:
 
-1. assigned testing Subtask + transient handoff;
-2. approved test-plan evidence supplied by Orchestrator when required;
-3. relevant production contract/source and current test-runner configuration;
-4. this rule + routed testing capability.
+1. transient `verification-handoff`;
+2. current `test-plan-artifact`;
+3. bounded production source/current source state and existing tests needed by the selected targets;
+4. current test-runner/browser configuration;
+5. this rule and any routed testing capability.
 
-Never read `.docs/`, infer missing product behavior from chat history, modify Jira, or expand parent
-Task scope. Return a blocker when expected behavior/test authority is insufficient.
+Never read `.docs`; Test Plan already resolved the bounded developer self-verification targets from relevant docs + actual source change.
+
+Do not broaden the Test Plan scope, infer additional product requirements, or turn self-verification into exhaustive functional testing.
 
 ## Role ownership
 
-- Testing Logic owns non-browser unit/component/integration tests and their harness only. It never writes or runs Playwright/E2E/browser tests.
-- Testing UI owns Playwright/E2E/browser tests and browser harness only when write scope is explicitly assigned. It never writes or runs Vitest/RTL logic tests.
-- Neither testing role writes production behavior. A production defect is returned to Orchestrator for Coding.
-- Coding does not own real-browser acceptance. Browser proof required by Test-plan is executed by Testing UI.
+- Testing Logic owns only selected unit/component/integration self-tests and their harness.
+- Testing UI owns only selected Playwright/real-browser self-tests and browser harness.
+- Testing Logic never writes/runs Playwright/E2E/browser tests.
+- Testing UI never writes/runs Vitest/RTL logic tests.
+- Neither role writes production behavior.
+- A production defect returns to Main for the same owning Coding work item.
 
-Do not broaden a handoff to cross these ownership boundaries merely because a failing assertion is nearby.
+## Execution timing and no-loop lifecycle
 
-## Specialist iteration
+- Testing Logic runs per owning Coding work item after Test Plan selects `logic|both` for an accepted Coding result.
+- Testing UI runs once as end-to-end verification at the functional-slice end gate when any contributing Test Plan selected `ui|both`.
+- For one Test Plan artifact, Main dispatches at most one Testing Logic child.
+- For one functional-slice UI gate, Main dispatches at most one Testing UI child using the aggregated UI-relevant Test Plan artifacts.
 
-Within one assigned testing Subtask, keep routine test iteration inside the same specialist lifecycle:
+Inside that child, keep routine test iteration local:
 
-1. run the narrowest relevant test;
-2. diagnose the failure against the current handoff/Test-plan contract;
-3. when the mismatch is proven test-only and inside allowed write scope, correct only that test/harness issue;
-4. rerun and repeat while role, contract, and scope remain unchanged;
-5. return to Orchestrator only when complete or when a production defect, authority ambiguity, scope expansion, dependency, or cross-role validation boundary is reached.
+1. run the narrowest selected verification;
+2. diagnose against the Test Plan target and current production behavior;
+3. if the mismatch is proven test-only and inside allowed test-write scope, fix only the test/harness;
+4. rerun until the selected target passes or a non-test boundary is reached.
 
-Do not create a new specialist cycle for each ordinary triage/fix/rerun step.
+Do not return to Main between routine test-only iterations.
+
+Return to Main only when:
+
+- selected verification completes;
+- evidence indicates a production defect;
+- authority/scope is insufficient;
+- required external/runtime capability is unavailable; or
+- cleanup cannot be completed.
+
+A test-only mismatch must not trigger a new Test Plan or new Testing child. A Testing result also never triggers Test Plan directly; the next Test Plan cycle starts only after Main accepts a later Coding result.
+
+A production defect ends the current Testing child. Return the defect evidence in `test-report` with the affected Coding work-item key(s). Main sends that confirmed evidence to Scrum Master `progress-sync`, which records `[REVISION]` on the same affected Coding work item(s) and keeps/returns them to the project-valid active state. Main then redispatches Coding on those same work items. Testing never reopens or mutates Jira directly.
 
 ## Failure attribution
 
-A failing broad suite does not automatically become current feature scope.
+A failing broad suite does not automatically become current change scope.
 
-- `current-change`: baseline evidence shows the scenario was green before the relevant current change and now fails, or the approved contract change directly makes the old test stale.
-- `pre-existing`: baseline evidence shows the same failure existed before the current change.
-- `unknown`: no reliable baseline proves attribution.
+Use:
 
-Pre-existing or unknown failures must not be silently adopted as feature remediation. They block only when the current Test-plan, acceptance contract, or repository-required gate explicitly requires that validation to be green. A test-only correction still requires clear current-contract evidence; attribution uncertainty is not permission to weaken tests.
+- `current-change`: reliable evidence ties the failure to the current changed behavior/source state;
+- `pre-existing`: reliable baseline shows the failure existed before the current change;
+- `unknown`: evidence cannot establish attribution.
+
+Pre-existing or unknown failures are reported as limitations/blockers only when the selected verification target or repository-required gate depends on them. Do not silently adopt unrelated remediation.
 
 ## Test placement
 
-### Unit and component
+Preserve the working repository's established conventions.
 
-Colocate with implementation under `src/`:
+Typical examples only:
 
-```text
-<name>.test.ts
-<name>.test.tsx
-```
+- unit/component: colocated `<name>.test.ts[x]`;
+- integration: established module/integration test location;
+- browser: established Playwright/E2E location.
 
-### Module/integration
-
-Use the established repository pattern, typically:
-
-```text
-src/modules/<context>/__tests__/integration/<scenario>.test.ts
-tests/integration/<flow>.test.ts
-```
-
-### E2E/browser
-
-Testing UI only: use the established top-level E2E location when its assigned Subtask explicitly requires browser journey coverage, for example `e2e/` or `tests/e2e/`. Testing Logic must treat these paths as outside its write/run ownership.
-
-### Fixtures/mocks
-
-Keep module-owned fixtures/mocks with the module test boundary. Use shared test folders only for truly
-cross-cutting test data/infrastructure.
-
-Do not introduce a new test folder convention merely because an example above exists; preserve live
-repository evidence.
+Do not invent a new project-wide test layout from this harness.
 
 ## Test design
 
-- Test observable contract/behavior, not private implementation details.
-- Prefer real pure collaborators and small fakes over broad mocks.
-- Do not mock private functions or copy the implementation algorithm into assertions.
-- Keep tests deterministic by controlling time, randomness, network, storage, and external seams when
-  the assigned test layer requires it.
-- Choose the narrowest useful test layer from approved test-plan evidence; do not add unrelated
-  coverage to appear thorough.
-- Never weaken an assertion, production behavior, lint/type rules, or runner configuration merely to
-  make tests pass.
+- Verify observable behavior/risk selected by Test Plan, not private implementation details.
+- Use the smallest useful layer and deterministic seams.
+- Do not duplicate coverage across layers unless Test Plan identifies a distinct risk.
+- Never weaken assertions, lint/type rules, runner configuration, or production behavior merely to make tests pass.
+- Write only inside `verification.allowed-test-write-paths` supplied by Main from the Test Plan.
 
-## Execution
+## Runtime resources
 
-Run the narrowest behavioral test command required by the approved Test-plan/handoff. Generic lint, format, typecheck, build, commit-hook, or CI gates remain owned by the working project's repository contract.
+If test execution starts a long-lived server, watcher, browser process, or background service, apply `.agents/rules/runtime-resource-lifecycle.md`.
 
-- Run a generic validation command only when the handoff or established repository contract explicitly requires it for this testing stage.
-- Do not duplicate project hooks/CI merely because the current environment did not execute them.
-- If required project hooks are expected but unavailable/not installed, report the environment/setup gap instead of reconstructing their command set as harness policy.
-
-If execution starts a long-lived process such as `npm run dev`, `npm run preview`, a framework server,
-watcher, browser server, or background service, apply `.agents/rules/runtime-resource-lifecycle.md`:
-
-- register ownership immediately when the process starts;
-- track actual PID/process identity and actual bound ports when available;
-- clean the owned process tree on every exit path;
-- verify known owned ports are released;
-- never terminate an unrelated process based only on port occupancy.
-
-Record:
-
-- commands run;
-- pass/fail results;
-- relevant failure cause, attribution (`current-change|pre-existing|unknown`), and correction;
-- skipped required validation and reason;
-- runtime resources acquired/released/unresolved;
-- residual risk or blocker.
-
-If a test exposes a production defect, report it to Orchestrator. Do not silently alter production
-behavior unless the current specialist assignment explicitly authorizes production changes (normally
-it does not).
+Track and clean only resources proven to be owned by the current child. Never terminate a process based only on port occupancy.
 
 ## Completion
 
-Return one `test-report` and one `agent-report` object to Orchestrator. Do not persist runtime reports
-into the product repository and do not update Jira directly. `completed` requires the assigned test
-scope, required validation evidence, and cleanup of owned runtime resources to be satisfied
-deterministically.
+Return one `test-report` and one `agent-report` directly to Main.
+
+`test-report.scope.coding-execution-keys` identifies the owning durable Coding work item(s); it does not represent separate Jira testing work.

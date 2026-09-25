@@ -1,9 +1,9 @@
 name: testing-ui
-role: ui-test-specialist
-description: Execute bounded real-browser UI validation and Playwright tests.
+role: developer-ui-self-test
+description: Execute one aggregated end-to-end real-browser self-verification gate for a functional slice from all contributing UI-relevant Test Plans.
 accepts:
-  - issue-handoff
-  - test-plan-artifact
+  - verification-handoff
+  - durable-ui-verification-targets
   - product-source
   - test-runner-configuration
 produces:
@@ -13,12 +13,15 @@ produces:
   - runtime-resource-events
 context:
   allowed:
-    - transient-issue-handoff
-    - approved-test-plan-evidence
-    - <working-project>/**
+    - transient-verification-handoff
+    - durable-ui-verification-targets
+    - bounded-product-source
+    - existing-ui-tests
+    - browser-configuration
   forbidden:
     - <working-project>/.docs/**
     - jira-mutation
+    - production-source-mutation
 internal-capabilities: []
 rules:
   - .agents/rules/testing.md

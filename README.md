@@ -5,7 +5,7 @@
 [![GitHub Template](https://img.shields.io/badge/GitHub-Template-181717?logo=github)](https://github.com/thuandiep1707/codex-harness-javascript/generate)
 [![JavaScript](https://img.shields.io/badge/JavaScript-Harness-F7DF1E?logo=javascript&logoColor=000)](https://github.com/thuandiep1707/codex-harness-javascript)
 
-A workflow-driven multi-agent harness for OpenAI Codex that turns product docs and current source into Jira-backed planning, implementation, testing, pause/resume handoff, execution-resource cleanup, and final acceptance.
+A workflow-driven multi-agent harness for OpenAI Codex that turns product docs and current source into Jira-backed planning, implementation, developer self-verification, pause/resume handoff, execution-resource cleanup, and final acceptance.
 
 **Public workflows:** `$frontend-delivery` · `$frontend-planning` · `$docs-development-ready`
 
@@ -21,7 +21,7 @@ A workflow-driven multi-agent harness for OpenAI Codex that turns product docs a
   />
 </p>
 
-This overview shows how public workflows move through Brain, Orchestrator, Specialists, internal Capabilities, and Jira-backed durable state across the full delivery lifecycle.
+This overview shows how Main orchestrates short-lived Brain, Scrum Master, and specialist children while Jira provides durable work state across the delivery lifecycle.
 
 ## Why this exists
 
@@ -44,10 +44,10 @@ This harness is built around five ideas:
 | **Workflow-first interface** | Only complete user-facing workflows appear in the `$` picker. Internal capabilities stay private. |
 | **Jira-backed execution context** | Jira stores durable work state, results, handoffs, and continuation context instead of relying on chat memory. |
 | **Pause / Resume by design** | A natural-language pause request creates a durable handoff before the workflow stops. A later session resumes from the smallest valid Jira context. |
-| **Progressive capability loading** | Agents load only routed capabilities for the current subtask instead of loading the whole knowledge base. |
+| **Progressive capability loading** | Agents load only routed capabilities for the current execution unit instead of loading the whole knowledge base. |
 | **Evidence-based stack discovery** | The harness inspects the existing project before routing UI, state, data, testing, or framework capabilities. |
-| **Explicit execution cleanup** | Primary Controller owns native child-agent lifecycle; specialists clean runtime resources they create, with controller-level fallback supervision. |
-| **Strict agent boundaries** | One child agent keeps one configured role: Brain reasons, Orchestrator owns workflow/Jira decisions and routing, Primary Controller owns runtime transport, and Specialists execute bounded work. |
+| **Explicit execution cleanup** | Main owns native child-agent lifecycle; specialists clean runtime resources they create, with Main-level fallback supervision. |
+| **Strict agent boundaries** | Main is the Orchestrator; Brain owns analysis/acceptance, Scrum Master owns Jira work management, and Specialists execute bounded work. |
 | **Acceptance beyond green tests** | Completion requires final acceptance against authoritative docs, Jira context, source changes, validation evidence, clean execution resources, and confirmed post-acceptance Jira finalization. |
 
 ## Quick Start
@@ -102,7 +102,7 @@ $frontend-delivery
 Implement the recruitment scope from the approved product docs end-to-end.
 ```
 
-`$frontend-delivery` does **not** stop just because Jira Tasks/Subtasks were created. It continues through dependency-ready specialist work, testing, reconciliation, runtime cleanup, child-agent closure, and final acceptance unless it reaches a real blocker, approval gate, or explicit pause.
+`$frontend-delivery` does **not** stop just because the Jira work graph was created. It continues through dependency-ready durable work, transient developer self-verification, reconciliation, runtime cleanup, child-agent closure, and final acceptance unless it reaches a real blocker, approval gate, or explicit pause.
 
 ## Example
 
@@ -116,29 +116,36 @@ The workflow resolves the current lifecycle entry and then coordinates the syste
 ```text
 product docs + current source
         ↓
+Main
+        ↓
 Brain
 authority readiness
 + requirement analysis
 + project-stack discovery
         ↓
-Orchestrator
-Jira planning + specialist routing
+Scrum Master
+schema discovery + Jira work graph
         ↓
-Test Plan
-acceptance coverage
-+ none | logic | ui | both
+Main
+capability + dependency routing
         ↓
-Coding
+Design / Coding durable work
         ↓
-Testing Logic / Testing UI
+Coding source change
         ↓
-acceptance-ready
+Test Plan (bounded relevant docs + actual diff)
+        ↓
+none | logic | ui | both
+        ↓
+transient Testing Logic / Testing UI when selected
+        ↓
+Main reconciliation
         ↓
 Brain Acceptance
         ↓
-Orchestrator Finalize
+Scrum Master Finalize
         ↓
-Parent Task Done
+Accepted functional slice finalized in the project-defined terminal Jira state
 ```
 
 If the work is interrupted:
@@ -168,7 +175,7 @@ Only packages under `.agents/skills/` are user-facing workflow entry points.
 | Workflow | Purpose |
 | --- | --- |
 | `$frontend-delivery` | Run frontend work end-to-end from authoritative docs/source through Jira planning, specialist execution, testing, cleanup, final acceptance, and Jira finalization. |
-| `$frontend-planning` | Analyze the requested frontend scope, create the Jira Feature/Task/Subtask graph, and stop before implementation. |
+| `$frontend-planning` | Analyze the requested frontend scope, create or reconcile a Jira work graph from semantic functional slices/execution units mapped to the current project schema, and stop before implementation. |
 | `$docs-development-ready` | Create or complete the coordinated Product / Feature Requirement, Functional Specification, and UI / UX Specification package, then finalize it after approval. |
 
 Everything else is internal capability knowledge and should not appear in the `$` picker.
@@ -213,7 +220,7 @@ $frontend-planning + NEW
 → Brain → Jira planning → STOP
 
 $frontend-delivery + RESUME
-→ reuse valid Jira context → continue the current executable Subtask
+→ reuse valid Jira context → continue the current executable execution unit
 ```
 
 Planning is a lifecycle operation. It does not automatically mean the workflow should stop; the execution intent decides whether planning is the destination or only one stage of delivery.
@@ -226,7 +233,7 @@ Examples:
 
 ```text
 .agents/capabilities/common/discover-project-stack/
-.agents/capabilities/frontend/plan-frontend-work/
+.agents/capabilities/frontend/manage-jira-work/
 .agents/capabilities/frontend/shadcn/
 .agents/capabilities/frontend/nextjs-tanstack-query/
 .agents/capabilities/frontend/nextjs-state-management/
@@ -236,7 +243,7 @@ Examples:
 An agent may load an internal capability only when:
 
 1. the capability is allowed by that agent's manifest;
-2. the Orchestrator routes it for the current specialist Subtask.
+2. Main routes it for the current specialist execution unit.
 
 The system does not load every capability "just in case".
 
@@ -287,34 +294,38 @@ If the required project capability is not available, the workflow should surface
 
 ## Jira Work Model
 
+The harness uses semantic work roles rather than assuming Jira issue-type names:
+
 ```text
-Feature Context
-  └── Task: one Functional Slice
-        └── Subtask: one independently actionable specialist work unit
+work-container   # optional grouping/context
+  └── functional-slice   # one scope + acceptance boundary
+        └── execution-unit # one independently actionable specialist work item
 ```
 
-The Orchestrator decomposes work by user outcome and functional boundary:
+Main coordinates decomposition intent; Scrum Master maps the semantic work model into the current Jira project schema:
 
 ```text
 requirement
 → user outcomes
 → functional slices
-→ Tasks
-→ specialist Subtasks
+→ specialist execution units
 ```
+
+Scrum Master discovers the current project's available Jira work types, fields, options, relationships, and workflow states, then maps those semantic roles to the project's actual schema. `Epic`, `Feature`, `Story`, `Task`, `Bug`, `Sub-task`, and custom work types are project-specific representations, not harness constants.
 
 It does not start by splitting a feature into Design / Coding / Testing buckets or by file/component ownership.
 
-Routine triage, diagnosis, retry, and test-only iteration stay inside the owning specialist lifecycle. They do not become new Jira Subtasks unless the discovered work is independently actionable and needs its own specialist ownership/scope.
+Test Plan, Testing Logic, and Testing UI are transient developer self-verification attached to the owning Coding work item. They never become separate Jira work items in the bundled frontend delivery workflow. Routine test-only diagnose/fix/rerun stays inside the same Testing child.
 
-Completing all executable Subtasks makes the parent Task `acceptance-ready`, not Done. Brain performs final acceptance first; only an accepted result followed by Orchestrator finalization may transition the parent Task to Done.
+Completing all executable execution units makes the functional-slice boundary `acceptance-ready`; this is a harness semantic state, not a literal Jira status. Brain performs final acceptance first; only an accepted result followed by finalization may transition that boundary through a project-valid transition to the project's terminal/completed workflow state.
 
 Context is inherited rather than duplicated:
 
-- Feature stores common approved product and architecture context;
-- Task stores the functional-slice delta;
-- Subtask stores the specialist execution delta and routed capability identifiers;
-- Specialist receives a transient handoff and does not independently rebuild full product context.
+- optional work-container stores common approved product and architecture context when the Jira model provides that level;
+- functional-slice stores the outcome/scope/acceptance delta;
+- execution-unit stores the specialist execution delta and routed capability identifiers;
+- Main gives durable Design/Coding workers a compact transient handoff with Jira identity, exact read allowlists, and execution controls;
+- Design/Coding resolve only those allowlisted Jira items directly instead of Main relaying full Jira descriptions; Test Plan/Testing remain Jira-independent.
 
 ## Pause / Resume
 
@@ -323,13 +334,12 @@ Pause is a durable workflow checkpoint, not a simple `stop responding` command.
 When the user expresses clear pause intent, the workflow coordinates runtime cleanup and durable Jira reconciliation:
 
 ```text
-Primary Controller freezes new dispatch
+Main freezes new dispatch
 → collects available execution evidence
 → cleans specialist-owned runtime resources
 → closes and verifies active specialist children
-→ Orchestrator reconciles confirmed state
-→ requests missing RESULT/status/HANDOFF Jira actions
-→ Primary Controller executes and confirms them
+→ Scrum Master persists confirmed RESULT/workflow-state/HANDOFF updates
+→ Main verifies durable persistence
 → paused
 ```
 
@@ -353,11 +363,11 @@ spawn child
 
 Ownership is explicit:
 
-- Primary Controller owns the native lifecycle of every spawned child agent;
-- Orchestrator decides which specialist should run, but does not spawn, wait for, interrupt, or close child agents;
+- Main owns the native lifecycle of every spawned child agent;
+- Main decides which dependency-ready specialist should run and owns its native lifecycle;
 - specialists own first-pass cleanup for long-lived runtime resources they create;
-- Primary Controller supervises cross-agent runtime cleanup and performs fallback cleanup when a specialist crashes or becomes unavailable, but only when ownership evidence is sufficient;
-- Orchestrator consumes cleanup evidence for workflow decisions.
+- Main supervises cross-agent runtime cleanup and performs fallback cleanup when a specialist crashes or becomes unavailable, but only when ownership evidence is sufficient;
+- Main consumes cleanup evidence when choosing the next workflow action.
 
 Runtime resource ownership can include command, working directory, PID/process group, known descendants, and actual bound ports. Port occupancy alone is never enough evidence to terminate a process. This prevents the harness from stopping a developer-managed server simply because it uses the same port.
 
@@ -367,15 +377,16 @@ Runtime-resource events and child/resource ledgers are transient control-plane e
 
 | Agent | Responsibility |
 | --- | --- |
+| `main` | Runtime orchestration, dependency/capability routing, specialist dispatch, reconciliation, child lifecycle, write-scope leases, and cleanup supervision |
 | `brain` | Requirement reasoning, authority readiness, architecture analysis, project-stack discovery, revalidation, final acceptance |
-| `orchestrator` | Jira planning/resume/pause/finalize decisions, dependency routing, capability selection, specialist coordination, and reconciliation |
+| `scrum-master` | Jira schema discovery, work-graph creation/reconciliation, compact Jira state sync, and authorized durable Jira mutations |
 | `design` | Bounded external design-provider execution |
-| `test-plan` | Acceptance coverage and authoritative testing route: `none | logic | ui | both` |
+| `test-plan` | Decide the smallest developer self-verification route/scope from bounded relevant docs plus the actual Coding source change |
 | `coding` | Bounded production implementation using only routed capabilities |
-| `testing-logic` | Unit/component/integration test work without a real browser |
-| `testing-ui` | Playwright / real-browser UI validation and browser-test work |
+| `testing-logic` | Transient unit/component/integration self-tests selected by Test Plan for the owning Coding work item |
+| `testing-ui` | Aggregated transient Playwright/real-browser end-to-end gate for one functional slice, covering UI targets from one-or-more Coding work items |
 
-Specialists do not own Jira mutation, do not read the full product truth independently, and do not expand their scope without returning a blocker to the Orchestrator. Test Plan owns testing classification; Orchestrator routes `none | logic | ui | both` mechanically rather than reclassifying from source or Git diff.
+Specialists do not own Jira mutation. Design/Coding may read only the exact Jira keys allowlisted by their `issue-handoff`, but do not read product docs directly. Test Plan may read only the relevant document paths explicitly listed in its `verification-handoff` plus the bounded actual source diff/current source; Testing roles remain Jira-independent. Test Plan owns `none | logic | ui | both`; Main follows that route mechanically and Scrum Master is not involved in self-test routing.
 
 ## Repository Structure
 
@@ -386,7 +397,7 @@ codex-harness-javascript/
 ├── LICENSE
 ├── .agents/
 │   ├── brain/
-│   ├── orchestrator/
+│   ├── scrum-master/
 │   ├── specialists/
 │   ├── rules/
 │   ├── skills/                 # PUBLIC workflows only
@@ -404,7 +415,7 @@ For implementation-level rules and protocol details, start with [`AGENTS.md`](AG
 
 ## Inspect scope usage
 
-Primary Controller supplies a common usage-report instruction with every child dispatch/continuation,
+Main supplies a common usage-report instruction with every child dispatch/continuation,
 including new agent roles. No per-agent manifest or bootstrap registration is needed. Existing response
 payloads retain their shape and add `scope-usage` using the shared
 [metadata format](.protocols/scope-usage.yaml).
@@ -413,13 +424,13 @@ Each report covers one turn: `loaded` lists skill/rule content newly read or sup
 lists material used with brief evidence, including material loaded earlier. A path merely present in
 an allowlist is not loaded content. Known-empty lists are `[]`; uncertainty is `partial` with limitations.
 
-At completion, pause, or blocker, the controller displays a `Scope usage` summary in the main
+At completion, pause, or blocker, Main displays a `Scope usage` summary in the main
 conversation for each child: applied paths, observed loaded-but-not-applied candidates across retained
 turns, and missing observations. Missing metadata does not rerun work or delay child cleanup.
 
 This is a declarative reporting contract, not a runtime hook or token measurement. Self-reporting and
 context loss limit completeness. Use the audit to investigate excess context, not to automatically
-remove mandatory rules. See the controller contract in [AGENTS.md](AGENTS.md#controller-supplied-scope-usage-metadata).
+remove mandatory rules. See the Main contract in [AGENTS.md](AGENTS.md#main-supplied-scope-usage-metadata).
 
 ## Roadmap
 

@@ -26,11 +26,11 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 | `audit-frontend-supply-chain` | Assess dependency/source adoption risk |
 | `audit-frontend-security` | Assess browser/runtime threat surfaces |
 
-### Orchestrator
+### Scrum Master
 
 | Capability | Responsibility |
 | --- | --- |
-| `plan-frontend-work` | Plan/resume/pause Jira-backed Functional Tasks/Subtasks, capability routing, handoff composition, reconciliation |
+| `manage-jira-work` | Discover current Jira schema, create/reconcile semantic work graphs, synchronize compact Jira state, and persist authorized durable Jira updates |
 
 ### Design
 
@@ -42,14 +42,14 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 
 | Capability | Responsibility |
 | --- | --- |
-| `plan-frontend-testing` | Convert one bounded handoff into a risk-based test-plan artifact |
+| `plan-frontend-testing` | Decide the smallest developer self-verification route/scope from bounded relevant docs + actual Coding source change |
 
 ### Coding
 
 | Capability | Responsibility |
 | --- | --- |
-| `migrate-legacy-frontend-module` | Migrate approved legacy behavior within one bounded Coding Subtask |
-| `integrate-third-party-frontend` | Implement an approved external integration within one bounded Coding Subtask |
+| `migrate-legacy-frontend-module` | Migrate approved legacy behavior within one bounded Coding execution unit |
+| `integrate-third-party-frontend` | Implement an approved external integration within one bounded Coding execution unit |
 | `nextjs-state-management` | Apply approved state-ownership reasoning when routed |
 | `nextjs-tanstack-query` | Implement explicit approved TanStack Query flows when project evidence supports them |
 | `shadcn` | Work with shadcn primitives/source mechanics only when shadcn is detected/approved and routed |
@@ -58,7 +58,7 @@ Chỉ các entry point dưới `.agents/skills/` được expose cho user qua `$
 
 | Capability | Responsibility |
 | --- | --- |
-| `testing` | Implement, run, debug, and report one bounded logic-testing Subtask |
+| `testing` | Implement, run, debug, and report bounded non-browser self-tests for the owning Coding work item |
 
 ### Testing UI
 
@@ -71,11 +71,11 @@ Internal capability availability does not mean it should be loaded.
 ```text
 project evidence
 + approved architecture/dependency direction
-+ current Subtask trigger
++ current execution-unit trigger
 + specialist manifest allowlist
 → smallest routed internal capability set
 ```
 
-Capability không được route thì specialist không load. Nếu stack evidence thiếu/conflict thì giữ unresolved thay vì default sang shadcn/Lucide/TanStack/Zustand hoặc library khác.
+Main chỉ route capability nằm trong specialist manifest allowlist và được current evidence + execution-unit trigger yêu cầu. Capability không được route thì specialist không load. Nếu stack evidence thiếu/conflict thì giữ unresolved thay vì default sang shadcn/Lucide/TanStack/Zustand hoặc library khác.
 
-Routine lint/typecheck/build/browser validation không tự tạo Testing Subtask. Test planning và test implementation vẫn là specialist responsibilities riêng.
+Test Plan, Testing Logic và Testing UI là transient developer self-verification; chúng không tạo Jira work item. Test Plan quyết định `none|logic|ui|both`; Main chỉ dispatch mechanically.

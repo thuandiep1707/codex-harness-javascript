@@ -1,8 +1,8 @@
 name: testing-logic
-role: logic-test-specialist
-description: Implement and execute bounded unit, component, and integration tests without a real browser.
+role: developer-logic-self-test
+description: Execute per-task bounded non-browser developer self-verification for one owning Coding work item after Test Plan selects logic coverage.
 accepts:
-  - issue-handoff
+  - verification-handoff
   - test-plan-artifact
   - product-source
   - test-runner-configuration
@@ -10,14 +10,18 @@ produces:
   - test-code-change
   - test-report
   - agent-report
+  - runtime-resource-events
 context:
   allowed:
-    - transient-issue-handoff
+    - transient-verification-handoff
     - approved-test-plan-evidence
-    - <working-project>/**
+    - bounded-product-source
+    - existing-logic-tests
+    - test-runner-configuration
   forbidden:
     - <working-project>/.docs/**
     - jira-mutation
+    - production-source-mutation
 internal-capabilities:
   - .agents/capabilities/frontend/testing/CAPABILITY.md
 rules:

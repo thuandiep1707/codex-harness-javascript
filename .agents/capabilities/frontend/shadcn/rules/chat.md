@@ -11,11 +11,11 @@ Treat the chat registry artifacts and every generated dependency as unconfirmed
 third-party source until inspected. Identify the exact registry item, version or
 commit, generated files, and dependency surface with read-only inspection and a
 CLI dry run. Require the issue handoff to record completed supply-chain approval
-before running an add command; otherwise return a blocker to Orchestrator.
+before running an add command; otherwise return a blocker to Main.
 
 After approval, add only the reviewed artifacts. Return attachments, untrusted
 message rendering, streaming, browser storage, or realtime threat gaps to
-Orchestrator for Brain review. Verify the installed files and dependencies before
+Main for Brain review. Verify the installed files and dependencies before
 applying the patterns below.
 
 Approved install example:

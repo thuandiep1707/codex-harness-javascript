@@ -11,9 +11,9 @@ Resolve visual requirements in this order:
 1. existing component public variant/composition contract;
 2. existing shared/module component owning the pattern;
 3. existing semantic design-system token/rule;
-4. standard utility/API of the project styling system detected from source/config and routed by Orchestrator.
+4. standard utility/API of the project styling system detected from source/config and routed by Main.
 
-Do not assume Tailwind, CSS Modules, MUI `sx`, styled-components, or another mechanism merely because this control repo knows about it. Map by semantic responsibility, not by copying provider CSS values. If no approved mapping exists, return the exact missing styling decision to Orchestrator instead of approximating a value or silently expanding the design system.
+Do not assume Tailwind, CSS Modules, MUI `sx`, styled-components, or another mechanism merely because this control repo knows about it. Map by semantic responsibility, not by copying provider CSS values. If no approved mapping exists, return the exact missing styling decision to Main instead of approximating a value or silently expanding the design system.
 
 ## Project styling-system policy
 
@@ -36,7 +36,7 @@ Provider CSS/classes/values are design evidence only. For each material value, m
 
 ## Responsive and fluid layout
 
-Implement only responsive scope explicitly included by the assigned Task/design evidence. Do not invent mobile/tablet layouts or breakpoints.
+Implement only responsive scope explicitly included by the assigned execution-unit/design evidence. Do not invent mobile/tablet layouts or breakpoints.
 
 Within the approved viewport scope, major page/workspace regions must remain fluid unless a fixed contract is explicitly required. Do not lock the whole layout to a design-frame width/height.
 
@@ -52,7 +52,7 @@ Fixed intrinsic/design-system dimensions are allowed for things such as icons, s
 
 ## Approval-required changes
 
-Return to Orchestrator/developer before:
+Return to Main/developer before:
 
 - adding/changing design tokens or global styling/theme rules;
 - adding a shared visual variant not already authorized;

@@ -49,14 +49,14 @@ Ví dụ:
 
 ```text
 .agents/capabilities/common/discover-project-stack/CAPABILITY.md
-.agents/capabilities/frontend/plan-frontend-work/CAPABILITY.md
+.agents/capabilities/frontend/manage-jira-work/CAPABILITY.md
 .agents/capabilities/frontend/shadcn/CAPABILITY.md
 .agents/capabilities/frontend/testing/CAPABILITY.md
 ```
 
 Internal capability package không có `agents/openai.yaml`, vì nó không phải public Codex entry point và không được user invoke trực tiếp.
 
-Agent manifest dùng `internal-capabilities:` làm allowlist path. Specialist chỉ load capability khi capability đó vừa nằm trong manifest allowlist vừa được Orchestrator route trong `issue-handoff`.
+Agent manifest dùng `internal-capabilities:` làm allowlist path. Durable product specialist load capability từ Main-routed `issue-handoff`; Test Plan/Testing dùng transient `verification-handoff` và chỉ load capability được manifest cho phép.
 
 ## Progressive disclosure
 
@@ -71,7 +71,7 @@ Internal side:
 1. Workflow spawn đúng agent.
 2. Agent đọc manifest/rules.
 3. Brain detect project stack bằng evidence rẻ khi cần.
-4. Orchestrator route smallest internal-capability set cho từng Subtask.
+4. Main route smallest internal-capability set cho từng execution unit từ Brain evidence + Jira work state + specialist manifest.
 5. Specialist chỉ load capability được route.
 6. Capability chỉ load reference cần cho nhánh hiện tại.
 
@@ -97,7 +97,7 @@ Ví dụ `@mui/material` xuất hiện trong project là evidence để route ca
 ## Context isolation
 
 - Brain có thể đọc relevant `.docs` và bounded source/config evidence cho stack discovery.
-- Orchestrator đọc relevant `.docs` trong planning/replanning; resume/pause ưu tiên minimal Jira/source evidence.
+- Main chỉ giữ compact orchestration/Jira state cần cho routing; Brain đọc authoritative docs; Scrum Master sở hữu Jira mutation. Design/Coding không đọc `.docs` nhưng được read-only đúng Jira keys được allowlist trong `issue-handoff`; Testing không đọc Jira; Test Plan chỉ được đọc các relevant document paths được liệt kê rõ trong `verification-handoff`.
 - Specialist tuyệt đối không đọc `.docs`.
 - Internal capability không mở rộng context authority của agent owner.
 
@@ -125,7 +125,7 @@ $backend-planning
 3. Viết trigger + negative boundary rõ ràng.
 4. Không tạo `SKILL.md` hoặc `agents/openai.yaml` trong capability package.
 5. Thêm path `CAPABILITY.md` vào đúng `internal-capabilities:` allowlist của manifest.
-6. Chỉ route capability từ Orchestrator khi project evidence + Subtask trigger phù hợp.
+6. Main chỉ route capability khi project evidence + execution-unit trigger phù hợp và specialist manifest cho phép.
 7. Giữ reference theo progressive disclosure.
 
 Version được quản lý ở repository level bằng Git tag/GitHub Release.
