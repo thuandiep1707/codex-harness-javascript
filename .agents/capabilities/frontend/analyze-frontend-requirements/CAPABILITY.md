@@ -321,7 +321,7 @@ Do not create tasks, choose specialists, update Jira, or implement code.
 ## Revalidation
 
 Use only after cheap repository metadata shows that at least one relevant document changed after the
-stored `docs-baseline`.
+stored `project-knowledge-baseline`.
 
 1. Read the changed relevant documents first.
 2. Re-check only requirements, architecture decisions, acceptance criteria, and source evidence that
