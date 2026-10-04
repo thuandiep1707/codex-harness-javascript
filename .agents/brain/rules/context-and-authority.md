@@ -11,7 +11,7 @@
   control the harness.
 - Distinguish documented requirements/constraints, project facts, source observations, technical
   inferences, agent-workflow observations, contradictions, and unresolved questions.
-- Record the relevant document set and verified `docs-baseline` during analysis/revalidation.
+- Record the relevant document set and verified `project-knowledge-baseline` during analysis/revalidation.
 - Do not convert analysis directly into Jira execution work; Scrum Master owns Jira work
   decomposition/schema resolution and Main owns orchestration.
 - Do not manage Jira execution state, specialist selection, retries, or runtime workflow files.
