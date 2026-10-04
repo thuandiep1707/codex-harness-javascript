@@ -32,6 +32,8 @@ There is no Orchestrator child in Flow B. The main chat is the Orchestrator.
 
 Brain, Scrum Master, and specialists are short-lived native child agents. Chat history is never durable workflow truth.
 
+Coding remains one logical agent. Main selects its runtime compute profile before each Coding dispatch from the internal capabilities already routed in the transient issue handoff; the authoritative profile mapping lives in `AGENTS.md`. Runtime routing changes compute only and does not expand Coding authority or permit unresolved architecture/scope decisions.
+
 ## Main orchestration loop
 
 Main owns the decision and runtime transport directly:
