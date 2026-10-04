@@ -142,7 +142,7 @@ $frontend-planning
 ## Resume
 
 1. Main resolves the current Jira-backed workflow state.
-2. Verify relevant authority/docs baseline using existing validity rules.
+2. Verify relevant authority/project-knowledge baseline using existing validity rules.
 3. Run targeted Brain revalidation only when required.
 4. Use Scrum Master only when Jira graph reconciliation or durable Jira mutation is required.
 5. Main dispatches only dependency-ready bounded specialist work.

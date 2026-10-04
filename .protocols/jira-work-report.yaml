@@ -8,7 +8,7 @@ validity:
   analysis-status: "<ready|blocked>"
   authority-status: "<ready|blocked>"
   work-graph-status: "<ready|partial|blocked>"
-  docs-baseline: ""
+  project-knowledge-baseline: ""
   relevant-documents: []
 
 jira:

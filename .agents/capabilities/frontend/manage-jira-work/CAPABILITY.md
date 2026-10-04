@@ -57,7 +57,7 @@ Create a work-container only when the current Jira/project model needs or suppor
 
 Store common approved context at the resolved work-container level when present, functional outcome/scope delta at the functional-slice level, and specialist execution delta at the execution-unit level.
 
-Persist the current validity markers required for future resume/replan decisions from the approved analysis: analysis readiness, authority readiness, context-version, docs-baseline, and recoverable relevant-document references. Return the same resolved markers in `jira-work-report.validity`.
+Persist the current validity markers required for future resume/replan decisions from the approved analysis: analysis readiness, authority readiness, context-version, project-knowledge-baseline, and recoverable relevant-document references. Return the same resolved markers in `jira-work-report.validity`.
 
 Create only independently actionable execution units actually required by evidence. Record the intended specialist role when known, but do not dispatch that role and do not select internal capability packages.
 
@@ -76,7 +76,7 @@ Load only the minimum Jira chain required by the request:
 3. optional work-container context when present;
 4. direct dependencies;
 5. latest durable result/handoff evidence;
-6. context/version validity markers required by Main, including analysis readiness, authority readiness, work-graph readiness, docs baseline, and relevant document references.
+6. context/version validity markers required by Main, including analysis readiness, authority readiness, work-graph readiness, project-knowledge baseline, and relevant document references.
 
 Return those markers in `jira-work-report.validity` together with the compact work graph/current state. Do not echo full descriptions when keys/workflow-state/dependencies are sufficient.
 
