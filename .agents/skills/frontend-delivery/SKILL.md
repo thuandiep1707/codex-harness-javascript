@@ -74,7 +74,7 @@ Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jir
 ### RESUME
 
 1. Resolve compact current Jira state; use Scrum Master `resume-sync` when fresh Jira state is required.
-2. Verify Jira validity markers, authority readiness, and the relevant documentation baseline.
+2. Verify Jira validity markers, authority readiness, and the project-knowledge baseline.
 3. Run targeted Brain revalidation only when relevant authority/contract evidence is stale or changed.
 4. Main selects the next dependency-ready execution unit from confirmed Jira state.
 5. Continue specialist routing, reconciliation, and durable Jira synchronization through the same Main/Scrum Master boundaries as normal delivery.
