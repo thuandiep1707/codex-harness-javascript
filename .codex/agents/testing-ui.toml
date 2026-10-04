@@ -1,7 +1,7 @@
 name = "testing-ui"
 description = "Execute the aggregated end-to-end real-browser self-verification gate for one functional slice."
 model = "gpt-6-luna"
-model_reasoning_effort = "medium"
+model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 developer_instructions = """
 Load .agents/specialists/testing-ui/AGENT.md, manifest.yaml, and listed rules before acting.
