@@ -31,6 +31,7 @@ const maxInventory = positiveInt(getArg("--max-inventory"), 500);
 const maxFileBytes = positiveInt(getArg("--max-file-bytes"), 2 * 1024 * 1024);
 const hotPaths = [...new Set(getArgs("--hot-path").map((value) => normalizeCorpusPath(value)).filter(Boolean))];
 const coldPaths = [...new Set(getArgs("--cold-path").map((value) => normalizeCorpusPath(value)).filter(Boolean))];
+const pairRoots = getArgs("--pair-roots").map((value) => parsePairRoots(value));
 const searchTier = (getArg("--search-tier", "hot") || "hot").toLowerCase();
 const indexFileArg = getArg("--index-file");
 const indexFile = indexFileArg ? path.resolve(indexFileArg) : null;
@@ -81,6 +82,22 @@ function normalizeCorpusPath(value) {
 function pathMatchesHint(relativePath, hint) {
   const normalized = normalizeCorpusPath(relativePath);
   return normalized === hint || normalized.startsWith(`${hint}/`);
+}
+
+function parsePairRoots(value) {
+  const separator = value.indexOf("=");
+  if (separator <= 0 || separator === value.length - 1) {
+    process.stderr.write(`Invalid --pair-roots value: ${value}. Expected <left>=<right>.\n`);
+    process.exit(2);
+  }
+
+  const left = normalizeCorpusPath(value.slice(0, separator));
+  const right = normalizeCorpusPath(value.slice(separator + 1));
+  if (!left || !right || left === right) {
+    process.stderr.write(`Invalid --pair-roots value: ${value}. Roots must be distinct non-empty paths.\n`);
+    process.exit(2);
+  }
+  return { left, right };
 }
 
 function corpusTier(relativePath) {
@@ -403,6 +420,27 @@ const scoredDocuments = documents.map((document) => ({
   ...scoreDocument(document),
 }));
 
+const documentPaths = new Set(scoredDocuments.map((document) => normalizeCorpusPath(document.path)));
+
+function pairedPathsFor(relativePath) {
+  const normalized = normalizeCorpusPath(relativePath);
+  const pairs = [];
+
+  for (const pair of pairRoots) {
+    for (const [from, to] of [
+      [pair.left, pair.right],
+      [pair.right, pair.left],
+    ]) {
+      if (!pathMatchesHint(normalized, from)) continue;
+      const suffix = normalized === from ? "" : normalized.slice(from.length + 1);
+      const counterpart = suffix ? `${to}/${suffix}` : to;
+      if (documentPaths.has(counterpart)) pairs.push(counterpart);
+    }
+  }
+
+  return [...new Set(pairs)];
+}
+
 const matchedDocuments = scoredDocuments.filter((document) => document.score > 0);
 const eligibleDocuments = matchedDocuments.filter(
   (document) => searchTier === "all" || document.corpusTier === searchTier,
@@ -427,6 +465,7 @@ const candidates = eligibleDocuments
     headingCount: document.headingCount,
     structuralHints: document.structuralHints,
     corpusTier: document.corpusTier,
+    pairedPaths: pairedPathsFor(document.path),
     contentTruncated: document.contentTruncated,
     score: document.score,
     matchedQueries: document.matchedQueries,
@@ -462,6 +501,7 @@ process.stdout.write(
         searchTier,
         hotPaths,
         coldPaths,
+        pairRoots,
       },
       stats: {
         filesIndexed: scoredDocuments.length,
@@ -487,6 +527,7 @@ process.stdout.write(
         "Corpus tiers are caller-supplied discovery priorities, not document authority or semantic classification.",
         "When no hot/cold hints are supplied, all project knowledge remains hot for backward compatibility.",
         "Cold documents remain indexed and discoverable but are excluded from the default hot candidate pool.",
+        "Pair roots are caller-supplied deterministic path relationships; pairedPaths only reports exact indexed counterparts and does not imply semantic authority.",
         "Reusable indexes are explicit transient runtime artifacts; they must live outside the working project and must not be treated as persistent project knowledge.",
         "Structural hints are discovery hints only; they do not classify document authority or purpose.",
         "Only Markdown/MDC content up to maxFileBytes is inspected for metadata and search matching.",
