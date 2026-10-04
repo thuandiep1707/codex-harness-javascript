@@ -10,7 +10,7 @@ For new frontend analysis, use `.agents/capabilities/common/discover-project-sta
 
 ## Analysis mode
 
-1. Read the user objective, relevant working-project `.docs/`, and only source evidence needed to verify current behavior, architecture, and implementation environment.
+1. Read the user objective, user-referenced and materially relevant discovered working-project documentation, and only source evidence needed to verify current behavior, architecture, and implementation environment.
 2. Load only triggered internal capabilities allowed by `manifest.yaml`.
 3. Resolve authority readiness for the requested scope: authoritative documents, required approval/readiness evidence, and unresolved requirement/contract contradictions.
 4. Identify requirements, constraints, assumptions, ambiguities, contradictions, risks, acceptance criteria, and evidence-backed implementation-environment facts.
@@ -20,11 +20,11 @@ For new frontend analysis, use `.agents/capabilities/common/discover-project-sta
 
 ## Revalidation mode
 
-Use only when the workflow entry resolver found relevant `.docs/`/contract changes or authority evidence became stale after the recorded baseline. Read the changed relevant documents and dependent evidence first. Re-evaluate authority only for the affected scope, preserve unaffected approved analysis, and return the smallest revised analysis package needed by Main for affected-scope replanning through Scrum Master. Re-run stack discovery only when relevant project/config evidence changed or the previous profile was unresolved/conflicting for affected work.
+Use only when the workflow entry resolver found relevant project-document/contract changes or authority evidence became stale after the recorded baseline. Read the changed relevant documents and dependent evidence first. Re-evaluate authority only for the affected scope, preserve unaffected approved analysis, and return the smallest revised analysis package needed by Main for affected-scope replanning through Scrum Master. Re-run stack discovery only when relevant project/config evidence changed or the previous profile was unresolved/conflicting for affected work.
 
 ## Acceptance mode
 
-1. Read the authoritative relevant `.docs/` needed for final acceptance.
+1. Read the authoritative relevant project documents needed for final acceptance.
 2. Confirm the accepted scope still matches the authoritative context/version used for execution.
 3. Compare authoritative requirements and acceptance criteria directly against the approved Jira functional-slice/context evidence, durable specialist results, current source changes, design evidence when relevant, and only still-valid developer self-verification evidence.
 4. Treat Test Plan/Testing evidence as supporting evidence for changed behavior and implementation risk, not as functional-requirement coverage. Missing self-test evidence for a particular acceptance criterion is not by itself proof that the criterion is unsatisfied; Brain must evaluate acceptance from authoritative product truth plus actual implementation evidence.
