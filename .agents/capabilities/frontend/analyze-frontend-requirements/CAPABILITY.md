@@ -110,6 +110,49 @@ Stop expanding when the requested scope is sufficiently explained by current pro
 when a required dependency cannot be resolved from accessible project evidence. Do not broaden source
 inspection for unrelated implementation details.
 
+### Evidence expansion and loop control
+
+Drive further document or source discovery from unresolved material questions, not from every newly
+observed identifier or dependency.
+
+Maintain transient analysis state for the current run so already inspected evidence can be reused.
+At minimum, track the equivalent of:
+
+- selected/read documents;
+- inspected source locations;
+- material concepts or relationships already resolved;
+- search/inventory queries already attempted;
+- unresolved material questions;
+- evidence branches already exhausted.
+
+Do not require a new protocol field for this state and do not persist routine traversal traces into
+the `analysis-package`.
+
+Apply these invariants during document/source reconciliation:
+
+1. Never re-read unchanged evidence unless a new material question requires a different section or
+   relationship from that evidence.
+2. Expand discovery only when the next evidence is reasonably capable of resolving or materially
+   changing an unresolved requirement, architecture boundary, state/data flow, integration contract,
+   runtime behavior, authority question, or acceptance condition.
+3. Reuse prior inventory/search results and previously inspected evidence instead of rediscovering the
+   same paths, concepts, or equivalent queries.
+4. When a dependency or concept points back to already inspected evidence, record any new material
+   relationship or cycle but do not replay the prior traversal from the beginning.
+5. If accessible authoritative/relevant evidence has been exhausted and a contradiction or ambiguity
+   remains, record it as such instead of continuing discovery in search of certainty.
+
+Treat source and document traversal as an evidence graph rather than a tree. Re-visiting a node is
+useful only when new evidence creates a materially different relationship or unresolved question.
+
+Use material information gain as the continuation criterion. A discovery branch may continue across
+many hops when each step adds or changes material knowledge. Stop that branch when repeated
+inspection/search produces no material information gain for the unresolved question it was meant to
+answer.
+
+Do not use a fixed source-hop limit or arbitrary directory-depth limit as the primary loop-control
+mechanism.
+
 ### Preserve material relationships
 
 When one behavior is supported by evidence from multiple categories, preserve the material
