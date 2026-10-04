@@ -1,7 +1,5 @@
 name = "coding"
 description = "Implement one bounded frontend Coding execution unit from compact handoff controls plus exact allowlisted Jira execution context using only routed internal capabilities."
-model = "gpt-6-luna"
-model_reasoning_effort = "low"
 sandbox_mode = "workspace-write"
 developer_instructions = """
 Load .agents/specialists/coding/AGENT.md, manifest.yaml, and listed local rules before acting.
