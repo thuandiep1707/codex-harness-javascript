@@ -459,6 +459,20 @@ Main is the Orchestrator and is not represented by a child-agent module.
 
 Test Plan owns testing classification and returns exactly one route: `none|logic|ui|both`. Main routes it mechanically and never reclassifies from source or Git diff.
 
+### Test Plan runtime profiles
+
+Test Plan remains one logical role. Main must select its runtime model and reasoning effort before every Test Plan dispatch using only structured workflow/implementation evidence already available for the accepted Coding result. The Test Plan agent config must not pin a model or reasoning effort that overrides this routing.
+
+| Profile | Model | Reasoning effort | Promotion trigger |
+| --- | --- | --- | --- |
+| `test-plan-standard` | `gpt-6-luna` | `medium` | Default when no stronger structured signal is present. |
+| `test-plan-complex` | `gpt-6-luna` | `high` | Confirmed production-defect revision, non-empty implementation `deviations`, or non-empty `known-limitations`. |
+| `test-plan-critical` | `gpt-6.1-sol` | `medium` | Non-empty implementation `public-contracts`, whose entries are restricted by the Coding contract to changed logical boundary contracts. |
+
+Routing is promotion-only: `standard < complex < critical`, and the strongest applicable profile wins. Main must not downgrade from missing signals, interpret free-form prose to estimate difficulty, read additional product documents/source merely to choose a profile, or treat model routing as a substitute for workflow-integrity checks. Missing/invalid required reports, context-version mismatch, out-of-scope source mutation, or another invalid Coding result must be reconciled or blocked before Test Plan routing rather than promoted to a stronger model.
+
+The runtime profile changes compute allocation only. It does not change Test Plan authority, context boundaries, `none|logic|ui|both` ownership, output protocols, or Main's prohibition on reclassifying Test Plan results. Model selection is an efficiency/quality-margin policy, not a correctness dependency.
+
 Each child module's `manifest.yaml` is authoritative for inputs, outputs, context allowlist, rules, external/runtime capabilities, and internal-capability allowlist.
 
 ## Context isolation
