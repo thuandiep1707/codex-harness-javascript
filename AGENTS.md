@@ -211,6 +211,21 @@ Use Scrum Master for:
 
 Scrum Master returns `.protocols/jira-work-report.yaml`.
 
+### Scrum Master runtime profiles
+
+Scrum Master remains one logical role, but Main must select its runtime model and reasoning effort explicitly from the assigned operation before every dispatch. The Scrum Master agent config must not pin a model or reasoning effort that would override this routing.
+
+| Operation | Runtime profile | Model | Reasoning effort |
+| --- | --- | --- | --- |
+| `planning` | `scrum-reasoning` | `gpt-6.1-sol` | `medium` |
+| `replan` | `scrum-reasoning` | `gpt-6.1-sol` | `medium` |
+| `resume-sync` | `scrum-routine` | `gpt-6-luna` | `low` |
+| `progress-sync` | `scrum-routine` | `gpt-6-luna` | `low` |
+| `pause` | `scrum-checkpoint` | `gpt-6-luna` | `medium` |
+| `finalize` | `scrum-routine` | `gpt-6-luna` | `low` |
+
+The runtime profile is a compute policy only; it does not change Scrum Master authority, Jira mutation ownership, input/output protocol, or operation semantics. Main must choose the profile before dispatch rather than retrying a lower-cost profile with a stronger model after an ambiguous Jira mutation. Existing side-effect-safe retry rules continue to apply.
+
 Main consumes the compact report and does not duplicate full Jira issue descriptions into its working context unless a workflow decision specifically requires them.
 
 Durable product specialists with their own Jira execution unit (currently Design and Coding) may read Jira directly, but only by the exact keys allowlisted in the current `issue-handoff`: their own execution unit, parent functional-slice boundary, optional work-container when explicitly required, and listed direct dependencies. They must not browse/search unrelated Jira work, broad comment history, sprint state, or sibling branches.
