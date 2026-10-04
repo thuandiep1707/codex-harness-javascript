@@ -1,5 +1,7 @@
 name = "test-plan"
 description = "Plan the smallest developer self-verification scope for one Coding change from bounded relevant docs and the actual source change."
+model = "gpt-6-luna"
+model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = """
 Load .agents/specialists/test-plan/AGENT.md, manifest.yaml, and local rules before acting.
