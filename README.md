@@ -114,13 +114,13 @@ Implement user management from the approved product docs.
 The workflow resolves the current lifecycle entry and then coordinates the system:
 
 ```text
-product docs + current source
+authoritative docs + relevant project knowledge + current source
         ↓
 Main
         ↓
 Brain
 authority readiness
-+ requirement analysis
++ requirement / project-knowledge analysis
 + project-stack discovery
         ↓
 Scrum Master
@@ -185,10 +185,10 @@ Everything else is internal capability knowledge and should not appear in the `$
 ### Truth model
 
 ```text
-Control repo                  = Workflow + Agent Behavior Truth
-Working project documentation = Product Truth
-Jira                          = Work + Execution Context Truth
-Product source                = Implementation Truth
+Control repo                       = Workflow + Agent Behavior Truth
+Authoritative project documentation = Product Truth
+Jira                               = Work + Execution Context Truth
+Product source                     = Implementation Truth
 ```
 
 Chat history is never workflow truth.
@@ -243,7 +243,7 @@ Examples:
 An agent may load an internal capability only when:
 
 1. the capability is allowed by that agent's manifest;
-2. Main routes it for the current specialist execution unit.
+2. the current assigned work materially triggers it; for specialist execution, Main must also route it.
 
 The system does not load every capability "just in case".
 
@@ -251,7 +251,7 @@ This keeps the public command surface small and the execution context focused ev
 
 ## Project Stack Discovery
 
-Before implementation routing, Brain can use the internal `discover-project-stack` capability to inspect cheap evidence first:
+During analysis, Brain can use the internal `discover-project-stack` capability to inspect the smallest relevant implementation-environment evidence first:
 
 ```text
 package.json / lockfile
@@ -259,6 +259,8 @@ package.json / lockfile
 framework config
         ↓
 UI / component config
+        ↓
+sanitized environment evidence when materially required
         ↓
 representative imports when needed
         ↓
@@ -268,14 +270,17 @@ deeper source only when evidence conflicts
 It can detect evidence for areas such as:
 
 ```text
-framework
+project shape (frontend | backend | fullstack | unresolved)
+framework / runtime
 UI library
 icon library
 styling system
 client-state library
 server-state library
+form library when relevant
 test runner
 package manager
+sanitized runtime / API-contract context when relevant
 ```
 
 For example, if a product already uses:
@@ -287,6 +292,8 @@ For example, if a product already uses:
 ```
 
 that evidence should drive capability routing. Coding should not silently switch the project to shadcn, Lucide, Zustand, or another library simply because the harness contains knowledge about it.
+
+Environment evidence is sanitized: raw secret values are never admitted as project context, and operationally sensitive values are exposed only when the bounded operation requires them.
 
 **Detection is not adoption.** Finding a package does not authorize installing, upgrading, replacing, or standardizing dependencies.
 
@@ -378,7 +385,7 @@ Runtime-resource events and child/resource ledgers are transient control-plane e
 | Agent | Responsibility |
 | --- | --- |
 | `main` | Runtime orchestration, dependency/capability routing, specialist dispatch, reconciliation, child lifecycle, write-scope leases, and cleanup supervision |
-| `brain` | Requirement reasoning, authority readiness, architecture analysis, project-stack discovery, revalidation, final acceptance |
+| `brain` | Requirement/project-knowledge analysis, authority readiness, architecture reasoning, project-stack discovery, revalidation, final acceptance |
 | `scrum-master` | Jira schema discovery, work-graph creation/reconciliation, compact Jira state sync, and authorized durable Jira mutations |
 | `design` | Bounded external design-provider execution |
 | `test-plan` | Decide the smallest developer self-verification route/scope from bounded relevant docs plus the actual Coding source change |
