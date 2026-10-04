@@ -504,13 +504,15 @@ process.stdout.write(
         pairRoots,
       },
       stats: {
+        filesScanned: scoredDocuments.length,
         filesIndexed: scoredDocuments.length,
         filesystemScans,
         indexReused,
         indexWritten,
         hotFiles,
         coldFiles,
-        candidatesMatched: eligibleDocuments.length,
+        candidatesMatched: matchedDocuments.length,
+        eligibleCandidatesMatched: eligibleDocuments.length,
         candidatesMatchedAllTiers: matchedDocuments.length,
         matchedByTier: {
           hot: hotMatches,
