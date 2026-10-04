@@ -459,6 +459,30 @@ Main is the Orchestrator and is not represented by a child-agent module.
 
 Test Plan owns testing classification and returns exactly one route: `none|logic|ui|both`. Main routes it mechanically and never reclassifies from source or Git diff.
 
+### Test Plan runtime profiles
+
+Test Plan remains one logical role, but Main must select its runtime model and reasoning effort before every Test Plan dispatch from the bounded task metadata already available for that Coding result. The Test Plan agent config must not pin a model or reasoning effort that would override this routing.
+
+| Profile | Model | Reasoning effort | Use when |
+| --- | --- | --- | --- |
+| `test-plan-trivial` | `gpt-6-luna` | `low` | Clearly mechanical or presentation-only change with no meaningful runtime-behavior, state, contract, integration, or revision risk. |
+| `test-plan-standard` | `gpt-6-luna` | `medium` | Default bounded behavioral change with one clear local risk surface. |
+| `test-plan-complex` | `gpt-6-luna` | `high` | Delta revalidation, state/lifecycle or async behavior, multi-layer/cross-module interaction, integration behavior, prior production defect, or multiple interacting verification concerns. |
+| `test-plan-critical` | `gpt-6.1-sol` | `medium` | Public/runtime contract change, architecture or module-boundary-sensitive change, security/auth-sensitive behavior, third-party/runtime integration, source/scope contradiction, or another change where several high-impact risk surfaces interact. |
+
+Profile selection is orchestration policy, not a second testing analysis. Main may use only the current bounded handoff, implementation report, prior verification evidence already supplied for the cycle, and mechanical source-diff metadata already captured for reconciliation. Main must not read additional product documents or broaden source inspection merely to choose a Test Plan profile.
+
+Selection rules:
+
+1. Start from `test-plan-standard`.
+2. Use `test-plan-trivial` only when the bounded evidence makes the absence of meaningful behavioral/contract/state/integration/revision risk clear; ambiguity stays `standard`.
+3. Promote to `test-plan-complex` when any complex signal is materially present.
+4. Promote to `test-plan-critical` when any critical signal is materially present; critical wins over complex.
+5. `delta-revalidation` is never `trivial`; it is at least `complex` unless a critical signal promotes it further.
+6. Do not run a cheaper Test Plan first merely to see whether it fails. Choose the profile once before dispatch from current evidence. A later Test Plan cycle after a new accepted Coding result is classified again from that new bounded evidence.
+
+The runtime profile changes compute allocation only. It does not change Test Plan authority, context boundaries, `none|logic|ui|both` ownership, output protocols, or the rule that Main must not reclassify Test Plan results.
+
 Each child module's `manifest.yaml` is authoritative for inputs, outputs, context allowlist, rules, external/runtime capabilities, and internal-capability allowlist.
 
 ## Context isolation
