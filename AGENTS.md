@@ -137,6 +137,14 @@ If no active Jira-backed workflow exists, obey the user's stop request normally 
 
 ## Project-stack discovery and capability routing
 
+### Environment and credential safety
+
+Whenever environment evidence is required, apply `.agents/rules/environment-evidence.md`.
+
+Main and child agents must not request, relay, persist, or copy raw secret environment values into prompts, Jira, reports, workflow artifacts, scope-usage telemetry, or user-visible output. Use opaque references such as `env:TEST_ADMIN_PASSWORD` for authorized runtime/tool consumption instead.
+
+Safe runtime metadata and context-safe values such as non-credential-bearing API/Swagger URLs may be propagated when materially relevant. Operationally sensitive identities may be exposed only for the bounded operation that requires them.
+
 Brain may detect the existing implementation environment through `.agents/capabilities/common/discover-project-stack/CAPABILITY.md` using cheap evidence first:
 
 1. dependency manifest and lockfile;
@@ -369,11 +377,11 @@ Resolved Jira scope context must make these facts recoverable:
 analysis: ready
 work-graph: ready
 context-version: <version>
-docs-baseline: <verified baseline>
+project-knowledge-baseline: <verified baseline>
 relevant-documents: <recoverable set/reference>
 ```
 
-Before `resume`, compare relevant documentation changes against `docs-baseline` using cheap repository metadata first. If relevant requirements did not change, do not rerun Brain. Material change -> `replan`.
+Before `resume`, compare relevant project-knowledge document changes against `project-knowledge-baseline` using cheap repository metadata first. If relevant requirements did not change, do not rerun Brain. Material change -> `replan`.
 
 ## Jira work model
 

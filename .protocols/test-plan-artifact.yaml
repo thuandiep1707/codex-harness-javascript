@@ -5,7 +5,7 @@ plan-mode: "<initial|delta-revalidation>"
 
 documents:
   relevant-documents: []
-  docs-baseline: "<verified-baseline>"
+  project-knowledge-baseline: "<verified-baseline>"
 
 source:
   baseline: "<pre-change-source-state>"

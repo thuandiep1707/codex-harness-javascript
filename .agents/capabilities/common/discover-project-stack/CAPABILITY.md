@@ -12,15 +12,58 @@ Inspect the smallest evidence set first:
 
 1. `package.json` and lockfile;
 2. framework/config files (`next.config.*`, `tsconfig.json`, test config, `components.json`, provider setup);
-3. representative direct imports from existing source only when dependency/config evidence is insufficient or conflicting;
-4. deeper source inspection only to resolve a material ambiguity.
+3. sanitized environment evidence when runtime configuration, API contracts, authentication/test context, or project classification materially depends on it;
+4. representative direct imports from existing source only when dependency/config evidence is insufficient or conflicting;
+5. deeper source inspection only to resolve a material ambiguity.
 
 Do not scan the entire source tree by default.
+
+## Environment evidence
+
+Apply `.agents/rules/environment-evidence.md` before inspecting environment configuration.
+
+Never read raw environment-file values directly into model context. Use the deterministic inspector:
+
+```text
+.agents/capabilities/common/discover-project-stack/scripts/inspect-environment.mjs
+```
+
+Run it against the resolved working-project root. It discovers bounded environment sources from project-root `.env` / `.env.*` conventions plus explicit env-file references in selected package/framework/tool configuration.
+
+The inspector returns sanitized evidence only:
+
+- `CONTEXT_SAFE`: exact value may be returned when useful;
+- `OPERATIONAL_SENSITIVE`: reference/availability by default; exact value only when the current bounded operation explicitly requires it;
+- `SECRET`: reference/availability only; exact value is never emitted.
+
+Use `--include-operational` only when the current assigned operation materially requires an operational identity such as a test username/account. Never use it as a general discovery default.
+
+A safe Swagger/OpenAPI URL may be used to retrieve contract evidence. Credential-bearing or secret-parameterized URLs must remain opaque.
+
+Do not invent environment-file precedence. Infer effective loading only from current framework/runtime/tool evidence; otherwise record it as unresolved.
+
+## Project shape
+
+Determine from project evidence whether the working project is:
+
+- `frontend`;
+- `backend`;
+- `fullstack`;
+- `unresolved`.
+
+Use framework/runtime evidence, entry points, source structure, relevant configuration, and representative imports when needed. Do not classify from the repository name alone and do not classify from environment variables alone.
+
+A project is `fullstack` when current evidence establishes material frontend and backend/server application surfaces in the same working project. Presence of a development server, build tool, server-side rendering support, or a single server utility is not by itself enough to classify a frontend project as fullstack.
+
+When evidence is insufficient or conflicting, return `unresolved` rather than guessing.
+
+Record the project-shape result and concise supporting evidence in the existing implementation-environment profile.
 
 ## Detect
 
 Record evidence-backed values when present:
 
+- project shape (`frontend|backend|fullstack|unresolved`);
 - framework/runtime;
 - UI/component library (for example shadcn/Radix, MUI, HeroUI, Chakra, Ant Design);
 - general-purpose icon library;
@@ -29,13 +72,15 @@ Record evidence-backed values when present:
 - server-state/data-fetching library;
 - form library when relevant;
 - unit/component/e2e test runner;
-- package manager and relevant framework configuration.
+- package manager and relevant framework configuration;
+- sanitized environment/runtime evidence relevant to project classification or external contracts;
+- safe Swagger/OpenAPI contract location when evidenced by sanitized environment/configuration.
 
 Use `unresolved` when evidence is missing or conflicting. Never turn absence into a default such as shadcn, Lucide, Zustand, or TanStack Query.
 
 ## Evidence contract
 
-For every detected technology, retain concise source evidence such as dependency name, config path, or representative import. Distinguish:
+For every detected technology or project-shape conclusion, retain concise source evidence such as dependency name, config path, entry point, source structure, or representative import. Distinguish:
 
 - `detected`: project evidence establishes current usage;
 - `approved`: higher authority explicitly fixes the choice;

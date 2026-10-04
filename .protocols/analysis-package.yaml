@@ -4,7 +4,7 @@ jira-scope-key: ""
 objective: "<objective>"
 document-context:
   relevant-documents: []
-  docs-baseline: "<git-commit-or-equivalent-baseline>"
+  project-knowledge-baseline: "<git-commit-or-equivalent-baseline>"
   context-version: 1
 authority:
   status: "<ready|blocked>"
@@ -25,7 +25,7 @@ implementation-environment:
   detected: []
   unresolved: []
   conflicting: []
-  evidence: []
+  evidence: [] # Sanitized evidence only. Never include raw SECRET environment values.
 acceptance-criteria:
   - id: "ac-1"
     statement: ""

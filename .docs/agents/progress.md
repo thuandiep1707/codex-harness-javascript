@@ -23,7 +23,7 @@
 - Resume reconstructs only the minimal semantic parent chain, direct dependencies, routed capability identifiers, latest durable checkpoint, and relevant source state.
 - Pause stops new dispatch, reconciles transient execution, then persists required durable `[RESULT]` / workflow-state / `[HANDOFF]` state through Scrum Master.
 - Explicit child-agent close/verification and runtime-resource/process/port cleanup lifecycle.
-- Brain `docs-baseline` for cheap resume/replan validation.
+- Brain `project-knowledge-baseline` for cheap resume/replan validation.
 - Coding component-decomposition gate and oversized handwritten TSX safety net.
 - Git tag/GitHub Release versioning policy.
 
