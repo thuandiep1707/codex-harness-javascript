@@ -28,6 +28,7 @@ internal-capabilities:
 rules:
   - .agents/brain/rules/context-and-authority.md
   - .agents/rules/environment-evidence.md
+  - .agents/rules/working-project-instruction-boundary.md
 capabilities:
   required: []
   optional:
