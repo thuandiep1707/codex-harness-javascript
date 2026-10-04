@@ -53,7 +53,7 @@ Independent specialist work may run concurrently only when existing runtime-capa
 
 Scrum Master is the Jira write authority for workflow structure and durable workflow updates.
 
-Scrum Master remains one logical agent. Main selects its runtime compute profile per operation: `planning|replan` use `gpt-6.1-sol / medium`; `resume-sync|progress-sync|finalize` use `gpt-6-luna / low`; `pause` uses `gpt-6-luna / medium`. These profiles change compute allocation only, not Scrum Master authority or protocol behavior.
+Scrum Master remains one logical agent. Main selects its operation-specific runtime compute profile from the authoritative routing policy in `AGENTS.md`. Runtime profiles change compute allocation only, not Scrum Master authority or protocol behavior.
 
 Durable product specialists with their own execution unit (currently Design and Coding) may read Jira directly, but only by the exact keys allowlisted in their current `issue-handoff`: own execution unit, parent functional slice, optional work-container when required, and listed direct dependencies. They must not browse/search unrelated Jira work or mutate Jira. Test Plan and Testing remain Jira-independent.
 
