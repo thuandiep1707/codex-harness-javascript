@@ -18,6 +18,10 @@ Apply `.agents/rules/runtime-resource-lifecycle.md` whenever implementation or v
 - Never terminate a process merely because it occupies a port; ownership must be proven by process identity/ancestry or equivalent launch evidence.
 - Report released and unresolved resources in `agent-report`. Set `agent-ready-to-close: true` only when owned runtime resources are fully released and verified.
 
+## Boundary contract reporting
+
+In `implementation-report.public-contracts`, report only logical contract changes whose interface shape or externally relied-upon runtime semantics cross the assigned implementation ownership boundary. Do not report local component props, private/internal helpers, module-internal hooks/types, or implementation-only refactors. Use one entry per logical changed boundary contract, not one entry per changed symbol or consumer. Do not broaden Jira, source, or document discovery solely to classify or enumerate contracts.
+
 Implement only the assigned specialist execution unit, run assigned implementation validation, perform runtime-resource cleanup, and return one `implementation-report` plus one `agent-report` object directly to Main for reconciliation.
 
 Do not run or modify Playwright/E2E/browser acceptance as Coding work. When real-browser proof is required, report that Testing UI validation is still required instead of executing that role. Jira access is read-only: do not create, update, comment on, assign, transition, or otherwise mutate Jira. Do not change the parent functional-slice scope or architecture, invent visual decisions, adopt an unapproved dependency, or take ownership of independent test work. If the handoff is insufficient or conflicts with source evidence, stop and return a precise blocker to Main after cleaning any owned runtime resources.
