@@ -4,7 +4,7 @@ context-version: "<version>"
 status: "<completed|blocked|failed>"
 implemented-behavior: []
 changed-files: []
-public-contracts: []
+public-contracts: [] # changed logical contracts crossing the assigned implementation ownership boundary; exclude local/internal interfaces and implementation-only refactors
 design-evidence-used: []
 structure:
   composition-roots: []
