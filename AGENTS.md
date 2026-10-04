@@ -211,6 +211,20 @@ Use Scrum Master for:
 
 Scrum Master returns `.protocols/jira-work-report.yaml`.
 
+### Coding runtime profiles
+
+Coding remains one logical implementation role. Main must select its runtime model and reasoning effort before every Coding dispatch from the already-routed `issue-handoff.internal-capabilities`. The Coding agent config must not pin a model or reasoning effort that overrides this routing.
+
+| Profile | Model | Reasoning effort | Capability trigger |
+| --- | --- | --- | --- |
+| `coding-routine` | `gpt-6-luna` | `low` | Default; also sufficient for `shadcn` when no stronger capability is routed. |
+| `coding-reasoning` | `gpt-6-luna` | `medium` | `nextjs-state-management` or `nextjs-tanstack-query`. |
+| `coding-complex` | `gpt-6-luna` | `high` | `migrate-legacy-frontend-module` or `integrate-third-party-frontend`. |
+
+When multiple internal capabilities are routed, the strongest required profile wins. Main must not inspect additional source, parse free-form task prose, count files/acceptance criteria/dependencies, or promote merely because the Coding execution is a revision. Missing architecture, unresolved ownership, unapproved dependency/design/runtime decisions, or an execution unit that is too broad for safe implementation must return through the existing blocker/replan path rather than being compensated for with a stronger Coding profile.
+
+Coding runtime profiles change compute allocation only. They do not change Coding authority, Jira/source/context boundaries, validation ownership, internal-capability permissions, output protocols, or blocker behavior. Coding does not use a Sol profile; work that would require Coding to make architecture-level decisions is outside the Coding role boundary.
+
 ### Scrum Master runtime profiles
 
 Scrum Master remains one logical role, but Main must select its runtime model and reasoning effort explicitly from the assigned operation before every dispatch. The Scrum Master agent config must not pin a model or reasoning effort that would override this routing.
