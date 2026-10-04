@@ -24,7 +24,7 @@ For new frontend analysis, use `.agents/capabilities/common/discover-project-sta
    approval/readiness evidence, and unresolved requirement/contract contradictions.
 6. Identify requirements, constraints, assumptions, ambiguities, contradictions, risks, acceptance
    criteria, and evidence-backed implementation-environment facts.
-7. Record the exact relevant document set and a verified repository baseline (`docs-baseline`) that
+7. Record the exact relevant document set and a verified repository baseline (`project-knowledge-baseline`) that
    can later be checked cheaply before resume.
 8. Make technical inferences only when project evidence supports them. Mark every inference and
    retain concise evidence for detected stack/library choices.
