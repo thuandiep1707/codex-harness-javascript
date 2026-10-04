@@ -38,6 +38,8 @@ Main owns workflow decisions and runtime transport:
 
 Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jira reads required by its assigned operation, and all authorized durable Jira mutations. Durable product specialists with their own execution unit (currently Design and Coding) may independently read only the exact Jira keys allowlisted in the current `issue-handoff`; Test Plan/Testing remain Jira-independent.
 
+Every Scrum Master dispatch in this workflow must use the operation-specific runtime profile defined by the Main orchestration contract in `AGENTS.md`. Do not pin or infer an alternate model/effort inside this workflow.
+
 ## Continuous delivery
 
 ### NEW
