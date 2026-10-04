@@ -1,6 +1,6 @@
 name = "testing-logic"
 description = "Execute per-task bounded non-browser developer self-verification for one owning Coding work item."
-model = "gpt-5.6-luna"
+model = "gpt-6-luna"
 model_reasoning_effort = "low"
 sandbox_mode = "workspace-write"
 developer_instructions = """
