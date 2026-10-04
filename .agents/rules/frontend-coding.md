@@ -79,6 +79,12 @@ Business semantics remain in the owning module. Load the Atomic rule for actual 
 - Do not add or change dependencies unless explicitly approved in the handoff/dependency evidence.
 - Preserve unrelated changes and avoid speculative cleanup.
 
+## Boundary contract reporting
+
+For `implementation-report.public-contracts`, a public contract means a changed logical interface shape or externally relied-upon runtime semantic whose consumer exists outside the assigned implementation ownership boundary. Local component props, private/internal helper signatures, module-internal hooks/types, and implementation-only refactors are not public contracts for this report.
+
+Record one entry per logical changed boundary contract rather than per symbol or consumer. Changing implementation behind an unchanged boundary contract does not create an entry. Do not expand source, Jira, or documentation scope solely to discover, classify, or enumerate public contracts; report only boundary-contract changes established from evidence already required for the assigned implementation.
+
 ## Validation
 
 Coding validates only what the current handoff and working project's established repository contract assign to Coding. Do not prescribe a second generic lint/format/typecheck/build matrix in the harness.

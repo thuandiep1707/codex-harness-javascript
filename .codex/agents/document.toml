@@ -1,6 +1,6 @@
 name = "document"
 description = "Execute the complete development-ready documentation workflow using the allowlisted document capabilities, preserving project truth and finalizing only user-approved documentation changes."
-model = "gpt-5.6-sol"
+model = "gpt-6.1-sol"
 model_reasoning_effort = "high"
 sandbox_mode = "workspace-write"
 developer_instructions = """
