@@ -67,8 +67,8 @@ Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jir
 18. Testing results and test-file changes never trigger Test Plan directly. Only a later accepted Coding result starts another Test Plan cycle.
 19. A functional slice becomes acceptance-ready only after all required durable work is complete and its UI gate is passed or not required.
 20. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
-22. If Brain returns `blocked` or `revision-required`, keep the functional-slice boundary non-terminal and route only the affected scope through revalidation/replan/revision.
-21. If Brain returns `accepted`, Main dispatches Scrum Master `finalize` with the current acceptance report.
+21. If Brain returns `blocked` or `revision-required`, keep the functional-slice boundary non-terminal and route only the affected scope through revalidation/replan/revision.
+22. If Brain returns `accepted`, Main dispatches Scrum Master `finalize` with the current acceptance report.
 23. Report workflow completion only after Scrum Master confirms the project-valid terminal/completed Jira transition and all child/runtime cleanup is resolved.
 
 ### RESUME
