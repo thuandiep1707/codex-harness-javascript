@@ -134,6 +134,7 @@ node <helper> --project-root <working-project-root> \
   --hot-path "analysis" \
   --cold-path "plans" \
   --cold-path "progresses" \
+  --pair-roots "plans=progresses" \
   --index-file <brain-runtime-temp>/project-knowledge-index.json
 ```
 
@@ -160,8 +161,14 @@ The helper returns:
 - per-tier match/file counts plus truncation/readability metadata that must be respected rather than
   treated as negative evidence.
 
-Corpus tiers and structural hints are not semantic authority classification. Brain remains responsible
-for deciding document purpose, relevance, and authority.
+When bootstrap evidence establishes a deterministic artifact relationship, such as a progress file
+mirroring a plan filename, pass it with `--pair-roots "<left>=<right>"`. The helper then returns
+`pairedPaths` only for exact indexed counterparts, allowing Brain to inspect the counterpart directly
+without searching the entire paired corpus. Pairing is a navigation optimization, not evidence of
+authority, truth, completion, or correctness.
+
+Corpus tiers, pair roots, and structural hints are not semantic authority classification. Brain remains
+responsible for deciding document purpose, relevance, and authority.
 
 If Node.js is unavailable, do not install it and do not block analysis solely for this optimization.
 Fall back to bounded repository-native discovery. When Git is available, include tracked plus
@@ -225,9 +232,13 @@ node <helper> --project-root <working-project-root> \
   --index-file <same-brain-runtime-temp>/project-knowledge-index.json \
   --cold-path "plans" \
   --cold-path "progresses" \
+  --pair-roots "plans=progresses" \
   --search-tier cold \
   --query "rescue marker"
 ```
+
+When a selected cold candidate exposes an exact `pairedPaths` counterpart, inspect that counterpart
+directly if it is materially relevant; do not issue a second broad query merely to rediscover it.
 
 Never repeat an equivalent query merely because the same concept is encountered through another
 source path. If the helper reports truncated inventory or truncated file inspection, do not infer that
