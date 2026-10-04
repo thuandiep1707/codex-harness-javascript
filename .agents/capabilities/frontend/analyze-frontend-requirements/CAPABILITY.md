@@ -13,9 +13,10 @@ description: Analyze relevant human-owned frontend documents and verified source
 2. When a usable user-referenced documentation scope exists, use it as the primary document scope for
    the requested work. Do not rediscover or replace that scope merely by scanning the broader
    documentation tree.
-3. Build a cheap project-knowledge inventory from project-owned `*.md` and `*.mdc` files across the
-   working project. Use path, filename, frontmatter/metadata when available, title, and headings first;
-   do not full-read every candidate during discovery.
+3. Build a cheap project-knowledge map from project-owned `*.md` and `*.mdc` files across the
+   working project. Prefer deterministic inventory/search evidence: keep the broad inventory compact
+   and return richer metadata/headings only for ranked candidates; do not full-read every candidate
+   during discovery.
 4. Classify discovered document candidates by purpose before using them as project knowledge. Keep
    product/architecture/requirement/decision/integration/current-system/analytic material eligible.
    Treat files whose primary purpose is controlling an AI, agent, skill, prompt, workflow, model, or
@@ -96,10 +97,11 @@ Structural hints are not semantic classification. Brain remains responsible for 
 purpose, relevance, and authority.
 
 If Node.js is unavailable, do not install it and do not block analysis solely for this optimization.
-Fall back to bounded repository-native discovery. Prefer tracked-file/search primitives such as
-`git ls-files "*.md" "*.mdc"` and targeted `git grep` when Git is available; otherwise use the
-available repository/file listing and search tools. Keep the same rule: search/list metadata first,
-full-read only selected documents.
+Fall back to bounded repository-native discovery. When Git is available, include tracked plus
+non-ignored untracked Markdown/MDC paths (for example with
+`git ls-files --cached --others --exclude-standard -- "*.md" "*.mdc"`) and use targeted repository
+search for current material terms. Otherwise use the available repository/file listing and search
+tools. Keep the same rule: search/list metadata first, full-read only selected documents.
 
 Do not exclude a directory merely because it may also contain agent/runtime files. Classify candidate
 documents by purpose:
