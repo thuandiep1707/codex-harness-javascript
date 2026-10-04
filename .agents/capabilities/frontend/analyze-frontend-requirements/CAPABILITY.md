@@ -115,26 +115,53 @@ When Node.js is already available, prefer the deterministic helper:
 ```
 
 Run it against the resolved working-project root. Pass a small set of material search terms derived
-from the user objective, requested module/source scope, and any already-read primary documentation:
+from the user objective, requested module/source scope, and any already-read primary documentation.
+
+When bootstrap evidence or an explicit user reference establishes useful corpus roles, pass them as
+transient discovery hints. A user-referenced documentation scope is always hot. Curated analysis,
+architecture/decision, or current-system documentation may also be hot when project evidence supports
+that role. Historical/generated plans or progress logs may be cold when bootstrap/project evidence
+supports that interpretation.
+
+Do not infer these roles from directory names alone. For example, use this shape only when the
+working project's own evidence supports these meanings:
 
 ```text
 node <helper> --project-root <working-project-root> \
   --query "rescue" \
-  --query "CT-Map"
+  --query "CT-Map" \
+  --hot-path "docs/rescue-page-redesign" \
+  --hot-path "analysis" \
+  --cold-path "plans" \
+  --cold-path "progresses" \
+  --index-file <brain-runtime-temp>/project-knowledge-index.json
 ```
 
 Do not expand the initial query set into broad synonym lists. Search terms should correspond to the
 current requested scope or a material unresolved question.
 
-The helper performs one deterministic pass over project-owned `*.md` and `*.mdc` files while
-excluding clear dependency/generated/build/cache/vendor trees. It returns:
+The helper indexes project-owned `*.md` and `*.mdc` files while excluding clear
+dependency/generated/build/cache/vendor trees. Corpus tiers control discovery priority only:
 
-- ranked `candidates` with compact frontmatter, H1/H2 headings, structural hints, and matched queries;
-- a compact project-wide `inventory` containing path/title/structural metadata for broader discovery;
-- truncation/readability metadata that must be respected rather than treated as negative evidence.
+- `hot` is the default candidate-search tier;
+- `cold` remains indexed and discoverable but does not pollute the default candidate pool;
+- `all` may be used for diagnostics or explicit cross-tier comparison;
+- when no corpus hints are provided, all files remain hot for backward compatibility.
 
-Structural hints are not semantic classification. Brain remains responsible for deciding document
-purpose, relevance, and authority.
+A caller-supplied hot hint wins over a cold hint when paths overlap. This allows a narrow
+user-referenced scope to remain hot even when it sits under a broader otherwise-cold area.
+
+The helper returns:
+
+- ranked `candidates` from the requested search tier with compact frontmatter, H1/H2 headings,
+  structural hints, matched queries, and corpus tier;
+- a compact project-wide `inventory` ordered hot before cold so bounded inventory does not let a
+  large historical corpus hide current high-priority knowledge;
+- per-tier match/file counts plus truncation/readability metadata that must be respected rather than
+  treated as negative evidence.
+
+Corpus tiers and structural hints are not semantic authority classification. Brain remains responsible
+for deciding document purpose, relevance, and authority.
 
 If Node.js is unavailable, do not install it and do not block analysis solely for this optimization.
 Fall back to bounded repository-native discovery. When Git is available, include tracked plus
@@ -168,15 +195,44 @@ scores more highly.
 
 Read full content only for documents selected as materially relevant to the current objective.
 
-Retain the helper/search result as transient evidence for the current analysis run. If source
-inspection later exposes a new material concept, first reuse the current inventory and prior search
-results. Run another targeted helper/search query only when that concept is tied to an unresolved
-material question and the existing inventory cannot resolve the candidate set. Never repeat an
-equivalent query merely because the same concept is encountered through another source path.
+Retain the helper/search result as transient evidence for the current analysis run. When an
+`--index-file` is used, keep it in a harness/runtime temp location outside the working project and
+reuse the same path for follow-up queries in the same Brain run. The first invocation builds the
+index; later invocations reuse indexed document content instead of walking and re-reading the whole
+Markdown/MDC corpus. Do not check the transient index into the working project or treat it as project
+knowledge.
 
-If the helper reports truncated inventory or truncated file inspection, do not infer that omitted
-documents or unmatched tail content are irrelevant. Use a targeted follow-up query only when a
-material open question requires it.
+If source inspection later exposes a new material concept, first reuse the current inventory and prior
+search results. When a new targeted query is materially required, run it against the same transient
+index:
+
+```text
+node <helper> --project-root <working-project-root> \
+  --index-file <same-brain-runtime-temp>/project-knowledge-index.json \
+  --query "markerRegistry"
+```
+
+Do not use `--refresh-index` merely for a different query. Refresh/rebuild only when relevant
+repository/document state materially changed during the current run or the existing runtime index is
+known to be invalid.
+
+Search the cold tier only after hot project knowledge plus materially relevant source evidence still
+leaves an unresolved material question. Reuse the same transient index rather than re-walking the
+corpus:
+
+```text
+node <helper> --project-root <working-project-root> \
+  --index-file <same-brain-runtime-temp>/project-knowledge-index.json \
+  --cold-path "plans" \
+  --cold-path "progresses" \
+  --search-tier cold \
+  --query "rescue marker"
+```
+
+Never repeat an equivalent query merely because the same concept is encountered through another
+source path. If the helper reports truncated inventory or truncated file inspection, do not infer that
+omitted documents or unmatched tail content are irrelevant. A targeted follow-up query still searches
+the complete reusable index; use one only when a material open question requires it.
 
 ### Source scope
 
