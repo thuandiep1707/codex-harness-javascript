@@ -89,6 +89,8 @@ Functional slices remain scope/acceptance boundaries. Durable product specialist
 
 Test Plan and Testing Logic are transiently attached to an owning Coding work item; Testing UI is a transient functional-slice end gate aggregating UI targets from completed Coding work items. None of them is a separate Jira work item or expands the durable work graph.
 
+Test Plan remains one logical agent. Main selects its task-complexity runtime profile before each dispatch using only bounded evidence already available for that Coding cycle; the authoritative profile mapping and promotion rules live in `AGENTS.md`. Runtime routing does not change Test Plan's verification authority or context boundary.
+
 Scrum Master creates or reconciles the Jira graph. Main decides execution order from confirmed Jira work state and dependency readiness.
 
 ## Context boundary
