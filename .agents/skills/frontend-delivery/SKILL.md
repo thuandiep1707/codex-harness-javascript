@@ -44,26 +44,32 @@ Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jir
 
 1. Main dispatches Brain for bounded requirement analysis, authority readiness, and project-stack discovery.
 2. Capture Brain `analysis-package`, close/verify Brain, and continue only when both `analysis-status: ready` and `authority.status: ready`.
-3. Main dispatches Scrum Master `planning` with execution intent `deliver` and the approved analysis.
-4. Scrum Master discovers the current Jira project schema, maps semantic work roles to supported Jira work types/fields/workflow states, creates or reconciles the Jira work graph, and returns compact `jira-work-report`.
-5. Main closes/verifies Scrum Master and selects dependency-ready execution units from confirmed Jira state.
-6. Main routes the smallest allowed internal-capability set for each selected execution unit and composes bounded `issue-handoff` objects containing compact Jira identity, exact Jira read allowlists, and transient execution controls rather than copied Jira narrative context.
-7. Before dispatching Coding, Main uses Scrum Master `progress-sync` when needed to transition the same Jira work item from its resolved todo/open state into the project-valid active/in-progress state.
-8. Before writable specialist dispatch, Main captures the working-project source baseline, reserves exact allowed write scope, and prevents overlapping writable leases.
-9. Main dispatches dependency-ready specialists within runtime/write-scope capacity. Design/Coding resolve durable execution requirements only from the exact Jira keys allowlisted by their handoff and must not browse broader Jira state or mutate Jira. A retry is allowed only after proving the prior attempt had no spawn side effect.
-10. For each returned durable-work specialist result, Main verifies assigned scope, context-version, required evidence, source diff, runtime cleanup, and child closure before accepting it.
-11. Each accepted Coding result triggers exactly one Test Plan cycle for that Coding change.
-12. If Test Plan selects `logic|both`, Main dispatches exactly one Testing Logic child for that Coding work item. A Logic production defect is returned in `test-report`, persisted by Scrum Master as `[REVISION]` on the same work item, and Coding is redispatched there.
-13. When Logic passes or is not required, Main dispatches Scrum Master `progress-sync` to persist the Coding `[RESULT]` and complete that work item. If Test Plan selected `ui|both`, the durable result also stores the bounded pending UI verification targets plus their owning Coding key.
-14. Only after Scrum Master confirms Coding completion may Main treat that dependency as satisfied and continue dependency routing.
-15. When all required durable work for a functional slice is complete, Main gathers any pending UI targets from those durable Coding results. If targets exist, Main dispatches exactly one Testing UI child for the functional-slice end-to-end gate.
-16. Testing UI returns one `test-report`. On pass, Main persists the functional-slice UI verification result through Scrum Master `progress-sync`. On a production defect, Main sends the affected Coding key(s) and evidence to Scrum Master, which records `[REVISION]` and returns those same Coding work items to active/in-progress before Main redispatches Coding.
-17. Testing results and test-file changes never trigger Test Plan directly. Only a later accepted Coding result starts another Test Plan cycle.
-18. A functional slice becomes acceptance-ready only after all required durable work is complete and its UI gate is passed or not required.
-19. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
-20. If Brain returns `blocked` or `revision-required`, keep the functional-slice boundary non-terminal and route only the affected scope through revalidation/replan/revision.
+3. Before Jira planning, verify frontend-workflow compatibility from Brain's evidence-backed project shape plus the requested scope:
+   - `frontend`: compatible;
+   - `backend`: incompatible with `$frontend-delivery`;
+   - `fullstack`: compatible only when the requested scope includes a material frontend surface;
+   - `unresolved`: do not guess; block until project/scope compatibility can be established from available evidence.
+   Repository naming alone must not decide compatibility.
+4. Main dispatches Scrum Master `planning` with execution intent `deliver` and the approved analysis.
+5. Scrum Master discovers the current Jira project schema, maps semantic work roles to supported Jira work types/fields/workflow states, creates or reconciles the Jira work graph, and returns compact `jira-work-report`.
+6. Main closes/verifies Scrum Master and selects dependency-ready execution units from confirmed Jira state.
+7. Main routes the smallest allowed internal-capability set for each selected execution unit and composes bounded `issue-handoff` objects containing compact Jira identity, exact Jira read allowlists, and transient execution controls rather than copied Jira narrative context.
+8. Before dispatching Coding, Main uses Scrum Master `progress-sync` when needed to transition the same Jira work item from its resolved todo/open state into the project-valid active/in-progress state.
+9. Before writable specialist dispatch, Main captures the working-project source baseline, reserves exact allowed write scope, and prevents overlapping writable leases.
+10. Main dispatches dependency-ready specialists within runtime/write-scope capacity. Design/Coding resolve durable execution requirements only from the exact Jira keys allowlisted by their handoff and must not browse broader Jira state or mutate Jira. A retry is allowed only after proving the prior attempt had no spawn side effect.
+11. For each returned durable-work specialist result, Main verifies assigned scope, context-version, required evidence, source diff, runtime cleanup, and child closure before accepting it.
+12. Each accepted Coding result triggers exactly one Test Plan cycle for that Coding change.
+13. If Test Plan selects `logic|both`, Main dispatches exactly one Testing Logic child for that Coding work item. A Logic production defect is returned in `test-report`, persisted by Scrum Master as `[REVISION]` on the same work item, and Coding is redispatched there.
+14. When Logic passes or is not required, Main dispatches Scrum Master `progress-sync` to persist the Coding `[RESULT]` and complete that work item. If Test Plan selected `ui|both`, the durable result also stores the bounded pending UI verification targets plus their owning Coding key.
+15. Only after Scrum Master confirms Coding completion may Main treat that dependency as satisfied and continue dependency routing.
+16. When all required durable work for a functional slice is complete, Main gathers any pending UI targets from those durable Coding results. If targets exist, Main dispatches exactly one Testing UI child for the functional-slice end-to-end gate.
+17. Testing UI returns one `test-report`. On pass, Main persists the functional-slice UI verification result through Scrum Master `progress-sync`. On a production defect, Main sends the affected Coding key(s) and evidence to Scrum Master, which records `[REVISION]` and returns those same Coding work items to active/in-progress before Main redispatches Coding.
+18. Testing results and test-file changes never trigger Test Plan directly. Only a later accepted Coding result starts another Test Plan cycle.
+19. A functional slice becomes acceptance-ready only after all required durable work is complete and its UI gate is passed or not required.
+20. Main dispatches Brain for final acceptance and closes/verifies Brain after the acceptance report returns.
+22. If Brain returns `blocked` or `revision-required`, keep the functional-slice boundary non-terminal and route only the affected scope through revalidation/replan/revision.
 21. If Brain returns `accepted`, Main dispatches Scrum Master `finalize` with the current acceptance report.
-22. Report workflow completion only after Scrum Master confirms the project-valid terminal/completed Jira transition and all child/runtime cleanup is resolved.
+23. Report workflow completion only after Scrum Master confirms the project-valid terminal/completed Jira transition and all child/runtime cleanup is resolved.
 
 ### RESUME
 
