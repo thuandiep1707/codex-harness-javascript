@@ -29,6 +29,19 @@ const maxResults = positiveInt(getArg("--max-results"), 20);
 const maxHeadings = positiveInt(getArg("--max-headings"), 12);
 const maxInventory = positiveInt(getArg("--max-inventory"), 500);
 const maxFileBytes = positiveInt(getArg("--max-file-bytes"), 2 * 1024 * 1024);
+const hotPaths = [...new Set(getArgs("--hot-path").map((value) => normalizeCorpusPath(value)).filter(Boolean))];
+const coldPaths = [...new Set(getArgs("--cold-path").map((value) => normalizeCorpusPath(value)).filter(Boolean))];
+const searchTier = (getArg("--search-tier", "hot") || "hot").toLowerCase();
+const indexFileArg = getArg("--index-file");
+const indexFile = indexFileArg ? path.resolve(indexFileArg) : null;
+const refreshIndex = args.includes("--refresh-index");
+const indexVersion = 1;
+const supportedSearchTiers = new Set(["hot", "cold", "all"]);
+
+if (!supportedSearchTiers.has(searchTier)) {
+  process.stderr.write(`Unsupported --search-tier: ${searchTier}. Expected hot, cold, or all.\n`);
+  process.exit(2);
+}
 
 const excludedSegments = new Set([
   ".git",
@@ -56,6 +69,29 @@ const frontmatterKeys = new Set([
 
 function toPosix(value) {
   return value.split(path.sep).join("/");
+}
+
+function normalizeCorpusPath(value) {
+  return toPosix(value)
+    .replace(/^\.\/+/, "")
+    .replace(/\/+$/, "")
+    .toLowerCase();
+}
+
+function pathMatchesHint(relativePath, hint) {
+  const normalized = normalizeCorpusPath(relativePath);
+  return normalized === hint || normalized.startsWith(`${hint}/`);
+}
+
+function corpusTier(relativePath) {
+  if (hotPaths.some((hint) => pathMatchesHint(relativePath, hint))) return "hot";
+  if (coldPaths.some((hint) => pathMatchesHint(relativePath, hint))) return "cold";
+  return "hot";
+}
+
+function isInsideProject(candidatePath) {
+  const relative = path.relative(projectRoot, candidatePath);
+  return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
 }
 
 function shouldSkip(relativePath) {
@@ -191,6 +227,12 @@ function structuralHints(relativePath) {
   if (/(^|\/)(adr|adrs|architecture|decisions?)(\/|$)/.test(normalized)) {
     hints.push("architecture-decision-like-path");
   }
+  if (/(^|\/)plans?(\/|$)/.test(normalized)) {
+    hints.push("plan-like-path");
+  }
+  if (/(^|\/)progress(es)?(\/|$)/.test(normalized)) {
+    hints.push("progress-like-path");
+  }
 
   return hints;
 }
@@ -208,14 +250,14 @@ function includesPhrase(haystack, query) {
   return normalized ? haystack.includes(normalized) : false;
 }
 
-function scoreDocument(document, rawText) {
+function scoreDocument(document) {
   if (queries.length === 0) return { score: 0, matchedQueries: [] };
 
   const pathText = normalizeForSearch(document.path);
   const titleText = normalizeForSearch(document.title);
   const headingText = normalizeForSearch(document.headings.map((item) => item.text).join(" "));
   const frontmatterText = normalizeForSearch(Object.values(document.frontmatter).join(" "));
-  const contentText = normalizeForSearch(rawText);
+  const contentText = normalizeForSearch(document.searchText || "");
   let score = 0;
   const matchedQueries = [];
 
@@ -250,58 +292,129 @@ if (!fs.existsSync(projectRoot) || !fs.statSync(projectRoot).isDirectory()) {
   process.exit(2);
 }
 
-const filePaths = walk(projectRoot).sort((a, b) => a.localeCompare(b));
-const documents = [];
+if (indexFile && isInsideProject(indexFile)) {
+  process.stderr.write("--index-file must point outside the working project; use a transient runtime/temp location.\n");
+  process.exit(2);
+}
 
-for (const absolute of filePaths) {
-  const relative = toPosix(path.relative(projectRoot, absolute));
-  let stat;
+function loadReusableIndex() {
+  if (!indexFile || refreshIndex || !fs.existsSync(indexFile)) return null;
+
   try {
-    stat = fs.statSync(absolute);
+    const parsed = JSON.parse(fs.readFileSync(indexFile, "utf8"));
+    if (
+      parsed?.kind !== "project-knowledge-reusable-index" ||
+      parsed?.version !== indexVersion ||
+      parsed?.projectRoot !== projectRoot ||
+      parsed?.maxHeadings !== maxHeadings ||
+      parsed?.maxFileBytes !== maxFileBytes ||
+      !Array.isArray(parsed?.documents)
+    ) {
+      return null;
+    }
+    return parsed.documents;
   } catch {
+    return null;
+  }
+}
+
+function writeReusableIndex(documents) {
+  if (!indexFile) return false;
+
+  try {
+    fs.mkdirSync(path.dirname(indexFile), { recursive: true });
+    fs.writeFileSync(
+      indexFile,
+      JSON.stringify({
+        kind: "project-knowledge-reusable-index",
+        version: indexVersion,
+        projectRoot,
+        maxHeadings,
+        maxFileBytes,
+        documents,
+      }),
+      { encoding: "utf8", mode: 0o600 },
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+let documents = loadReusableIndex();
+let indexReused = Boolean(documents);
+let indexWritten = false;
+let filesystemScans = 0;
+
+if (!documents) {
+  const filePaths = walk(projectRoot).sort((a, b) => a.localeCompare(b));
+  documents = [];
+  filesystemScans = 1;
+
+  for (const absolute of filePaths) {
+    const relative = toPosix(path.relative(projectRoot, absolute));
+    let stat;
+    try {
+      stat = fs.statSync(absolute);
+    } catch {
+      documents.push({
+        path: relative,
+        extension: path.extname(relative).toLowerCase(),
+        readable: false,
+        sizeBytes: null,
+        title: path.posix.basename(relative),
+        headingCount: 0,
+        headings: [],
+        frontmatter: {},
+        structuralHints: structuralHints(relative),
+        contentTruncated: false,
+        searchText: "",
+      });
+      continue;
+    }
+
+    const read = readBounded(absolute, stat.size);
+    const frontmatter = parseFrontmatter(read.text);
+    const headingData = extractHeadings(read.text);
+    const firstH1 = headingData.headings.find((item) => item.level === 1)?.text;
+    const title = frontmatter.title || firstH1 || path.posix.basename(relative);
+
     documents.push({
       path: relative,
       extension: path.extname(relative).toLowerCase(),
-      readable: false,
-      sizeBytes: null,
-      title: path.posix.basename(relative),
-      headingCount: 0,
-      headings: [],
-      frontmatter: {},
+      readable: read.readable,
+      sizeBytes: stat.size,
+      title,
+      headingCount: headingData.headingCount,
+      headings: headingData.headings,
+      frontmatter,
       structuralHints: structuralHints(relative),
-      contentTruncated: false,
-      score: 0,
-      matchedQueries: [],
+      contentTruncated: read.contentTruncated,
+      searchText: read.text,
     });
-    continue;
   }
 
-  const read = readBounded(absolute, stat.size);
-  const frontmatter = parseFrontmatter(read.text);
-  const headingData = extractHeadings(read.text);
-  const firstH1 = headingData.headings.find((item) => item.level === 1)?.text;
-  const title = frontmatter.title || firstH1 || path.posix.basename(relative);
-
-  const base = {
-    path: relative,
-    extension: path.extname(relative).toLowerCase(),
-    readable: read.readable,
-    sizeBytes: stat.size,
-    title,
-    headingCount: headingData.headingCount,
-    headings: headingData.headings,
-    frontmatter,
-    structuralHints: structuralHints(relative),
-    contentTruncated: read.contentTruncated,
-  };
-
-  const scored = scoreDocument(base, read.text);
-  documents.push({ ...base, ...scored });
+  indexWritten = writeReusableIndex(documents);
 }
 
-const candidates = documents
-  .filter((document) => document.score > 0)
-  .sort((a, b) => b.score - a.score || a.path.localeCompare(b.path))
+const scoredDocuments = documents.map((document) => ({
+  ...document,
+  corpusTier: corpusTier(document.path),
+  ...scoreDocument(document),
+}));
+
+const matchedDocuments = scoredDocuments.filter((document) => document.score > 0);
+const eligibleDocuments = matchedDocuments.filter(
+  (document) => searchTier === "all" || document.corpusTier === searchTier,
+);
+
+const candidates = eligibleDocuments
+  .sort((a, b) => {
+    if (searchTier === "all" && a.corpusTier !== b.corpusTier) {
+      return a.corpusTier === "hot" ? -1 : 1;
+    }
+    return b.score - a.score || a.path.localeCompare(b.path);
+  })
   .slice(0, maxResults)
   .map((document) => ({
     path: document.path,
@@ -313,19 +426,31 @@ const candidates = documents
     headings: document.headings,
     headingCount: document.headingCount,
     structuralHints: document.structuralHints,
+    corpusTier: document.corpusTier,
     contentTruncated: document.contentTruncated,
     score: document.score,
     matchedQueries: document.matchedQueries,
   }));
 
-const compactInventory = documents
+const inventoryDocuments = [...scoredDocuments].sort((a, b) => {
+  if (a.corpusTier !== b.corpusTier) return a.corpusTier === "hot" ? -1 : 1;
+  return a.path.localeCompare(b.path);
+});
+
+const compactInventory = inventoryDocuments
   .slice(0, maxInventory)
   .map((document) => ({
     path: document.path,
     title: document.title,
     structuralHints: document.structuralHints,
+    corpusTier: document.corpusTier,
     ...(document.readable ? {} : { readable: false }),
   }));
+
+const hotFiles = scoredDocuments.filter((document) => document.corpusTier === "hot").length;
+const coldFiles = scoredDocuments.length - hotFiles;
+const hotMatches = matchedDocuments.filter((document) => document.corpusTier === "hot").length;
+const coldMatches = matchedDocuments.length - hotMatches;
 
 process.stdout.write(
   JSON.stringify(
@@ -333,17 +458,36 @@ process.stdout.write(
       kind: "project-knowledge-inventory",
       projectRoot: ".",
       queries,
+      corpus: {
+        searchTier,
+        hotPaths,
+        coldPaths,
+      },
       stats: {
-        filesScanned: documents.length,
-        candidatesMatched: documents.filter((document) => document.score > 0).length,
+        filesIndexed: scoredDocuments.length,
+        filesystemScans,
+        indexReused,
+        indexWritten,
+        hotFiles,
+        coldFiles,
+        candidatesMatched: eligibleDocuments.length,
+        candidatesMatchedAllTiers: matchedDocuments.length,
+        matchedByTier: {
+          hot: hotMatches,
+          cold: coldMatches,
+        },
         candidatesReturned: candidates.length,
         inventoryReturned: compactInventory.length,
-        inventoryOmitted: Math.max(0, documents.length - compactInventory.length),
-        inventoryTruncated: documents.length > compactInventory.length,
+        inventoryOmitted: Math.max(0, scoredDocuments.length - compactInventory.length),
+        inventoryTruncated: scoredDocuments.length > compactInventory.length,
       },
       candidates,
       inventory: compactInventory,
       limitations: [
+        "Corpus tiers are caller-supplied discovery priorities, not document authority or semantic classification.",
+        "When no hot/cold hints are supplied, all project knowledge remains hot for backward compatibility.",
+        "Cold documents remain indexed and discoverable but are excluded from the default hot candidate pool.",
+        "Reusable indexes are explicit transient runtime artifacts; they must live outside the working project and must not be treated as persistent project knowledge.",
         "Structural hints are discovery hints only; they do not classify document authority or purpose.",
         "Only Markdown/MDC content up to maxFileBytes is inspected for metadata and search matching.",
         "Only H1/H2 headings are extracted for discovery.",
