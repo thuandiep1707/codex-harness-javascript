@@ -38,6 +38,8 @@ Main owns workflow decisions and runtime transport:
 
 Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jira reads required by its assigned operation, and all authorized durable Jira mutations. Durable product specialists with their own execution unit (currently Design and Coding) may independently read only the exact Jira keys allowlisted in the current `issue-handoff`; Test Plan/Testing remain Jira-independent.
 
+Every Scrum Master dispatch in this workflow must use the operation-specific runtime profile defined by the Main orchestration contract in `AGENTS.md`. Do not pin or infer an alternate model/effort inside this workflow.
+
 ## Continuous delivery
 
 ### NEW
@@ -56,9 +58,9 @@ Scrum Master owns Jira schema discovery, work-graph creation/reconciliation, Jir
 7. Main routes the smallest allowed internal-capability set for each selected execution unit and composes bounded `issue-handoff` objects containing compact Jira identity, exact Jira read allowlists, and transient execution controls rather than copied Jira narrative context.
 8. Before dispatching Coding, Main uses Scrum Master `progress-sync` when needed to transition the same Jira work item from its resolved todo/open state into the project-valid active/in-progress state.
 9. Before writable specialist dispatch, Main captures the working-project source baseline, reserves exact allowed write scope, and prevents overlapping writable leases.
-10. Main dispatches dependency-ready specialists within runtime/write-scope capacity. Design/Coding resolve durable execution requirements only from the exact Jira keys allowlisted by their handoff and must not browse broader Jira state or mutate Jira. A retry is allowed only after proving the prior attempt had no spawn side effect.
+10. Main dispatches dependency-ready specialists within runtime/write-scope capacity. Before each Coding dispatch, Main selects the Coding runtime profile from the already-routed `issue-handoff.internal-capabilities` using the authoritative compute policy in `AGENTS.md`; do not inspect extra source or reinterpret task prose to choose the profile. Design/Coding resolve durable execution requirements only from the exact Jira keys allowlisted by their handoff and must not browse broader Jira state or mutate Jira. A retry is allowed only after proving the prior attempt had no spawn side effect.
 11. For each returned durable-work specialist result, Main verifies assigned scope, context-version, required evidence, source diff, runtime cleanup, and child closure before accepting it.
-12. Each accepted Coding result triggers exactly one Test Plan cycle for that Coding change.
+12. Each accepted Coding result triggers exactly one Test Plan cycle for that Coding change. Before dispatch, Main selects the Test Plan runtime profile using the authoritative structured-signal compute policy in `AGENTS.md`; do not broaden context or infer an alternate profile inside this workflow.
 13. If Test Plan selects `logic|both`, Main dispatches exactly one Testing Logic child for that Coding work item. A Logic production defect is returned in `test-report`, persisted by Scrum Master as `[REVISION]` on the same work item, and Coding is redispatched there.
 14. When Logic passes or is not required, Main dispatches Scrum Master `progress-sync` to persist the Coding `[RESULT]` and complete that work item. If Test Plan selected `ui|both`, the durable result also stores the bounded pending UI verification targets plus their owning Coding key.
 15. Only after Scrum Master confirms Coding completion may Main treat that dependency as satisfied and continue dependency routing.

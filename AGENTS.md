@@ -211,6 +211,35 @@ Use Scrum Master for:
 
 Scrum Master returns `.protocols/jira-work-report.yaml`.
 
+### Coding runtime profiles
+
+Coding remains one logical implementation role. Main must select its runtime model and reasoning effort before every Coding dispatch from the already-routed `issue-handoff.internal-capabilities`. The Coding agent config must not pin a model or reasoning effort that overrides this routing.
+
+| Profile | Model | Reasoning effort | Capability trigger |
+| --- | --- | --- | --- |
+| `coding-routine` | `gpt-6-luna` | `low` | Default; also sufficient for `shadcn` when no stronger capability is routed. |
+| `coding-reasoning` | `gpt-6-luna` | `medium` | `nextjs-state-management` or `nextjs-tanstack-query`. |
+| `coding-complex` | `gpt-6-luna` | `high` | `migrate-legacy-frontend-module` or `integrate-third-party-frontend`. |
+
+When multiple internal capabilities are routed, the strongest required profile wins. Main must not inspect additional source, parse free-form task prose, count files/acceptance criteria/dependencies, or promote merely because the Coding execution is a revision. Missing architecture, unresolved ownership, unapproved dependency/design/runtime decisions, or an execution unit that is too broad for safe implementation must return through the existing blocker/replan path rather than being compensated for with a stronger Coding profile.
+
+Coding runtime profiles change compute allocation only. They do not change Coding authority, Jira/source/context boundaries, validation ownership, internal-capability permissions, output protocols, or blocker behavior. Coding does not use a Sol profile; work that would require Coding to make architecture-level decisions is outside the Coding role boundary.
+
+### Scrum Master runtime profiles
+
+Scrum Master remains one logical role, but Main must select its runtime model and reasoning effort explicitly from the assigned operation before every dispatch. The Scrum Master agent config must not pin a model or reasoning effort that would override this routing.
+
+| Operation | Runtime profile | Model | Reasoning effort |
+| --- | --- | --- | --- |
+| `planning` | `scrum-reasoning` | `gpt-6.1-sol` | `medium` |
+| `replan` | `scrum-reasoning` | `gpt-6.1-sol` | `medium` |
+| `resume-sync` | `scrum-routine` | `gpt-6-luna` | `low` |
+| `progress-sync` | `scrum-routine` | `gpt-6-luna` | `low` |
+| `pause` | `scrum-checkpoint` | `gpt-6-luna` | `medium` |
+| `finalize` | `scrum-routine` | `gpt-6-luna` | `low` |
+
+The runtime profile is a compute policy only; it does not change Scrum Master authority, Jira mutation ownership, input/output protocol, or operation semantics. Main must choose the profile before dispatch rather than retrying a lower-cost profile with a stronger model after an ambiguous Jira mutation. Existing side-effect-safe retry rules continue to apply.
+
 Main consumes the compact report and does not duplicate full Jira issue descriptions into its working context unless a workflow decision specifically requires them.
 
 Durable product specialists with their own Jira execution unit (currently Design and Coding) may read Jira directly, but only by the exact keys allowlisted in the current `issue-handoff`: their own execution unit, parent functional-slice boundary, optional work-container when explicitly required, and listed direct dependencies. They must not browse/search unrelated Jira work, broad comment history, sprint state, or sibling branches.
@@ -443,6 +472,20 @@ One child agent = one configured role. Never execute another role.
 Main is the Orchestrator and is not represented by a child-agent module.
 
 Test Plan owns testing classification and returns exactly one route: `none|logic|ui|both`. Main routes it mechanically and never reclassifies from source or Git diff.
+
+### Test Plan runtime profiles
+
+Test Plan remains one logical role. Main must select its runtime model and reasoning effort before every Test Plan dispatch using only structured workflow/implementation evidence already available for the accepted Coding result. The Test Plan agent config must not pin a model or reasoning effort that overrides this routing.
+
+| Profile | Model | Reasoning effort | Promotion trigger |
+| --- | --- | --- | --- |
+| `test-plan-standard` | `gpt-6-luna` | `medium` | Default when no stronger structured signal is present. |
+| `test-plan-complex` | `gpt-6-luna` | `high` | Confirmed production-defect revision, non-empty implementation `deviations`, or non-empty `known-limitations`. |
+| `test-plan-critical` | `gpt-6.1-sol` | `medium` | Non-empty implementation `public-contracts`, whose entries are restricted by the Coding contract to changed logical boundary contracts. |
+
+Routing is promotion-only: `standard < complex < critical`, and the strongest applicable profile wins. Main must not downgrade from missing signals, interpret free-form prose to estimate difficulty, read additional product documents/source merely to choose a profile, or treat model routing as a substitute for workflow-integrity checks. Missing/invalid required reports, context-version mismatch, out-of-scope source mutation, or another invalid Coding result must be reconciled or blocked before Test Plan routing rather than promoted to a stronger model.
+
+The runtime profile changes compute allocation only. It does not change Test Plan authority, context boundaries, `none|logic|ui|both` ownership, output protocols, or Main's prohibition on reclassifying Test Plan results. Model selection is an efficiency/quality-margin policy, not a correctness dependency.
 
 Each child module's `manifest.yaml` is authoritative for inputs, outputs, context allowlist, rules, external/runtime capabilities, and internal-capability allowlist.
 

@@ -7,6 +7,8 @@ description: Analyze frontend requirements and create or reconcile a Jira work g
 
 This is a user-facing planning-only workflow. Main is the runtime Orchestrator.
 
+Scrum Master `planning` and `replan` dispatches must use the operation-specific runtime profile defined by the Main orchestration contract in `AGENTS.md`.
+
 ## Scope
 
 1. Main resolves the working product repository, execution intent `plan-only`, and current Jira-backed lifecycle entry.

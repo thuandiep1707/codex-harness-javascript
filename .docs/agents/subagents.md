@@ -32,6 +32,8 @@ There is no Orchestrator child in Flow B. The main chat is the Orchestrator.
 
 Brain, Scrum Master, and specialists are short-lived native child agents. Chat history is never durable workflow truth.
 
+Coding remains one logical agent. Main selects its runtime compute profile before each Coding dispatch from the internal capabilities already routed in the transient issue handoff; the authoritative profile mapping lives in `AGENTS.md`. Runtime routing changes compute only and does not expand Coding authority or permit unresolved architecture/scope decisions.
+
 ## Main orchestration loop
 
 Main owns the decision and runtime transport directly:
@@ -52,6 +54,8 @@ Independent specialist work may run concurrently only when existing runtime-capa
 ## Jira ownership
 
 Scrum Master is the Jira write authority for workflow structure and durable workflow updates.
+
+Scrum Master remains one logical agent. Main selects its operation-specific runtime compute profile from the authoritative routing policy in `AGENTS.md`. Runtime profiles change compute allocation only, not Scrum Master authority or protocol behavior.
 
 Durable product specialists with their own execution unit (currently Design and Coding) may read Jira directly, but only by the exact keys allowlisted in their current `issue-handoff`: own execution unit, parent functional slice, optional work-container when required, and listed direct dependencies. They must not browse/search unrelated Jira work or mutate Jira. Test Plan and Testing remain Jira-independent.
 
@@ -86,6 +90,9 @@ These are harness semantics, not Jira issue-type names. Scrum Master discovers t
 Functional slices remain scope/acceptance boundaries. Durable product specialists such as Design/Coding execute Jira execution units.
 
 Test Plan and Testing Logic are transiently attached to an owning Coding work item; Testing UI is a transient functional-slice end gate aggregating UI targets from completed Coding work items. None of them is a separate Jira work item or expands the durable work graph.
+
+Test Plan remains one logical agent. Main selects its runtime compute profile before each dispatch from the structured signals already available for that accepted Coding result; the authoritative profile mapping and promotion rules live in `AGENTS.md`. Runtime routing does not change Test Plan verification authority, context boundaries, or protocol behavior.
+
 
 Scrum Master creates or reconciles the Jira graph. Main decides execution order from confirmed Jira work state and dependency readiness.
 
