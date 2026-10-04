@@ -377,11 +377,11 @@ Resolved Jira scope context must make these facts recoverable:
 analysis: ready
 work-graph: ready
 context-version: <version>
-docs-baseline: <verified baseline>
+project-knowledge-baseline: <verified baseline>
 relevant-documents: <recoverable set/reference>
 ```
 
-Before `resume`, compare relevant documentation changes against `docs-baseline` using cheap repository metadata first. If relevant requirements did not change, do not rerun Brain. Material change -> `replan`.
+Before `resume`, compare relevant project-knowledge document changes against `project-knowledge-baseline` using cheap repository metadata first. If relevant requirements did not change, do not rerun Brain. Material change -> `replan`.
 
 ## Jira work model
 
