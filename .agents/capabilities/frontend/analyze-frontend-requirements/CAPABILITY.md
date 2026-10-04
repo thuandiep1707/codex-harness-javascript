@@ -7,18 +7,47 @@ description: Analyze relevant human-owned frontend documents and verified source
 
 ## Analysis
 
-1. Inventory `.docs/` cheaply by filename/headings and select only documents relevant to the user
-   objective.
-2. Record the selected document set and a verified repository baseline that can later prove whether
+1. Inspect the user request first for any explicitly referenced document, document path, folder, or
+   documentation scope relevant to the requested work. User-provided documentation references may
+   appear in any natural-language form and must not depend on a fixed keyword or prompt syntax.
+2. When a usable user-referenced documentation scope exists, use it as the primary document scope for
+   the requested work. Do not rediscover or replace that scope merely by scanning the broader
+   documentation tree. Additional documents may still be discovered when materially required as
+   supporting analytic/context evidence.
+3. When the user provides no usable documentation reference, inventory `.docs/` cheaply by
+   filename/headings and select only documents relevant to the user objective.
+4. Record the selected document set and a verified repository baseline that can later prove whether
    those documents changed.
-3. Read the relevant documents, then inspect only source evidence needed to confirm current
+5. Read the relevant documents, then inspect only source evidence needed to confirm current
    architecture and behavior.
-4. Separate documented requirement/constraint, observed source behavior, evidence-backed inference,
+6. Separate documented requirement/constraint, observed source behavior, evidence-backed inference,
    ambiguity, contradiction, and missing decision.
-5. Define included/excluded scope without inventing product behavior.
-6. Express every acceptance criterion as observable evidence.
-7. Identify required external capabilities and blocking open questions.
-8. Return YAML matching `.protocols/analysis-package.yaml`.
+7. Define included/excluded scope without inventing product behavior.
+8. Express every acceptance criterion as observable evidence.
+9. Identify required external capabilities and blocking open questions.
+10. Return YAML matching `.protocols/analysis-package.yaml`.
+
+### Document intake
+
+Interpret documentation references semantically from the user request rather than matching a fixed
+field name or keyword.
+
+Examples of equivalent user intent include, but are not limited to:
+
+- `docs: .docs/rescue-page-redesign`
+- `Tài liệu: .docs/rescue`
+- `Tham khảo: .docs/rescue`
+- `dùng tài liệu trong .docs/rescue`
+- `xem spec ở .docs/rescue/spec.md`
+
+A user-referenced documentation scope is the primary document scope for the requested work. After
+reading it, classify the material by evidence and authority rather than by the wording the user used
+to reference it. Do not assume that every referenced file is a requirement/specification merely
+because the user supplied its path.
+
+Broaden document discovery beyond the referenced scope only when materially required to obtain
+supporting analytic/context evidence or resolve a relevant authority/contract ambiguity. Do not
+replace the user-referenced scope with a separately rediscovered document set.
 
 ### Source scope
 
