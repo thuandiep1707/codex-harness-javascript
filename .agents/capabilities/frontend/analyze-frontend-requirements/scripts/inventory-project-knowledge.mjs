@@ -27,7 +27,7 @@ const projectRoot = path.resolve(getArg("--project-root") || process.cwd());
 const queries = [...new Set(getArgs("--query").map((value) => value.trim()).filter(Boolean))];
 const maxResults = positiveInt(getArg("--max-results"), 20);
 const maxHeadings = positiveInt(getArg("--max-headings"), 12);
-const maxInventory = positiveInt(getArg("--max-inventory"), 1000);
+const maxInventory = positiveInt(getArg("--max-inventory"), 500);
 const maxFileBytes = positiveInt(getArg("--max-file-bytes"), 2 * 1024 * 1024);
 
 const excludedSegments = new Set([
@@ -322,13 +322,9 @@ const compactInventory = documents
   .slice(0, maxInventory)
   .map((document) => ({
     path: document.path,
-    extension: document.extension,
-    readable: document.readable,
-    sizeBytes: document.sizeBytes,
     title: document.title,
-    headingCount: document.headingCount,
     structuralHints: document.structuralHints,
-    contentTruncated: document.contentTruncated,
+    ...(document.readable ? {} : { readable: false }),
   }));
 
 process.stdout.write(
@@ -342,6 +338,7 @@ process.stdout.write(
         candidatesMatched: documents.filter((document) => document.score > 0).length,
         candidatesReturned: candidates.length,
         inventoryReturned: compactInventory.length,
+        inventoryOmitted: Math.max(0, documents.length - compactInventory.length),
         inventoryTruncated: documents.length > compactInventory.length,
       },
       candidates,
